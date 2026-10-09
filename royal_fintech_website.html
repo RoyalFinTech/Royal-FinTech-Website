@@ -1913,7 +1913,23 @@ function validateContactPhone() {
 // AI SUMMARY ENGINE - auto-generate request summary for admin
 // ============================================================
 function generateAISummary(app) {
-  if (app && app.aiSummary && typeof app.aiSummary === 'object' && app.aiSummary.purpose) return app.aiSummary;
+  if (app && app.aiSummary && typeof app.aiSummary === 'object' && app.aiSummary.purpose) {
+    var remote = app.aiSummary;
+    var list = function(value, fallback) {
+      return Array.isArray(value) ? value.map(function(item){return String(item);}) : fallback;
+    };
+    return {
+      purpose:String(remote.purpose),
+      typeNames:list(remote.typeNames, getTypeNames(app.types)),
+      complexity:['Low','Medium','High'].indexOf(remote.complexity)>-1 ? remote.complexity : 'Medium',
+      approach:String(remote.approach || 'Confirm the scope with the client before implementation planning.'),
+      techStack:list(remote.techStack, []),
+      suggestedFeatures:list(remote.suggestedFeatures, getFeatNames(app.features)),
+      phases:list(remote.phases, []),
+      challenges:list(remote.challenges, []),
+      recommendations:list(remote.recommendations, [])
+    };
+  }
   var typeNames = [];
   try {
     [APP_TYPES_BUSINESS, APP_TYPES_PERSONAL, APP_TYPES_PLATFORM].forEach(function(g) {
@@ -1983,7 +1999,7 @@ function renderAISummaryPanel(app) {
   html += '<h4>\ud83e\udd16 ' + (app.aiSummarySource === 'server-ai' ? 'AI Project Summary' : 'Automated Project Triage Summary') + '</h4>';
   html += '<div class="ai-sum-row"><b>What the client wants</b>' + esc(summary.purpose) + '</div>';
   html += '<div class="ai-sum-row"><b>Project Type</b>' + esc(summary.typeNames.join(', ') || 'Custom') + '</div>';
-  html += '<div class="ai-sum-row"><b>Complexity</b><span class="complexity-badge ' + complexityClass + '">' + summary.complexity + '</span></div>';
+  html += '<div class="ai-sum-row"><b>Complexity</b><span class="complexity-badge ' + complexityClass + '">' + esc(summary.complexity) + '</span></div>';
   html += '<div class="ai-sum-row"><b>Suggested Approach</b>' + esc(summary.approach) + '</div>';
   html += '<div class="ai-sum-row"><b>Recommended Tech Stack</b>' + esc(summary.techStack.join(' \u2022 ')) + '</div>';
   html += '<div class="ai-sum-row"><b>Suggested Features</b>' + esc(summary.suggestedFeatures.join(', ')) + '</div>';
@@ -3173,7 +3189,7 @@ footer{border-top:1px solid var(--rf-line)}
     <form id="loginForm" novalidate autocomplete="off">
       <div class="fg">
         <label for="adminEmail">Email Address</label>
-        <input type="email" id="adminEmail" placeholder="admin@royalfintech.com" required autocomplete="username" spellcheck="false">
+        <input type="email" id="adminEmail" placeholder="Your administrator email" required autocomplete="username" spellcheck="false">
         <div class="fg-err" id="emailErr">Please enter a valid email.</div>
       </div>
       <div class="fg">
@@ -3701,7 +3717,7 @@ function getSession() {
     return d;
   } catch(e) { return null; }
 }
-function clearSession() { try { sessionStorage.removeItem(SK); } catch(e){} }
+function clearSession() { try { sessionStorage.removeItem(SK); sessionStorage.removeItem('rft_admin_access_token'); } catch(e){} }
 function isAuth() { return !!getSession(); }
 
 // ---- RATE LIMITER ----
@@ -4802,18 +4818,18 @@ var AI_INTENTS = [
       if (ctx.productId) {
         var prod = RFT_KB.products.find(function(p){ return p.id === ctx.productId; });
         if (prod) {
-          return 'For a project similar to ' + prod.name + ' (' + prod.type + '), pricing depends on the features you choose. Most ' + prod.type.toLowerCase() + ' projects start around D80,000–D250,000 depending on complexity. The best way to get an exact number is the Request App form, which calculates your price live as you select features. Want me to open it with ' + prod.type + ' pre-selected?';
+          return 'For a project similar to ' + prod.name + ' (' + prod.type + '), pricing depends on the features you choose. Most ' + prod.type.toLowerCase() + ' projects start around ' + convertPrice(80000) + '–' + convertPrice(250000) + ' depending on complexity. The best way to get an exact number is the Request App form, which calculates your price live as you select features. Want me to open it with ' + prod.type + ' pre-selected?';
         }
       }
       var p = RFT_KB.pricing;
-      return 'Here\'s a quick overview of our base pricing in GMD:\n\n🌐 Websites: Personal D10,000 · Business D20,000 · Church D25,000 · School D40,000\n📱 Apps: Basic D35,000 · Business D50,000 · Marketplace D100,000 · Healthcare D150,000 · Wallet/FinTech D250,000\n🏢 Enterprise: starting from D500,000\n\nAdd-ons like Admin Portal, AI Integration, or Payment Gateway are priced separately. You can see the full breakdown in our Pricing section, or use the Request App form to get an exact itemized quote. Want me to open the pricing page or the request form?';
+      return 'Here\'s a quick overview of our base pricing in ' + currentCurrency + ':\n\n🌐 Websites: Personal ' + convertPrice(10000) + ' · Business ' + convertPrice(20000) + ' · Church ' + convertPrice(25000) + ' · School ' + convertPrice(40000) + '\n📱 Apps: Basic ' + convertPrice(35000) + ' · Business ' + convertPrice(50000) + ' · Marketplace ' + convertPrice(100000) + ' · Healthcare ' + convertPrice(150000) + ' · Wallet/FinTech ' + convertPrice(250000) + '\n🏢 Enterprise: starting from ' + convertPrice(500000) + '\n\nAdd-ons are priced separately. Converted amounts are indicative; final quotes are confirmed by our team. Want me to open the pricing page or the request form?';
     }
   },
   {
     name: 'pricing_currency',
     patterns: [/change.*currency/i, /\b(usd|dollar|euro|naira|cedi)\b.*price/i, /currency/i],
     handle: function() {
-      return 'You can change your preferred currency anytime — just use the currency selector (showing GMD by default) in the top navigation bar or the mobile menu. All prices across the site, including the Request App quotation, update automatically to your selected currency. We support GMD, USD, EUR, GBP, NGN, GHS, KES, ZAR, XOF, CAD and AED.';
+      return 'You can change your preferred currency from the top navigation or mobile menu. Pricing cards, budget ranges, feature add-ons and quotations follow the selected currency; USD is the first-visit default. Converted values are indicative; Royal FinTech confirms the final quote. Supported currencies include GMD, USD, EUR, GBP, NGN, GHS, KES, ZAR, XOF, CAD, AUD, AED and SAR.';
     }
   },
   {
@@ -5301,7 +5317,7 @@ document.addEventListener('touchend', function(e) {
 // applicationsPath:'/api/applications', aiSummaryPath:'/api/ai/summarize', aiEnabled:true }.
 // The server must authenticate and authorize admin actions, persist requests centrally, validate inputs,
 // and keep AI provider secrets server-side. localStorage alone is not a shared admin inbox.
-window.RFT_CONFIG = window.RFT_CONFIG || { apiBaseUrl:'', applicationsPath:'/api/applications', aiSummaryPath:'/api/ai/summarize', aiEnabled:false };
+window.RFT_CONFIG = window.RFT_CONFIG || { apiBaseUrl:'', applicationsPath:'/api/applications', adminAuthPath:'/api/admin/login', aiSummaryPath:'/api/ai/summarize', aiEnabled:false };
 
 // ---- IN-MEMORY DATABASE (localStorage-backed) ----
 var DB = {
@@ -7926,6 +7942,82 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return notice;
   }
+  window.loadServerApplications = async function () {
+    var config=window.RFT_CONFIG||{};
+    var base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\\/$/,''):'';
+    if(!base) return false;
+    var token='';
+    try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
+    if(!token) return false;
+    var response=await fetch(base+(config.applicationsPath||'/api/applications'),{
+      method:'GET',headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}
+    });
+    if(response.status===401||response.status===403){clearSession();showPage('adminLogin');throw new Error('Admin session expired. Please sign in again.');}
+    if(!response.ok)throw new Error('Could not refresh applications (HTTP '+response.status+').');
+    var payload=await response.json();
+    var rows=Array.isArray(payload)?payload:(payload.applications||payload.data);
+    if(!Array.isArray(rows))throw new Error('Applications API must return an array or an applications/data array.');
+    var remoteRows=rows.map(function(row,index){
+      var originalId=row.id;
+      var numericId=Number(originalId);
+      return Object.assign({},row,{
+        id:Number.isFinite(numericId)&&numericId>0?numericId:(Date.now()+index),
+        serverId:originalId==null?'':String(originalId),
+        name:String(row.name||''),email:String(row.email||''),phone:String(row.phone||''),
+        projectName:String(row.projectName||row.project||row.service||'Project Request'),
+        service:String(row.service||row.projectName||row.project||'Project Request'),
+        desc:String(row.desc||row.description||''),
+        description:String(row.description||row.desc||''),
+        types:Array.isArray(row.types)?row.types:[],
+        platforms:Array.isArray(row.platforms)?row.platforms:[],
+        features:Array.isArray(row.features)?row.features:[],
+        estimatedTotal:Number(row.estimatedTotal||row.quotedAmount||0),
+        currency:String(row.currency||row.quotedCurrency||'USD'),
+        status:String(row.status||'pending'),date:row.date||row.createdAt||new Date().toISOString(),
+        deliveryStatus:'server-confirmed'
+      });
+    });
+    var localDrafts=(DB.get('applications')||[]).filter(function(row){return row.deliveryStatus!=='server-confirmed';});
+    DB.set('applications',remoteRows.concat(localDrafts));
+    try{if(typeof renderApplications==='function')renderApplications();if(typeof renderClientTable==='function')renderClientTable();if(typeof updateAppStats==='function')updateAppStats();if(typeof updateOverviewWidgets==='function')updateOverviewWidgets();}catch(e){}
+    return true;
+  };
+
+  window.performLogin = async function () {
+    try{
+      if(typeof clearLoginMsgs==='function')clearLoginMsgs();
+      if(typeof canLogin==='function'&&!canLogin())return;
+      var emailEl=document.getElementById('adminEmail'),passEl=document.getElementById('adminPass'),button=document.getElementById('loginBtn');
+      var email=emailEl?emailEl.value.trim():'',password=passEl?passEl.value:'';
+      if(!email||!validEmail(email)){showFgErr('adminEmail','emailErr','Enter a valid email address.');return;}
+      if(!password){showFgErr('adminPass','passErr','Password is required.');return;}
+      var config=window.RFT_CONFIG||{},base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\\/$/,''):'';
+      if(!base){showLoginErr('Admin sign-in is not configured. Add the secure API base URL and admin login endpoint before enabling admin access.');return;}
+      if(button){button.disabled=true;button.textContent='Verifying securely…';}
+      var response=await fetch(base+(config.adminAuthPath||'/api/admin/login'),{
+        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({email:email,password:password})
+      });
+      var result=await response.json().catch(function(){return {};});
+      var token=result.access_token||result.accessToken||result.token||'';
+      if(!response.ok||result.authenticated===false||!token){
+        if(typeof badLogin==='function')badLogin();
+        if(passEl)passEl.value='';
+        throw new Error(result.message||'The server did not authorize this login or did not issue a session token.');
+      }
+      sessionStorage.setItem('rft_admin_access_token',token);
+      saveSession(email);if(typeof resetTries==='function')resetTries();
+      showLoginOk('Authenticated securely. Loading requests…');
+      showPage('adminDash');
+      try{await window.loadServerApplications();}catch(loadError){showToast('Signed in, but application refresh failed: '+loadError.message,'error');}
+      if(button){button.disabled=false;button.textContent='🔐 Sign In to Dashboard';}
+    }catch(error){
+      showLoginErr(error&&error.message?error.message:'Unable to sign in. Please try again.');
+      var button=document.getElementById('loginBtn');if(button){button.disabled=false;button.textContent='🔐 Sign In to Dashboard';}
+    }
+  };
+  window.handleLoginClick=function(event){if(event){event.preventDefault();event.stopPropagation();}window.performLogin();};
+
   window.submitProjectRequest = async function () {
     var buttons=document.querySelectorAll('#reqStep4 button');
     buttons.forEach(function(button){button.disabled=true;});
