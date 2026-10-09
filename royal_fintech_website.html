@@ -3718,7 +3718,7 @@ function getSession() {
   } catch(e) { return null; }
 }
 function clearSession() { try { sessionStorage.removeItem(SK); sessionStorage.removeItem('rft_admin_access_token'); } catch(e){} }
-function isAuth() { return !!getSession(); }
+function isAuth() { try { return !!getSession() && !!sessionStorage.getItem('rft_admin_access_token'); } catch(e) { return false; } }
 
 // ---- RATE LIMITER ----
 let loginTries = 0, lockUntil = 0;
@@ -5314,7 +5314,7 @@ document.addEventListener('touchend', function(e) {
 
 // ---- OPTIONAL SERVER INTEGRATION ----
 // Example deployment configuration: window.RFT_CONFIG = { apiBaseUrl:'https://your-api.example.com',
-// applicationsPath:'/api/applications', aiSummaryPath:'/api/ai/summarize', aiEnabled:true }.
+// applicationsPath:'/api/applications', adminAuthPath:'/api/admin/login', aiSummaryPath:'/api/ai/summarize', aiEnabled:true }.
 // The server must authenticate and authorize admin actions, persist requests centrally, validate inputs,
 // and keep AI provider secrets server-side. localStorage alone is not a shared admin inbox.
 window.RFT_CONFIG = window.RFT_CONFIG || { apiBaseUrl:'', applicationsPath:'/api/applications', adminAuthPath:'/api/admin/login', aiSummaryPath:'/api/ai/summarize', aiEnabled:false };
