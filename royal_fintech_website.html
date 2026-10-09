@@ -2174,6 +2174,35 @@ document.addEventListener('DOMContentLoaded', function() {
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta name="robots" content="index, follow">
+<style id="rft-premium-qa-upgrade">
+:root{--rf-line:rgba(148,163,184,.18)}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(37,99,235,.12),transparent 38%),var(--bg,#0A0F1C);text-rendering:optimizeLegibility}
+#mainNav,.req-nav{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:var(--rf-line)!important}
+#mainNav{box-shadow:0 10px 34px rgba(0,0,0,.12)}
+#hero{position:relative;isolation:isolate;overflow:hidden}
+#hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 78% 35%,rgba(37,99,235,.14),transparent 38%),linear-gradient(180deg,transparent 75%,rgba(7,13,25,.25))}
+.hero-badge{border-color:rgba(246,200,106,.24)!important;background:rgba(246,200,106,.06)!important}
+.hero-title{letter-spacing:-.045em;text-wrap:balance}
+.hero-sub{max-width:620px;text-wrap:pretty}
+.btn{min-height:44px;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.btn:focus-visible,.icon-btn:focus-visible,.hamburger:focus-visible,.p-tab:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid rgba(59,130,246,.75);outline-offset:3px}
+.price-card,.req-section-card,.form-box,.ai-summary-box,.app-field-section{border-color:var(--rf-line)!important;box-shadow:0 14px 40px rgba(0,0,0,.10)}
+.price-card{background:linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.018))!important}
+.price-card:hover{transform:translateY(-4px);border-color:rgba(96,165,250,.44)!important;box-shadow:0 22px 48px rgba(0,0,0,.20)}
+.price-amt{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.p-tab{min-height:42px}
+.req-section-card{background:linear-gradient(155deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}
+.req-input{min-height:44px;border-color:var(--rf-line)!important}
+.req-input:focus{border-color:rgba(59,130,246,.72)!important;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.req-type-chip,.req-platform-card,.feat-card{transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.req-type-chip:hover,.req-platform-card:hover,.feat-card:hover{transform:translateY(-2px)}
+#reqStep4 button:disabled{opacity:.6;cursor:wait;transform:none}
+footer{border-top:1px solid var(--rf-line)}
+@media(max-width:640px){.hero-title{letter-spacing:-.035em}.req-nav{padding-inline:14px!important}#reqLocalOnlyNotice{font-size:.8rem!important}#reqStep5 .req-section-card{padding:16px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body>
 <!-- LOADER -->
@@ -2278,7 +2307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </select>
     <select id="currSelect" class="lc-select" onchange="setCurrency(this.value)" title="Currency">
       <option value="GMD">🇬🇲 GMD</option>
-      <option value="USD">🇺🇸 USD</option>
+      <option value="USD" selected>🇺🇸 USD</option>
       <option value="EUR">🇪🇺 EUR</option>
       <option value="GBP">🇬🇧 GBP</option>
       <option value="NGN">🇳🇬 NGN</option>
@@ -2345,7 +2374,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <label for="currSelectMob" class="sr-only">Currency</label>
       <select id="currSelectMob" class="lc-select drawer-select" onchange="setCurrency(this.value)" title="Currency">
         <option value="GMD">🇬🇲 GMD</option>
-        <option value="USD">🇺🇸 USD</option>
+        <option value="USD" selected>🇺🇸 USD</option>
         <option value="EUR">🇪🇺 EUR</option>
         <option value="GBP">🇬🇧 GBP</option>
         <option value="NGN">🇳🇬 NGN</option>
@@ -2584,7 +2613,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="center">
     <div class="tag rev">Transparent Pricing</div>
     <h2 class="section-title rev">Simple, <span class="hi">Honest Pricing</span></h2>
-    <p class="section-desc rev">Every project is unique. Here are our base prices in <strong id="priceCurrLabel">GMD (Gambian Dalasi)</strong>.</p>
+    <p class="section-desc rev">Every project is unique. Here are our base prices in <strong id="priceCurrLabel">USD (US Dollar)</strong>.</p>
   </div>
   <div class="pricing-tabs">
     <button class="p-tab active" onclick="showPriceTab('websites',this)" type="button">Websites</button>
@@ -2595,7 +2624,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
   <div id="pricingContent"></div>
   <div class="center" style="margin-top:30px">
-    <p style="color:var(--gray);font-size:0.85rem;margin-bottom:16px">All prices are in GMD by default. Change your currency above to see converted prices.</p>
+    <p style="color:var(--gray);font-size:0.85rem;margin-bottom:16px">Prices default to USD. Switch currency above to see indicative converted prices; final quotes are confirmed by our team.</p>
     <button class="btn btn-primary" onclick="showPage('requestPage')" type="button">Get Free Quotation →</button>
   </div>
 </section>
@@ -2886,9 +2915,9 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       <div class="req-field">
         <label>Preferred Currency</label>
-        <select id="rqCurrency" class="req-input">
+        <select id="rqCurrency" class="req-input" onchange="setCurrency(this.value)">
           <option value="GMD">🇬🇲 GMD - Gambian Dalasi</option>
-          <option value="USD">🇺🇸 USD - US Dollar</option>
+          <option value="USD" selected>🇺🇸 USD - US Dollar</option>
           <option value="EUR">🇪🇺 EUR - Euro</option>
           <option value="GBP">🇬🇧 GBP - British Pound</option>
           <option value="NGN">🇳🇬 NGN - Nigerian Naira</option>
@@ -3158,7 +3187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </form>
     <br>
     <button class="btn btn-ghost btn-sm" onclick="showPage('mainSite')" style="width:100%;margin-top:6px" type="button">← Back to Website</button>
-    <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6"><strong style="color:var(--gray)">Demo Access:</strong><br>Email: admin@royalfintech.com<br>Password: admin2026</p>
+    <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6">Secure admin authentication must be connected to a server before managing real customer requests. Browser-only credentials are not production security.</p>
   </div>
 </div>
 </div>
@@ -3654,8 +3683,8 @@ function esc(s) {
 // ---- SESSION MANAGEMENT ----
 const SK = 'rft_admin_v3';
 const ST = 60 * 60 * 1000;
-let ADMIN_EMAIL = 'admin@royalfintech.com';
-let ADMIN_PASS  = 'admin2026';
+let ADMIN_EMAIL = '';
+let ADMIN_PASS  = '';
 let soundEnabled = true;
 
 function saveSession(email) {
@@ -4141,6 +4170,10 @@ function performLogin() {
     }
     if (!ok) { return; }
 
+    if (!ADMIN_EMAIL || !ADMIN_PASS) {
+      showLoginErr('Admin sign-in is not configured. Connect secure server-side authentication before enabling access to customer data.');
+      return;
+    }
     // Set loading state
     if (btn) { btn.textContent = '⏳ Signing in...'; btn.disabled = true; }
     showLoginOk('Verifying credentials...');
@@ -5259,6 +5292,13 @@ document.addEventListener('touchend', function(e) {
    Marketing Center, Email, Applications, Notifications
    ============================================================ */
 
+// ---- OPTIONAL SERVER INTEGRATION ----
+// Example deployment configuration: window.RFT_CONFIG = { apiBaseUrl:'https://your-api.example.com',
+// applicationsPath:'/api/applications', aiSummaryPath:'/api/ai/summarize', aiEnabled:true }.
+// The server must authenticate and authorize admin actions, persist requests centrally, validate inputs,
+// and keep AI provider secrets server-side. localStorage alone is not a shared admin inbox.
+window.RFT_CONFIG = window.RFT_CONFIG || { apiBaseUrl:'', applicationsPath:'/api/applications', aiSummaryPath:'/api/ai/summarize', aiEnabled:false };
+
 // ---- IN-MEMORY DATABASE (localStorage-backed) ----
 var DB = {
   get: function(key) {
@@ -5286,17 +5326,7 @@ var templates    = DB.get('emailTemplates');
 var auditLog     = DB.get('auditLog');
 var currentAppId = null;
 
-// Initialize demo data if empty
-if (!applications.length) {
-  var demoApps = [
-    { id: 1001, name: 'Aminata Mendy', email: 'aminata@example.com', phone: '+220 777 1234', country: 'The Gambia', service: 'Mobile App Development', platforms: 'Android, iOS', budget: '$5,000 – $15,000', timeline: '3–6 months', description: 'A marketplace app for Gambian businesses.', status: 'approved', date: new Date(Date.now()-86400000*3).toISOString(), files: [] },
-    { id: 1002, name: 'Omar Kah', email: 'omar@example.com', phone: '+220 778 5678', country: 'The Gambia', service: 'FinTech Solutions', platforms: 'Web App', budget: '$15,000 – $50,000', timeline: '6–12 months', description: 'Digital payment platform for local banks.', status: 'reviewing', date: new Date(Date.now()-86400000*1).toISOString(), files: [] },
-    { id: 1003, name: 'Fatou Diallo', email: 'fatou@example.com', phone: '+220 779 9012', country: 'Senegal', service: 'AI Development', platforms: 'Web App, AI Assistant', budget: '$5,000 – $15,000', timeline: '3–6 months', description: 'AI customer support chatbot.', status: 'pending', date: new Date().toISOString(), files: [] },
-    { id: 1004, name: 'Lamin Jallow', email: 'lamin@example.com', phone: '+220 776 3456', country: 'The Gambia', service: 'Delivery Systems', platforms: 'Android, iOS', budget: '$2,000 – $5,000', timeline: '1–3 months', description: 'Last-mile delivery app for local businesses.', status: 'pending', date: new Date().toISOString(), files: [] }
-  ];
-  DB.set('applications', demoApps);
-  applications = demoApps;
-}
+// No demo applicants are seeded; this panel starts empty until genuine requests arrive.
 if (!announcements.length) {
   var demoAnnouncements = [
     { id: 1, text: '🔥 20% Discount on Website Development this month!', url: '', color: '#ffffff', status: 'active' },
@@ -6278,7 +6308,7 @@ var TRANSLATIONS = {
 };
 
 var currentLang = 'en';
-var currentCurrency = 'GMD';
+var currentCurrency = 'USD';
 
 // Currency exchange rates (approximate, relative to GMD)
 var CURRENCY_RATES = {
@@ -6313,37 +6343,45 @@ function setLanguage(lang) {
   document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
 }
 
+function updateRequestBudgetLabels() {
+  var budget = document.getElementById('rqBudget');
+  var currencyLabel = document.getElementById('rqBudgetCurrLabel');
+  if (currencyLabel) currencyLabel.textContent = currentCurrency;
+  if (!budget) return;
+  var bands = {'10000':[10000,30000],'30000':[30000,80000],'80000':[80000,150000],'150000':[150000,300000],'300000':[300000,500000],'500000':[500000,null]};
+  Array.from(budget.options).forEach(function(option) {
+    var range = bands[option.value];
+    if (!range) return;
+    option.textContent = range[1] === null ? convertPrice(range[0]) + '+' : convertPrice(range[0]) + ' – ' + convertPrice(range[1]);
+  });
+}
 function setCurrency(curr) {
+  if (!Object.prototype.hasOwnProperty.call(CURRENCY_RATES, curr)) curr = 'USD';
   currentCurrency = curr;
   try { localStorage.setItem('rft_currency', curr); } catch(e) {}
-  ['currSelect','currSelectMob'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.value = curr;
-  });
-  var label = document.getElementById('priceCurrLabel');
-  var names = { GMD:'GMD (Gambian Dalasi)',USD:'USD (US Dollar)',EUR:'EUR (Euro)',GBP:'GBP (British Pound)',NGN:'NGN (Nigerian Naira)',GHS:'GHS (Ghanaian Cedi)',KES:'KES (Kenyan Shilling)',ZAR:'ZAR (South African Rand)',XOF:'XOF (CFA Franc)',CAD:'CAD (Canadian Dollar)',AED:'AED (UAE Dirham)' };
-  if (label) label.textContent = names[curr] || curr;
-  // Re-render pricing with new currency
-  if (typeof renderPricingTab === 'function') {
-    var activeTab = document.querySelector('.p-tab.active');
-    if (activeTab) renderPricingTab(activeTab.getAttribute('data-tab') || 'websites');
-  }
+  ['currSelect','currSelectMob','rqCurrency'].forEach(function(id) { var el=document.getElementById(id); if(el) el.value=curr; });
+  var label=document.getElementById('priceCurrLabel');
+  var names={GMD:'GMD (Gambian Dalasi)',USD:'USD (US Dollar)',EUR:'EUR (Euro)',GBP:'GBP (British Pound)',NGN:'NGN (Nigerian Naira)',GHS:'GHS (Ghanaian Cedi)',KES:'KES (Kenyan Shilling)',ZAR:'ZAR (South African Rand)',XOF:'XOF (CFA Franc)',XAF:'XAF (CFA Franc)',CAD:'CAD (Canadian Dollar)',AUD:'AUD (Australian Dollar)',AED:'AED (UAE Dirham)',SAR:'SAR (Saudi Riyal)'};
+  if(label) label.textContent=names[curr]||curr;
+  updateRequestBudgetLabels();
+  var activeStep=document.querySelector('.req-step.active');
+  if(activeStep&&activeStep.id==='reqStep2'&&typeof renderPlatformGrid==='function') renderPlatformGrid();
+  if(activeStep&&activeStep.id==='reqStep3'&&typeof initFeaturesGrid==='function') initFeaturesGrid();
+  if(activeStep&&activeStep.id==='reqStep4'&&typeof buildQuotation==='function'&&window._rqQuotNum) buildQuotation();
+  if(typeof renderPricingTab==='function'){var activeTab=document.querySelector('.p-tab.active');if(activeTab)renderPricingTab(activeTab.getAttribute('data-tab')||'websites');}
+  try{if(typeof renderClientTable==='function')renderClientTable();}catch(e){}
+  try{if(typeof updateOverviewWidgets==='function')updateOverviewWidgets();}catch(e){}
 }
-
 function convertPrice(gmdAmount) {
-  var rate = CURRENCY_RATES[currentCurrency] || 1;
-  var sym = CURRENCY_SYMBOLS[currentCurrency] || 'D';
-  var converted = Math.round(gmdAmount * rate);
-  return sym + ' ' + converted.toLocaleString();
+  var amount=Number(gmdAmount); if(!Number.isFinite(amount)) amount=0;
+  var rate=CURRENCY_RATES[currentCurrency]||1, sym=CURRENCY_SYMBOLS[currentCurrency]||currentCurrency;
+  return sym+' '+Math.round(amount*rate).toLocaleString(undefined,{maximumFractionDigits:0});
 }
-
 function initLangCurrency() {
-  try {
-    var savedLang = localStorage.getItem('rft_lang');
-    var savedCurr = localStorage.getItem('rft_currency');
-    if (savedLang) setLanguage(savedLang);
-    if (savedCurr) setCurrency(savedCurr);
-  } catch(e) {}
+  var savedLang=null,savedCurr=null;
+  try{savedLang=localStorage.getItem('rft_lang');savedCurr=localStorage.getItem('rft_currency');}catch(e){}
+  if(savedLang)setLanguage(savedLang);
+  setCurrency(savedCurr||'USD');
 }
 
 // ============================================================
@@ -6843,7 +6881,7 @@ function buildQuotation() {
   PLATFORM_OPTIONS.forEach(function(p) { if (rqSelectedPlatforms.indexOf(p.id)>-1 && p.price>0) platformExtra+=p.price; });
   total += platformExtra;
   var timeline = total<30000?'2-4 weeks':total<80000?'4-8 weeks':total<150000?'2-4 months':total<300000?'3-6 months':total<500000?'6-12 months':'12-18 months';
-  var quotNum = 'RFT-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000);
+  var quotNum = window._rqQuotNum || ('RFT-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000));
   window._rqQuotNum = quotNum; window._rqTotal = total; window._rqTimeline = timeline;
   window._rqTypeNames = typeNames; window._rqFeatureLines = featureLines;
 
@@ -6959,9 +6997,10 @@ function downloadReceipt() {
 
 function startNewRequest() {
   rqSelectedTypes=[]; rqSelectedPlatforms=[]; rqSelectedFeatures=[]; rqBasePrice=0;
-  ['rqName','rqEmail','rqPhone','rqProjectName','rqDesc'].forEach(function(id) {
-    var el=document.getElementById(id); if(el) el.value='';
-  });
+  window._rqQuotNum=null; window._rqRefNum=null; window._rqTotal=0;
+  ['rqName','rqEmail','rqPhone','rqProjectName','rqDesc','rqCompany'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var logoInput=document.getElementById('rqLogoFile'),logoPreview=document.getElementById('rqLogoPreview');
+  if(logoInput)logoInput.value=''; if(logoPreview)logoPreview.innerHTML='';
   goToReqStep(1);
 }
 
