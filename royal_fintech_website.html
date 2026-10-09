@@ -7944,7 +7944,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   window.loadServerApplications = async function () {
     var config=window.RFT_CONFIG||{};
-    var base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\\/$/,''):'';
+    var base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\/$/,''):'';
     if(!base) return false;
     var token='';
     try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
@@ -7991,7 +7991,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var email=emailEl?emailEl.value.trim():'',password=passEl?passEl.value:'';
       if(!email||!validEmail(email)){showFgErr('adminEmail','emailErr','Enter a valid email address.');return;}
       if(!password){showFgErr('adminPass','passErr','Password is required.');return;}
-      var config=window.RFT_CONFIG||{},base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\\/$/,''):'';
+      var config=window.RFT_CONFIG||{},base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\/$/,''):'';
       if(!base){showLoginErr('Admin sign-in is not configured. Add the secure API base URL and admin login endpoint before enabling admin access.');return;}
       if(button){button.disabled=true;button.textContent='Verifying securely…';}
       var response=await fetch(base+(config.adminAuthPath||'/api/admin/login'),{
