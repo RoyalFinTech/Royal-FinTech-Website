@@ -1038,7 +1038,7 @@ footer{background:#060A14;border-top:1px solid var(--gborder);padding:48px 22px 
     </form>
     <br>
     <button class="btn btn-ghost btn-sm" onclick="showPage('mainSite')" style="width:100%;margin-top:6px">← Back to Website</button>
-    <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6"><strong style="color:var(--gray)">Demo Access:</strong><br>Email: admin@royalfintech.com<br>Password: admin2026</p>
+    <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6">This legacy page requires server-side admin authentication before access to customer requests can be enabled.</p>
   </div>
 </div>
 </div>
@@ -1511,8 +1511,8 @@ function esc(s) {
 // ---- SESSION MANAGEMENT ----
 const SK = 'rft_admin_v3';
 const ST = 60 * 60 * 1000;
-let ADMIN_EMAIL = 'admin@royalfintech.com';
-let ADMIN_PASS  = 'admin2026';
+let ADMIN_EMAIL = '';
+let ADMIN_PASS  = '';
 let soundEnabled = true;
 
 function saveSession(email) {
@@ -1525,8 +1525,8 @@ function getSession() {
     return d;
   } catch(e) { return null; }
 }
-function clearSession() { try { sessionStorage.removeItem(SK); } catch(e){} }
-function isAuth() { return !!getSession(); }
+function clearSession() { try { sessionStorage.removeItem(SK); sessionStorage.removeItem('rft_admin_access_token'); } catch(e){} }
+function isAuth() { try { return !!getSession() && !!sessionStorage.getItem('rft_admin_access_token'); } catch(e) { return false; } }
 
 // ---- RATE LIMITER ----
 let loginTries = 0, lockUntil = 0;
@@ -1980,6 +1980,10 @@ function performLogin() {
     }
     if (!ok) { console.log('[RFT] Validation failed'); return; }
 
+    if (!ADMIN_EMAIL || !ADMIN_PASS) {
+      showLoginErr('Admin sign-in is not configured on this legacy page. Use the primary website with the secure server API configuration.');
+      return;
+    }
     // Set loading state
     if (btn) { btn.textContent = '⏳ Signing in...'; btn.disabled = true; }
     showLoginOk('Verifying credentials...');
