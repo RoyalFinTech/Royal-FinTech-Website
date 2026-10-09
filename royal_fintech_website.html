@@ -2033,6 +2033,7 @@ window.viewApp = function(id) {
     (FEATURES_LIST||[]).forEach(function(f) { if ((app.features||[]).indexOf(f.id) > -1) featNames.push(f.ico + ' ' + f.name); });
   } catch(e) {}
   var platformNames = (app.platforms || []).join(', ') || '\u2014';
+  var safeStatus = ['pending','reviewing','approved','rejected','in_development','testing','paid','completed','closed','awaiting_payment'].indexOf(app.status)>-1 ? app.status : 'pending';
 
   var html = '';
   html += app.deliveryStatus === 'server-confirmed'
@@ -2071,7 +2072,7 @@ window.viewApp = function(id) {
   // Budget & timeline
   html += '<div class="app-field-section"><h5>\ud83d\udcb0 Budget &amp; Timeline</h5><div class="app-field-grid">';
   html += '<div class="app-field"><label>Estimated Total</label><span style="color:var(--blue);font-weight:700">' + convertPrice(app.estimatedTotal||0) + '</span></div>';
-  html += '<div class="app-field"><label>Status</label><span><span class="app-status app-' + (app.status||'pending') + '">' + (app.status||'pending') + '</span></span></div>';
+  html += '<div class="app-field"><label>Status</label><span><span class="app-status app-' + safeStatus + '">' + safeStatus + '</span></span></div>';
   html += '</div></div>';
 
   // Internal notes (editable)
@@ -5529,15 +5530,16 @@ function renderApplications(filterStatus, searchQuery) {
     return;
   }
   panel.innerHTML = apps.map(function(a) {
-    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[a.status] || 'app-pending';
+    var safeStatus = ['pending','reviewing','approved','rejected'].indexOf(a.status)>-1 ? a.status : 'pending';
+    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[safeStatus] || 'app-pending';
     var dateStr = new Date(a.date).toLocaleDateString();
     return '<tr>'
-      + '<td>' + a.name + '</td>'
-      + '<td style="font-size:0.8rem;color:var(--gray)">' + a.email + '</td>'
-      + '<td style="font-size:0.8rem">' + a.service + '</td>'
+      + '<td>' + esc(String(a.name||'-')) + '</td>'
+      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email||'-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + esc(String(a.service||a.projectName||'-')) + '</td>'
       + '<td style="font-size:0.8rem">' + dateStr + '</td>'
-      + '<td><span class="app-status ' + statusClass + '">' + a.status + '</span></td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + a.id + ')" type="button">View</button></td>'
+      + '<td><span class="app-status ' + statusClass + '">' + safeStatus + '</span></td>'
+      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + (Number(a.id)||0) + ')" type="button">View</button></td>'
       + '</tr>';
   }).join('');
 }
@@ -5559,7 +5561,8 @@ function viewApp(id) {
     ['Submitted', new Date(app.date).toLocaleString()]
   ];
   content.innerHTML = fields.map(function(f) {
-    return '<div class="app-field"><label>' + f[0] + '</label><span>' + (f[1]||'-') + '</span></div>';
+    var value = f[1] == null || f[1] === '' ? '-' : (Array.isArray(f[1]) ? f[1].join(', ') : String(f[1]));
+    return '<div class="app-field"><label>' + esc(String(f[0])) + '</label><span>' + esc(value) + '</span></div>';
   }).join('');
   document.getElementById('appDetailModal').classList.add('open');
   addAuditLog('👁️', 'action', 'Viewed application from ' + app.name);
@@ -7029,7 +7032,16 @@ function handleRqLogoUpload(input) {
   Array.from(input.files||[]).forEach(function(file) {
     var pill=document.createElement('div');
     pill.style.cssText='padding:5px 12px;background:var(--bg2);border:1px solid var(--gborder);border-radius:20px;font-size:0.75rem;display:flex;align-items:center;gap:6px';
-    pill.innerHTML='\ud83d\udcce '+file.name+'<span style="cursor:pointer;color:var(--red)" onclick="this.parentNode.remove()">\u00d7</span>';
+    var fileLabel=document.createElement('span');
+    fileLabel.textContent='📎 '+file.name;
+    var removeButton=document.createElement('button');
+    removeButton.type='button';
+    removeButton.textContent='×';
+    removeButton.setAttribute('aria-label','Remove '+file.name);
+    removeButton.style.cssText='cursor:pointer;color:var(--red);border:0;background:transparent;font:inherit;padding:0';
+    removeButton.onclick=function(){pill.remove();};
+    pill.appendChild(fileLabel);
+    pill.appendChild(removeButton);
     preview.appendChild(pill);
     if (file.type.startsWith('image/') && typeof compressImage==='function') {
       compressImage(file, function(dataUrl) {
