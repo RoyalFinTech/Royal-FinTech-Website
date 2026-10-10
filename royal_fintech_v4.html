@@ -2722,22 +2722,17 @@ if (!announcements.length) {
 
 // ---- TICKER BAR ----
 function buildTicker() {
-  var bar = document.getElementById('tickerBar');
-  var inner = document.getElementById('tickerInner');
-  if (!bar || !inner) return;
-  var source = Array.isArray(announcements) ? announcements : [];
-  var active = source.filter(function(a) { return a && a.status === 'active'; });
-  if (!active.length) { bar.classList.remove('active'); inner.textContent = ''; return; }
+  var bar=document.getElementById('tickerBar'),inner=document.getElementById('tickerInner');
+  if(!bar||!inner)return;
+  var source=Array.isArray(announcements)?announcements:[];
+  var active=source.filter(function(a){return a&&a.status==='active';});
+  if(!active.length){bar.classList.remove('active');inner.textContent='';return;}
   bar.classList.add('active');
-  inner.innerHTML = active.concat(active).map(function(a) {
-    var color = /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color || '')) ? String(a.color) : '#ffffff';
-    var rawUrl = String(a.url || '').trim();
-    var safeUrl = /^(https?:\/\/|\/|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '';
-    return '<span class="ticker-item" style="color:' + color + '">'
-      + (safeUrl ? '<a href="' + esc(safeUrl) + '" style="color:inherit;text-decoration:none" rel="noopener noreferrer">' : '')
-      + esc(String(a.text || ''))
-      + (safeUrl ? '</a>' : '')
-      + '</span><span class="ticker-sep">❖</span>';
+  inner.innerHTML=active.concat(active).map(function(a){
+    var color=/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color||''))?String(a.color):'#ffffff';
+    var rawUrl=String(a.url||'').trim();
+    var url=/^(https?:\/\/|\/|#)/i.test(rawUrl)&&!/^javascript:/i.test(rawUrl)?rawUrl:'';
+    return '<span class="ticker-item" style="color:'+color+'">'+(url?'<a href="'+esc(url)+'" rel="noopener noreferrer" style="color:inherit;text-decoration:none">':'')+esc(String(a.text||''))+(url?'</a>':'')+'</span><span class="ticker-sep">❖</span>';
   }).join('');
 }
 
@@ -2745,43 +2740,24 @@ function buildTicker() {
 var carouselIdx = 0;
 var carouselInterval = null;
 function buildCarousel() {
-  var wrap = document.getElementById('promoCarousel');
-  if (!wrap) return;
-  var source = Array.isArray(banners) ? banners : [];
-  var active = source.filter(function(b) { return b && b.status === 'active'; });
-  if (!active.length) { wrap.classList.remove('active'); return; }
+  var wrap=document.getElementById('promoCarousel');if(!wrap)return;
+  var source=Array.isArray(banners)?banners:[];
+  var active=source.filter(function(b){return b&&b.status==='active';});
+  if(!active.length){wrap.classList.remove('active');return;}
   wrap.classList.add('active');
-  var slides = document.getElementById('promoSlides');
-  var dots = document.getElementById('promoDots');
-  if (!slides || !dots) return;
-  slides.innerHTML = active.map(function(b) {
-    var rawColor = String(b.color || '');
-    var safeColor = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\))$/i.test(rawColor) ? rawColor : 'var(--grad)';
-    var rawUrl = String(b.url || '#').trim();
-    var safeUrl = /^(https?:\/\/|\/|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '#';
-    var rawImage = String(b.imgData || '');
-    var safeImage = /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(rawImage) ? rawImage : '';
-    return '<div class="promo-slide" style="background:' + safeColor + '">'
-      + (safeImage ? '<img src="' + esc(safeImage) + '" alt="' + esc(String(b.title || '')) + '">' : '')
-      + '<div class="promo-overlay"></div><div class="promo-content">'
-      + '<h2>' + esc(String(b.title || '')) + '</h2><p>' + esc(String(b.desc || '')) + '</p>'
-      + (b.btnText ? '<a href="' + esc(safeUrl) + '" class="btn btn-primary btn-sm" rel="noopener noreferrer">' + esc(String(b.btnText)) + '</a>' : '')
-      + '</div></div>';
+  var slides=document.getElementById('promoSlides'),dots=document.getElementById('promoDots');if(!slides||!dots)return;
+  slides.innerHTML=active.map(function(b){
+    var c=String(b.color||'');
+    var color=/^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\))$/i.test(c)?c:'var(--grad)';
+    var rawUrl=String(b.url||'#').trim(),url=/^(https?:\/\/|\/|#)/i.test(rawUrl)&&!/^javascript:/i.test(rawUrl)?rawUrl:'#';
+    var rawImage=String(b.imgData||''),img=/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(rawImage)?rawImage:'';
+    return '<div class="promo-slide" style="background:'+color+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(String(b.title||''))+'">':'')+'<div class="promo-overlay"></div><div class="promo-content"><h2>'+esc(String(b.title||''))+'</h2><p>'+esc(String(b.desc||''))+'</p>'+(b.btnText?'<a href="'+esc(url)+'" class="btn btn-primary btn-sm" rel="noopener noreferrer">'+esc(String(b.btnText))+'</a>':'')+'</div></div>';
   }).join('');
-  dots.innerHTML = active.map(function(_, i) {
-    return '<span class="promo-dot' + (i===0?' active':'') + '" data-promo-slide="' + i + '" role="button" tabindex="0" aria-label="Go to slide ' + (i+1) + '"></span>';
-  }).join('');
-  dots.onclick = function(event) {
-    var dot = event.target && event.target.closest ? event.target.closest('[data-promo-slide]') : null;
-    if (dot && dots.contains(dot)) gotoSlide(Number(dot.getAttribute('data-promo-slide')) || 0);
-  };
-  dots.onkeydown = function(event) {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    var dot = event.target && event.target.closest ? event.target.closest('[data-promo-slide]') : null;
-    if (dot && dots.contains(dot)) { event.preventDefault(); gotoSlide(Number(dot.getAttribute('data-promo-slide')) || 0); }
-  };
-  if (carouselInterval) clearInterval(carouselInterval);
-  if (active.length > 1) carouselInterval = setInterval(function() { nextSlide(); }, 5000);
+  dots.innerHTML=active.map(function(_,i){return '<span class="promo-dot'+(i===0?' active':'')+'" data-promo-slide="'+i+'" role="button" tabindex="0" aria-label="Go to slide '+(i+1)+'"></span>';}).join('');
+  dots.onclick=function(event){var dot=event.target&&event.target.closest?event.target.closest('[data-promo-slide]'):null;if(dot&&dots.contains(dot))gotoSlide(Number(dot.getAttribute('data-promo-slide'))||0);};
+  dots.onkeydown=function(event){if(event.key!=='Enter'&&event.key!==' ')return;var dot=event.target&&event.target.closest?event.target.closest('[data-promo-slide]'):null;if(dot&&dots.contains(dot)){event.preventDefault();gotoSlide(Number(dot.getAttribute('data-promo-slide'))||0);}};
+  if(carouselInterval)clearInterval(carouselInterval);
+  if(active.length>1)carouselInterval=setInterval(function(){nextSlide();},5000);
 }
 
 function nextSlide() {
@@ -3093,18 +3069,12 @@ function saveTemplate() {
 }
 
 function renderEmailHistory() {
-  var body = document.getElementById('emailHistBody');
-  if (!body) return;
-  var hist = DB.get('emailHistory');
-  if (!hist.length) { body.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No emails sent yet</div>'; return; }
-  body.innerHTML = hist.slice(0,20).map(function(e) {
-    return '<div class="email-history-item">'
-      + '<div class="email-hist-ico">📧</div>'
-      + '<div style="flex:1"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px">' + e.subject + '</div>'
-      + '<div style="color:var(--gray);font-size:0.78rem">To: ' + e.to + '</div>'
-      + '<div style="color:var(--muted);font-size:0.72rem">' + new Date(e.date).toLocaleString() + '</div></div>'
-      + '<div class="email-status-sent">✅ Sent</div>'
-      + '</div>';
+  var body=document.getElementById('emailHistBody');if(!body)return;
+  var raw=DB.get('emailHistory'),hist=Array.isArray(raw)?raw.filter(function(e){return e&&typeof e==='object';}):[];
+  if(!hist.length){body.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">No emails sent yet</div>';return;}
+  body.innerHTML=hist.slice(0,20).map(function(e){
+    var date=e.date?new Date(e.date):null;
+    return '<div class="email-history-item"><div class="email-hist-ico">📧</div><div style="flex:1"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px">'+esc(String(e.subject||'(No subject)'))+'</div><div style="color:var(--gray);font-size:0.78rem">To: '+esc(String(e.to||''))+'</div><div style="color:var(--muted);font-size:0.72rem">'+(date&&isFinite(date.getTime())?date.toLocaleString():'-')+'</div></div><div class="email-status-sent">✅ Sent</div></div>';
   }).join('');
 }
 
