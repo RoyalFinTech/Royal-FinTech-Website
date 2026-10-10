@@ -5515,42 +5515,68 @@ function requestBrowserNotifPermission() {
 function renderApplications(filterStatus, searchQuery) {
   var panel = document.getElementById('appListBody');
   if (!panel) return;
-  var apps = DB.get('applications');
+  var apps;
+  try {
+    apps = DB.get('applications');
+    if (!Array.isArray(apps)) apps = [];
+  } catch (e) {
+    panel.textContent = 'Applications could not be loaded.';
+    return;
+  }
+  apps = apps.filter(function(a) { return a && typeof a === 'object'; });
   if (filterStatus && filterStatus !== 'all') {
     apps = apps.filter(function(a) { return a.status === filterStatus; });
   }
-  if (searchQuery) {
-    var q = searchQuery.toLowerCase();
+  var q = String(searchQuery || '').trim().toLowerCase();
+  if (q) {
     apps = apps.filter(function(a) {
-      return a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.service.toLowerCase().includes(q);
+      return [a.name, a.email, a.service, a.projectName].some(function(value) {
+        return String(value == null ? '' : value).toLowerCase().includes(q);
+      });
     });
   }
   if (!apps.length) {
     panel.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">No applications found</td></tr>';
     return;
   }
+  var allowedStatuses = ['pending', 'reviewing', 'approved', 'rejected'];
+  var statusClasses = {pending:'app-pending', reviewing:'app-reviewing', approved:'app-approved', rejected:'app-rejected'};
   panel.innerHTML = apps.map(function(a) {
-    var safeStatus = ['pending','reviewing','approved','rejected'].indexOf(a.status)>-1 ? a.status : 'pending';
-    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[safeStatus] || 'app-pending';
-    var dateStr = new Date(a.date).toLocaleDateString();
+    var safeStatus = allowedStatuses.indexOf(a.status) > -1 ? a.status : 'pending';
+    var statusClass = statusClasses[safeStatus];
+    var parsedDate = a.date ? new Date(a.date) : null;
+    var dateStr = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.toLocaleDateString() : '-';
+    var appId = a.id == null ? '' : String(a.id);
     return '<tr>'
-      + '<td>' + esc(String(a.name||'-')) + '</td>'
-      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email||'-')) + '</td>'
-      + '<td style="font-size:0.8rem">' + esc(String(a.service||a.projectName||'-')) + '</td>'
+      + '<td>' + esc(String(a.name || '-')) + '</td>'
+      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email || '-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + esc(String(a.service || a.projectName || '-')) + '</td>'
       + '<td style="font-size:0.8rem">' + dateStr + '</td>'
       + '<td><span class="app-status ' + statusClass + '">' + safeStatus + '</span></td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + (Number(a.id)||0) + ')" type="button">View</button></td>'
+      + '<td><button class="btn btn-outline btn-sm" data-view-app-id="' + esc(appId) + '" type="button">View</button></td>'
       + '</tr>';
   }).join('');
+  // Delegated listener avoids placing applicant-controlled values in executable HTML.
+  panel.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('button[data-view-app-id]') : null;
+    if (!button || !panel.contains(button)) return;
+    event.preventDefault();
+    viewApp(button.getAttribute('data-view-app-id'));
+  };
 }
 
 function viewApp(id) {
-  var apps = DB.get('applications');
-  var app = apps.find(function(a) { return a.id === id; });
+  var apps;
+  try {
+    apps = DB.get('applications');
+    if (!Array.isArray(apps)) return;
+  } catch (e) { return; }
+  var app = apps.find(function(a) { return a && a.id != null && String(a.id) === String(id); });
   if (!app) return;
-  currentAppId = id;
   var content = document.getElementById('appDetailContent');
-  if (!content) return;
+  var modal = document.getElementById('appDetailModal');
+  if (!content || !modal) return;
+  currentAppId = app.id;
   var fields = [
     ['Full Name', app.name], ['Email', app.email], ['Phone', app.phone],
     ['Country', app.country || '-'], ['Service Requested', app.service],
@@ -5558,14 +5584,14 @@ function viewApp(id) {
     ['Timeline', app.timeline || '-'], ['Expected Users', app.users || '-'],
     ['Features', app.features || '-'], ['Integrations', app.integrations || '-'],
     ['Description', app.description || '-'], ['Status', app.status],
-    ['Submitted', new Date(app.date).toLocaleString()]
+    ['Submitted', app.date && !isNaN(new Date(app.date).getTime()) ? new Date(app.date).toLocaleString() : '-']
   ];
   content.innerHTML = fields.map(function(f) {
     var value = f[1] == null || f[1] === '' ? '-' : (Array.isArray(f[1]) ? f[1].join(', ') : String(f[1]));
     return '<div class="app-field"><label>' + esc(String(f[0])) + '</label><span>' + esc(value) + '</span></div>';
   }).join('');
-  document.getElementById('appDetailModal').classList.add('open');
-  addAuditLog('👁️', 'action', 'Viewed application from ' + app.name);
+  modal.classList.add('open');
+  try { addAuditLog('👁️', 'action', 'Viewed application from ' + String(app.name || 'Unknown applicant').slice(0, 120)); } catch (e) {}
 }
 
 function closeAppModal() {
