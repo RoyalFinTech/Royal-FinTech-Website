@@ -7840,51 +7840,83 @@ function fld(label, value) {
 function renderCRMListView() {
   var view = document.getElementById('crmView');
   if (!view) return;
-  var apps = (DB.get('applications')||[]).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-
-  var html = '<div class="crm-header"><h2 style="margin:0;font-size:1.1rem">🗂️ CRM — All Clients</h2>' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-    '<input placeholder="🔍 Search..." id="crmListSearch" oninput="filterCRMList()" style="padding:7px 12px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none">' +
-    '<select id="crmListFilter" onchange="filterCRMList()" style="padding:7px 10px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none">' +
-    '<option value="">All</option>' +
-    CRM_STATUSES.map(function(s){ return '<option value="'+s.id+'">'+s.label+'</option>'; }).join('') +
-    '</select></div></div>';
-
-  if (!apps.length) {
-    html += '<div style="text-align:center;padding:40px;color:var(--muted)">No clients yet — app request submissions appear here automatically.</div>';
-    view.innerHTML = html;
-    return;
-  }
-
-  html += '<div id="crmCardGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:16px">';
-  apps.forEach(function(app) {
-    var rec = getCRMRecord(app.id);
-    var pct = completionPct(app.status);
-    var typeNames = getTypeNames(app.types);
-    var star = rec.starred ? '<span style="color:#f59e0b;margin-left:4px">★</span>' : '';
-    html += '<div class="crm-profile-card" style="cursor:pointer" onclick="openCRMProfile('+app.id+')">' +
-      '<div class="crm-profile-header">' +
-        '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
-          '<div class="crm-avatar">' + esc(initials(app.name)) + '</div>' +
-          '<div class="crm-profile-meta">' +
-            '<h4>' + esc(app.name||'—') + star + '</h4>' +
-            '<p>' + esc(app.company||app.email||'') + '</p>' +
-          '</div>' +
-        '</div>' +
-        '<div>' + statusBadgeHtml(app.status) + '</div>' +
-      '</div>' +
-      '<div style="padding:0 16px 14px">' +
-        '<div style="font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px">' + esc(app.projectName||(typeNames[0]||'Custom Project')) + '</div>' +
-        '<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:8px">' +
-          '<span>' + esc(app.country||'') + '</span>' +
-          '<span style="font-weight:700;color:var(--blue)">' + convertPrice(app.estimatedTotal||0) + '</span>' +
-        '</div>' +
-        '<div class="crm-progress-wrap"><div class="crm-progress-bar" style="width:'+pct+'%"></div></div>' +
-        '<div style="font-size:0.68rem;color:var(--gray);margin-top:3px">'+pct+'% complete &nbsp;·&nbsp; ' + formatDateShort(app.date) + '</div>' +
-      '</div></div>';
+  var raw = DB.get('applications');
+  var apps = (Array.isArray(raw) ? raw : []).filter(function(app) { return app && typeof app === 'object'; })
+    .slice().sort(function(a,b) {
+      var da = new Date(a.date).getTime(), db = new Date(b.date).getTime();
+      return (isFinite(db)?db:0)-(isFinite(da)?da:0);
+    });
+  view.textContent = '';
+  var header = document.createElement('div');
+  header.className = 'crm-header';
+  header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap';
+  var heading = document.createElement('h2');
+  heading.style.cssText = 'margin:0;font-size:1.1rem';
+  heading.textContent = '🗂️ CRM — All Clients';
+  header.appendChild(heading);
+  var controls = document.createElement('div');
+  controls.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+  var search = document.createElement('input');
+  search.placeholder = '🔍 Search...'; search.id = 'crmListSearch';
+  search.style.cssText = 'padding:7px 12px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none';
+  search.addEventListener('input', filterCRMList);
+  controls.appendChild(search);
+  var select = document.createElement('select');
+  select.id = 'crmListFilter';
+  select.style.cssText = 'padding:7px 10px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none';
+  var allOption = document.createElement('option'); allOption.value = ''; allOption.textContent = 'All'; select.appendChild(allOption);
+  CRM_STATUSES.forEach(function(status) {
+    var option = document.createElement('option'); option.value = String(status.id); option.textContent = String(status.label); select.appendChild(option);
   });
-  html += '</div>';
-  view.innerHTML = html;
+  select.addEventListener('change', filterCRMList);
+  controls.appendChild(select); header.appendChild(controls); view.appendChild(header);
+  if (!apps.length) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'text-align:center;padding:40px;color:var(--muted)';
+    empty.textContent = 'No clients yet — app request submissions appear here automatically.';
+    view.appendChild(empty); return;
+  }
+  var grid = document.createElement('div');
+  grid.id = 'crmCardGrid';
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:16px';
+  apps.forEach(function(app) {
+    var card = document.createElement('div');
+    card.className = 'crm-profile-card'; card.style.cursor = 'pointer'; card.tabIndex = 0;
+    var appId = Number(app.id);
+    card.setAttribute('data-crm-open-id', Number.isFinite(appId) ? String(appId) : '0');
+    var rec = getCRMRecord(app.id) || {};
+    var pct = completionPct(app.status), types = getTypeNames(app.types);
+    var top = document.createElement('div'); top.className = 'crm-profile-header';
+    var identity = document.createElement('div'); identity.style.cssText = 'display:flex;align-items:center;gap:10px;flex:1;min-width:0';
+    var avatar = document.createElement('div'); avatar.className = 'crm-avatar'; avatar.textContent = initials(String(app.name || ''));
+    var meta = document.createElement('div'); meta.className = 'crm-profile-meta';
+    var name = document.createElement('h4'); name.textContent = String(app.name || '—');
+    if (rec.starred) { var star = document.createElement('span'); star.style.cssText = 'color:#f59e0b;margin-left:4px'; star.textContent = '★'; name.appendChild(star); }
+    var company = document.createElement('p'); company.textContent = String(app.company || app.email || '');
+    meta.appendChild(name); meta.appendChild(company); identity.appendChild(avatar); identity.appendChild(meta);
+    var status = document.createElement('div'); status.innerHTML = statusBadgeHtml(app.status);
+    top.appendChild(identity); top.appendChild(status); card.appendChild(top);
+    var body = document.createElement('div'); body.style.cssText = 'padding:0 16px 14px';
+    var project = document.createElement('div'); project.style.cssText = 'font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px'; project.textContent = String(app.projectName || types[0] || 'Custom Project');
+    var details = document.createElement('div'); details.style.cssText = 'display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:8px';
+    var country = document.createElement('span'); country.textContent = String(app.country || '');
+    var amount = document.createElement('span'); amount.style.cssText = 'font-weight:700;color:var(--blue)'; amount.textContent = String(convertPrice(app.estimatedTotal || 0));
+    details.appendChild(country); details.appendChild(amount);
+    var progress = document.createElement('div'); progress.className = 'crm-progress-wrap';
+    var progressBar = document.createElement('div'); progressBar.className = 'crm-progress-bar'; progressBar.style.width = Math.max(0,Math.min(100,Number(pct)||0)) + '%'; progress.appendChild(progressBar);
+    var date = document.createElement('div'); date.style.cssText = 'font-size:0.68rem;color:var(--gray);margin-top:3px'; date.textContent = String(pct) + '% complete · ' + formatDateShort(app.date);
+    body.appendChild(project); body.appendChild(details); body.appendChild(progress); body.appendChild(date); card.appendChild(body); grid.appendChild(card);
+  });
+  grid.addEventListener('click', function(event) {
+    var card = event.target && event.target.closest ? event.target.closest('[data-crm-open-id]') : null;
+    if (card && grid.contains(card)) openCRMProfile(Number(card.getAttribute('data-crm-open-id')) || 0);
+  });
+  grid.addEventListener('keydown', function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var card = event.target && event.target.closest ? event.target.closest('[data-crm-open-id]') : null;
+    if (card && grid.contains(card)) { event.preventDefault(); openCRMProfile(Number(card.getAttribute('data-crm-open-id')) || 0); }
+  });
+  view.appendChild(grid);
 }
 
 function filterCRMList() {
