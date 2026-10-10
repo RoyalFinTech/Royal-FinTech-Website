@@ -4491,36 +4491,29 @@ function pushAdminNotif(title, msg) {
 
 function renderNotifs() {
   const body = document.getElementById('notifBody'); if (!body) return;
-  if (!notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
-  body.innerHTML = notifs.map(function(n) {
-    var title = String(n && n.title || '');
-    return '<div class="notif-item' + (n && n.unread ? ' unread' : '') + '" role="button" tabindex="0">'
-      + (n && n.unread ? '<div class="notif-unread-dot"></div>' : '')
+  if (!Array.isArray(notifs) || !notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
+  body.innerHTML = notifs.filter(function(n) { return n && typeof n === 'object'; }).map(function(n) {
+    var title = String(n.title || '🔔 Notification');
+    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" data-mark-notif-read="1" role="button" tabindex="0">'
+      + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
       + '<div class="notif-ico">' + esc(title.split(' ')[0] || '🔔') + '</div>'
       + '<div style="flex:1"><div class="notif-title">' + esc(title.replace(/^[^ ]+ /, '')) + '</div>'
-      + '<div class="notif-msg">' + esc(String(n && n.msg || '')) + '</div>'
-      + '<div class="notif-time">' + esc(String(n && n.time || '')) + '</div></div></div>';
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
-  body.onclick = function(event) {
-    var item = event.target && event.target.closest ? event.target.closest('.notif-item') : null;
-    if (item && body.contains(item)) markRead(item);
-  };
-  body.onkeydown = function(event) {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    var item = event.target && event.target.closest ? event.target.closest('.notif-item') : null;
-    if (item && body.contains(item)) { event.preventDefault(); markRead(item); }
-  };
+  body.onclick = function(event) { var item = event.target && event.target.closest ? event.target.closest('[data-mark-notif-read]') : null; if (item && body.contains(item)) markRead(item); };
+  body.onkeydown = function(event) { if (event.key !== 'Enter' && event.key !== ' ') return; var item = event.target && event.target.closest ? event.target.closest('[data-mark-notif-read]') : null; if (item && body.contains(item)) { event.preventDefault(); markRead(item); } };
 }
 
 function renderAdminNotifs() {
   const body = document.getElementById('admNotifBody'); if (!body) return;
-  if (!adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
-  body.innerHTML = adminNotifs.map(function(n) {
-    return '<div class="notif-item' + (n && n.unread ? ' unread' : '') + '">'
-      + (n && n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div style="flex:1"><div class="notif-title">' + esc(String(n && n.title || '')) + '</div>'
-      + '<div class="notif-msg">' + esc(String(n && n.msg || '')) + '</div>'
-      + '<div class="notif-time">' + esc(String(n && n.time || '')) + '</div></div></div>';
+  if (!Array.isArray(adminNotifs) || !adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
+  body.innerHTML = adminNotifs.filter(function(n) { return n && typeof n === 'object'; }).map(function(n) {
+    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '">'
+      + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
+      + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || 'Notification')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
 }
 
