@@ -1611,7 +1611,7 @@ function showProductDetail(id) {
     p.features.forEach(function(ft){
       var fc=document.createElement('div');
       fc.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);border-radius:10px;font-size:0.82rem;font-weight:600';
-      fc.innerHTML='✓ '+ft; fg.appendChild(fc);
+      fc.innerHTML='<span aria-hidden="true">✓</span> <span>' + esc(String(ft)) + '</span>'; fg.appendChild(fc);
     });
     featSection.appendChild(fh); featSection.appendChild(fg);
   }
@@ -1626,7 +1626,7 @@ function showProductDetail(id) {
     extra.benefits.forEach(function(b){
       var bc=document.createElement('div');
       bc.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;font-size:0.82rem';
-      bc.innerHTML='<span style="color:#10b981;font-size:1.1rem;flex-shrink:0">✔️</span><span style="color:var(--gray)">'+b+'</span>';
+      bc.innerHTML='<span style="color:#10b981;font-size:1.1rem;flex-shrink:0">✔️</span><span style="color:var(--gray)">'+esc(String(b))+'</span>';
       bg2.appendChild(bc);
     });
     benefitSection.appendChild(bh); benefitSection.appendChild(bg2);
@@ -1672,7 +1672,7 @@ function showProductDetail(id) {
       var faqItem=document.createElement('div');
       faqItem.style.cssText='border-bottom:1px solid var(--gborder);padding:14px 0;cursor:pointer';
       var q=document.createElement('div'); q.style.cssText='font-weight:700;font-size:0.88rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center';
-      q.innerHTML=item.q+' <span style="color:var(--blue);font-size:1rem">▼</span>';
+      q.innerHTML=esc(String(item.q || ''))+' <span style="color:var(--blue);font-size:1rem">▼</span>';
       var a=document.createElement('div'); a.style.cssText='color:var(--gray);font-size:0.82rem;line-height:1.7'; a.textContent=item.a;
       faqItem.appendChild(q); faqItem.appendChild(a); faqSection.appendChild(faqItem);
     });
@@ -4522,7 +4522,7 @@ function renderAdminNotifs() {
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
       + '<div style="flex:1"><div class="notif-title">' + esc(n.title) + '</div>'
       + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + n.time + '</div></div></div>';
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
 }
 
