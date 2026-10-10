@@ -6597,26 +6597,54 @@ function renderAdminProducts() {
   var grid = document.getElementById('adminProductGrid');
   if (!grid) return;
   var products = getProductsDB();
-  grid.innerHTML = '';
+  grid.textContent = '';
+  var statusColors = {live:'#10b981',beta:'#f59e0b',soon:'#6366f1',dev:'#64748b'};
   products.forEach(function(p, idx) {
+    p = p && typeof p === 'object' ? p : {};
     var card = document.createElement('div');
     card.style.cssText = 'background:var(--glass);border:1px solid var(--gborder);border-radius:16px;overflow:hidden';
-    var statusBadge = {live:'#10b981',beta:'#f59e0b',soon:'#6366f1',dev:'#64748b'}[p.status]||'#64748b';
-    card.innerHTML =
-      '<div style="height:120px;background:var(--bg2);display:flex;align-items:center;justify-content:center;padding:16px;position:relative">' +
-        '<img src="' + p.logo + '" style="max-height:90px;max-width:90%;object-fit:contain" alt="' + p.name + '">' +
-        '<span style="position:absolute;top:8px;right:8px;background:' + statusBadge + ';color:#fff;padding:2px 8px;border-radius:10px;font-size:0.6rem;font-weight:700">' + p.status.toUpperCase() + '</span>' +
-      '</div>' +
-      '<div style="padding:14px">' +
-        '<div style="font-size:0.65rem;color:var(--blue);font-weight:700;margin-bottom:4px">' + p.tag + '</div>' +
-        '<h4 style="margin-bottom:6px;font-size:0.95rem">' + p.name + '</h4>' +
-        '<p style="font-size:0.75rem;color:var(--gray);margin-bottom:12px;line-height:1.5">' + p.desc.substring(0,80) + '...</p>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
-          '<button onclick="editAdminProduct(' + idx + ')" style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:6px;font-size:0.72rem;cursor:pointer;font-weight:600" type="button">Edit</button>' +
-          '<button onclick="uploadProductLogo(' + idx + ')" style="flex:1;background:var(--glass);border:1px solid var(--gborder);color:var(--fg);border-radius:8px;padding:6px;font-size:0.72rem;cursor:pointer" type="button">Logo</button>' +
-          '<button onclick="deleteAdminProduct(' + idx + ')" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:0.72rem;cursor:pointer" type="button">Del</button>' +
-        '</div>' +
-      '</div>';
+    var imageWrap = document.createElement('div');
+    imageWrap.style.cssText = 'height:120px;background:var(--bg2);display:flex;align-items:center;justify-content:center;padding:16px;position:relative';
+    var logo = document.createElement('img');
+    var logoSrc = String(p.logo || '');
+    if (/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(logoSrc)) logo.src = logoSrc;
+    logo.alt = String(p.name || 'Product logo');
+    logo.style.cssText = 'max-height:90px;max-width:90%;object-fit:contain';
+    logo.onerror = function() { this.style.display = 'none'; };
+    imageWrap.appendChild(logo);
+    var badge = document.createElement('span');
+    badge.style.cssText = 'position:absolute;top:8px;right:8px;background:' + (statusColors[p.status] || '#64748b') + ';color:#fff;padding:2px 8px;border-radius:10px;font-size:0.6rem;font-weight:700';
+    badge.textContent = String(p.status || 'unknown').toUpperCase();
+    imageWrap.appendChild(badge);
+    card.appendChild(imageWrap);
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:14px';
+    var tag = document.createElement('div');
+    tag.style.cssText = 'font-size:0.65rem;color:var(--blue);font-weight:700;margin-bottom:4px';
+    tag.textContent = String(p.tag || '');
+    body.appendChild(tag);
+    var title = document.createElement('h4');
+    title.style.cssText = 'margin-bottom:6px;font-size:0.95rem';
+    title.textContent = String(p.name || 'Untitled product');
+    body.appendChild(title);
+    var desc = document.createElement('p');
+    desc.style.cssText = 'font-size:0.75rem;color:var(--gray);margin-bottom:12px;line-height:1.5';
+    desc.textContent = String(p.desc || '').substring(0,80) + (String(p.desc || '').length > 80 ? '…' : '');
+    body.appendChild(desc);
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap';
+    [['Edit', 'editAdminProduct'], ['Logo', 'uploadProductLogo'], ['Del', 'deleteAdminProduct']].forEach(function(item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = item[0];
+      button.style.cssText = item[1] === 'deleteAdminProduct'
+        ? 'background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:0.72rem;cursor:pointer'
+        : 'flex:1;background:' + (item[1] === 'editAdminProduct' ? 'var(--blue);color:#fff;border:none' : 'var(--glass);border:1px solid var(--gborder);color:var(--fg)') + ';border-radius:8px;padding:6px;font-size:0.72rem;cursor:pointer';
+      button.addEventListener('click', function() { window[item[1]](idx); });
+      actions.appendChild(button);
+    });
+    body.appendChild(actions);
+    card.appendChild(body);
     grid.appendChild(card);
   });
 }
