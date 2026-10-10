@@ -4490,39 +4490,37 @@ function pushAdminNotif(title, msg) {
 }
 
 function renderNotifs() {
-  var body = document.getElementById('notifBody'); if (!body) return;
-  if (!Array.isArray(notifs) || !notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
-  body.innerHTML = notifs.map(function(n, index) {
-    n = n && typeof n === 'object' ? n : {};
-    var title = String(n.title || '🔔 Notification');
-    var first = title.split(' ')[0] || '🔔';
-    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" data-notif-index="' + index + '" role="button" tabindex="0">'
-      + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div class="notif-ico">' + esc(first) + '</div>'
+  const body = document.getElementById('notifBody'); if (!body) return;
+  if (!notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
+  body.innerHTML = notifs.map(function(n) {
+    var title = String(n && n.title || '');
+    return '<div class="notif-item' + (n && n.unread ? ' unread' : '') + '" role="button" tabindex="0">'
+      + (n && n.unread ? '<div class="notif-unread-dot"></div>' : '')
+      + '<div class="notif-ico">' + esc(title.split(' ')[0] || '🔔') + '</div>'
       + '<div style="flex:1"><div class="notif-title">' + esc(title.replace(/^[^ ]+ /, '')) + '</div>'
-      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
-      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
+      + '<div class="notif-msg">' + esc(String(n && n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n && n.time || '')) + '</div></div></div>';
   }).join('');
-  function markFromEvent(event) {
-    var item = event.target && event.target.closest ? event.target.closest('[data-notif-index]') : null;
-    if (!item || !body.contains(item)) return;
-    var index = Number(item.getAttribute('data-notif-index'));
-    if (!Number.isInteger(index) || index < 0 || index >= notifs.length) return;
-    notifs[index].unread = false; renderNotifs();
-  }
-  body.onclick = markFromEvent;
-  body.onkeydown = function(event) { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); markFromEvent(event); } };
+  body.onclick = function(event) {
+    var item = event.target && event.target.closest ? event.target.closest('.notif-item') : null;
+    if (item && body.contains(item)) markRead(item);
+  };
+  body.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var item = event.target && event.target.closest ? event.target.closest('.notif-item') : null;
+    if (item && body.contains(item)) { event.preventDefault(); markRead(item); }
+  };
 }
 
 function renderAdminNotifs() {
   const body = document.getElementById('admNotifBody'); if (!body) return;
   if (!adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
   body.innerHTML = adminNotifs.map(function(n) {
-    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '">'
-      + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div style="flex:1"><div class="notif-title">' + esc(n.title) + '</div>'
-      + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
+    return '<div class="notif-item' + (n && n.unread ? ' unread' : '') + '">'
+      + (n && n.unread ? '<div class="notif-unread-dot"></div>' : '')
+      + '<div style="flex:1"><div class="notif-title">' + esc(String(n && n.title || '')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n && n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n && n.time || '')) + '</div></div></div>';
   }).join('');
 }
 
@@ -5487,27 +5485,40 @@ function updateCountdown(endDate) {
 // ---- POPUP NOTIFICATION ----
 var popupQueue = [];
 function showPopupNotif(title, body, icon) {
-  icon = String(icon || '🔔'); title = String(title == null ? '' : title); body = String(body == null ? '' : body);
-  var container = document.getElementById('popupNotif'); if (!container) return;
-  var item = document.createElement('div'); item.className = 'popup-notif-item';
-  var header = document.createElement('div'); header.className = 'pn-hdr';
-  var iconEl = document.createElement('span'); iconEl.className = 'pn-ico'; iconEl.textContent = icon;
-  var titleEl = document.createElement('span'); titleEl.className = 'pn-title'; titleEl.textContent = title;
-  var close = document.createElement('button'); close.className = 'pn-close'; close.type = 'button'; close.textContent = '✕'; close.setAttribute('aria-label','Close notification');
-  close.addEventListener('click',function(){item.remove();});
-  header.appendChild(iconEl); header.appendChild(titleEl); header.appendChild(close);
-  var bodyEl = document.createElement('div'); bodyEl.className = 'pn-body'; bodyEl.textContent = body;
-  var timeEl = document.createElement('div'); timeEl.className = 'pn-time'; timeEl.textContent = new Date().toLocaleTimeString();
-  item.appendChild(header); item.appendChild(bodyEl); item.appendChild(timeEl); container.appendChild(item);
-  setTimeout(function(){item.classList.add('show');},50);
-  try { var ctx=new (window.AudioContext||window.webkitAudioContext)(), osc=ctx.createOscillator(), g=ctx.createGain(); osc.connect(g);g.connect(ctx.destination);osc.frequency.setValueAtTime(880,ctx.currentTime);osc.frequency.setValueAtTime(660,ctx.currentTime+0.1);g.gain.setValueAtTime(0.08,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);osc.start();osc.stop(ctx.currentTime+0.4); } catch(e) {}
-  setTimeout(function(){item.classList.remove('show');setTimeout(function(){if(item.parentNode)item.remove();},500);},6000);
-  if (window.Notification && Notification.permission==='granted') new Notification(title,{body:body,icon:''});
-}
-
-// Request browser notification permission
-function requestBrowserNotifPermission() {
-  if (window.Notification && Notification.permission === 'default') {
+  icon = icon || '🔔';
+  var container = document.getElementById('popupNotif');
+  if (!container) return;
+  var item = document.createElement('div');
+  item.className = 'popup-notif-item';
+  var timeStr = new Date().toLocaleTimeString();
+  item.innerHTML = '<div class="pn-hdr">'
+    + '<span class="pn-ico">' + esc(String(icon)) + '</span>'
+    + '<span class="pn-title">' + esc(String(title || '')) + '</span>'
+    + '<button class="pn-close" type="button" aria-label="Close notification">✕</button>'
+    + '</div>'
+    + '<div class="pn-body">' + esc(String(body || '')) + '</div>'
+    + '<div class="pn-time">' + esc(timeStr) + '</div>';
+  item.querySelector('.pn-close').addEventListener('click', function() { item.remove(); });
+  container.appendChild(item);
+  setTimeout(function() { item.classList.add('show'); }, 50);
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(); osc.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+  setTimeout(function() {
+    item.classList.remove('show');
+    setTimeout(function() { if (item.parentNode) item.remove(); }, 500);
+  }, 6000);
+  if (window.Notification && Notification.permission === 'granted') {
+    try { new Notification(String(title || 'Royal FinTech'), { body: String(body || '') }); } catch(e) {}
+  } else if (window.Notification && Notification.permission === 'default') {
     Notification.requestPermission();
   }
 }
