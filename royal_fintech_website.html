@@ -2102,35 +2102,40 @@ function saveAppNotes(id) {
 window.renderApplications = function(filterStatus, searchQuery) {
   var panel = document.getElementById('appListBody');
   if (!panel) return;
-  var apps = DB.get('applications') || [];
-  if (filterStatus && filterStatus !== 'all') {
-    apps = apps.filter(function(a) { return a.status === filterStatus; });
-  }
-  if (searchQuery) {
-    var q = searchQuery.toLowerCase();
-    apps = apps.filter(function(a) {
-      return (a.name||'').toLowerCase().indexOf(q) > -1 ||
-             (a.email||'').toLowerCase().indexOf(q) > -1 ||
-             (a.projectName||'').toLowerCase().indexOf(q) > -1;
-    });
-  }
-  apps = apps.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); });
+  var apps;
+  try { apps = DB.get('applications'); if (!Array.isArray(apps)) apps = []; }
+  catch (e) { panel.textContent = 'Applications could not be loaded.'; return; }
+  apps = apps.filter(function(a) { return a && typeof a === 'object'; });
+  if (filterStatus && filterStatus !== 'all') apps = apps.filter(function(a) { return a.status === filterStatus; });
+  var q = String(searchQuery || '').trim().toLowerCase();
+  if (q) apps = apps.filter(function(a) {
+    return [a.name, a.email, a.projectName, a.service].some(function(v) { return String(v == null ? '' : v).toLowerCase().indexOf(q) > -1; });
+  });
+  apps.sort(function(a,b) { var da = new Date(a.date).getTime(), db = new Date(b.date).getTime(); return (isFinite(db)?db:0)-(isFinite(da)?da:0); });
   if (!apps.length) {
     panel.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">No applications found</td></tr>';
     return;
   }
+  var allowed = ['pending','reviewing','approved','rejected'];
+  var classes = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'};
   panel.innerHTML = apps.map(function(a) {
-    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[a.status] || 'app-pending';
-    var dateStr = new Date(a.date).toLocaleDateString();
-    return '<tr>'
-      + '<td>' + esc(a.name||'-') + '</td>'
-      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(a.email||'-') + '</td>'
-      + '<td style="font-size:0.8rem">' + esc(a.projectName||'-') + '</td>'
+    var status = allowed.indexOf(a.status) > -1 ? a.status : 'pending';
+    var date = a.date ? new Date(a.date) : null;
+    var dateStr = date && isFinite(date.getTime()) ? date.toLocaleDateString() : '-';
+    var id = Number(a.id);
+    return '<tr><td>' + esc(String(a.name || '-')) + '</td>'
+      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email || '-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + esc(String(a.projectName || a.service || '-')) + '</td>'
       + '<td style="font-size:0.8rem">' + dateStr + '</td>'
-      + '<td><span class="app-status ' + statusClass + '">' + (a.status||'pending') + '</span></td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + a.id + ')" type="button">View</button></td>'
-      + '</tr>';
+      + '<td><span class="app-status ' + classes[status] + '">' + status + '</span></td>'
+      + '<td><button class="btn btn-outline btn-sm" data-view-app-id="' + (Number.isFinite(id) ? id : 0) + '" type="button">View</button></td></tr>';
   }).join('');
+  panel.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('button[data-view-app-id]') : null;
+    if (!button || !panel.contains(button)) return;
+    event.preventDefault();
+    viewApp(button.getAttribute('data-view-app-id'));
+  };
 };
 
 // ============================================================
@@ -4376,22 +4381,37 @@ function showPanel(id) {
 function renderMessagesPanel() {
   var container = document.getElementById('msgListContainer');
   if (!container) return;
-  var msgs = (DB.get('contactMessages') || []).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+  var raw = DB.get('contactMessages');
+  var msgs = (Array.isArray(raw) ? raw : []).filter(function(m) { return m && typeof m === 'object'; })
+    .slice().sort(function(a,b) { return new Date(b.date).getTime() - new Date(a.date).getTime(); });
   if (!msgs.length) {
     container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No messages yet — contact form submissions will appear here.</div>';
     return;
   }
   container.innerHTML = msgs.map(function(m) {
-    var initials = (m.name||'?').split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+    var name = String(m.name || 'Unknown');
+    var initialsText = name.split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+    var id = Number(m.id);
     var timeAgo = timeAgoStr(m.date);
     var unreadDot = m.status === 'new' ? '<div class="msg-dot"></div>' : '';
-    return '<div class="msg-item" onclick="openMessageDetail(' + m.id + ')">'
-      + '<div class="msg-av">' + esc(initials) + '</div>'
-      + '<div style="flex:1"><div class="msg-name">' + esc(m.name||'Unknown') + '</div>'
-      + '<div class="msg-prev">' + esc((m.message||'').substring(0,80)) + '</div></div>'
-      + '<div class="msg-time">' + timeAgo + '</div>' + unreadDot
-      + '</div>';
+    return '<div class="msg-item" data-message-id="' + (Number.isFinite(id) ? id : 0) + '" role="button" tabindex="0">'
+      + '<div class="msg-av">' + esc(initialsText) + '</div>'
+      + '<div style="flex:1"><div class="msg-name">' + esc(name) + '</div>'
+      + '<div class="msg-prev">' + esc(String(m.message || '').substring(0,80)) + '</div></div>'
+      + '<div class="msg-time">' + esc(String(timeAgo)) + '</div>' + unreadDot + '</div>';
   }).join('');
+  container.onclick = function(event) {
+    var item = event.target && event.target.closest ? event.target.closest('[data-message-id]') : null;
+    if (!item || !container.contains(item)) return;
+    openMessageDetail(Number(item.getAttribute('data-message-id')) || 0);
+  };
+  container.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var item = event.target && event.target.closest ? event.target.closest('[data-message-id]') : null;
+    if (!item || !container.contains(item)) return;
+    event.preventDefault();
+    openMessageDetail(Number(item.getAttribute('data-message-id')) || 0);
+  };
 }
 
 function timeAgoStr(dateStr) {
@@ -5797,16 +5817,16 @@ function saveTemplate() {
 function renderEmailHistory() {
   var body = document.getElementById('emailHistBody');
   if (!body) return;
-  var hist = DB.get('emailHistory');
+  var raw = DB.get('emailHistory');
+  var hist = Array.isArray(raw) ? raw.filter(function(e) { return e && typeof e === 'object'; }) : [];
   if (!hist.length) { body.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No emails sent yet</div>'; return; }
   body.innerHTML = hist.slice(0,20).map(function(e) {
-    return '<div class="email-history-item">'
-      + '<div class="email-hist-ico">📧</div>'
-      + '<div style="flex:1"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px">' + e.subject + '</div>'
-      + '<div style="color:var(--gray);font-size:0.78rem">To: ' + e.to + '</div>'
-      + '<div style="color:var(--muted);font-size:0.72rem">' + new Date(e.date).toLocaleString() + '</div></div>'
-      + '<div class="email-status-sent">✅ Sent</div>'
-      + '</div>';
+    var date = e.date ? new Date(e.date) : null;
+    return '<div class="email-history-item"><div class="email-hist-ico">📧</div>'
+      + '<div style="flex:1"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px">' + esc(String(e.subject || '(No subject)')) + '</div>'
+      + '<div style="color:var(--gray);font-size:0.78rem">To: ' + esc(String(e.to || '')) + '</div>'
+      + '<div style="color:var(--muted);font-size:0.72rem">' + (date && isFinite(date.getTime()) ? date.toLocaleString() : '-') + '</div></div>'
+      + '<div class="email-status-sent">✅ Sent</div></div>';
   }).join('');
 }
 
@@ -5832,18 +5852,25 @@ function showMktTab(tab) {
 function renderDeals() {
   var list = document.getElementById('dealsList');
   if (!list) return;
-  var deals = DB.get('flashDeals');
+  var raw = DB.get('flashDeals');
+  var deals = Array.isArray(raw) ? raw.filter(function(d) { return d && typeof d === 'object'; }) : [];
   if (!deals.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No flash deals yet. Create your first deal!</div>'; return; }
   list.innerHTML = deals.map(function(d) {
-    var isActive = d.status === 'active' && new Date(d.end) > new Date();
-    return '<div class="deal-card' + (isActive?' active-deal':'') + '">'
-      + '<div class="deal-info"><h4>' + d.title + '</h4><p>' + d.offer + ' · Ends: ' + new Date(d.end).toLocaleDateString() + '</p></div>'
-      + '<div style="display:flex;gap:6px;align-items:center">'
-      + '<span class="deal-badge' + (isActive?'':' inactive') + '">' + (isActive?'🟢 Active':'⛔ Inactive') + '</span>'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleDeal(' + d.id + ')" type="button">' + (isActive?'Deactivate':'Activate') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteDeal(' + d.id + ')" type="button">🗑️</button>'
-      + '</div></div>';
+    var id = Number(d.id), end = d.end ? new Date(d.end) : null;
+    var isActive = d.status === 'active' && end && isFinite(end.getTime()) && end > new Date();
+    var endText = end && isFinite(end.getTime()) ? end.toLocaleDateString() : 'No valid end date';
+    var safeId = Number.isFinite(id) ? id : 0;
+    return '<div class="deal-card' + (isActive?' active-deal':'') + '"><div class="deal-info"><h4>' + esc(String(d.title || 'Untitled deal')) + '</h4><p>' + esc(String(d.offer || '')) + ' · Ends: ' + endText + '</p></div>'
+      + '<div style="display:flex;gap:6px;align-items:center"><span class="deal-badge' + (isActive?'':' inactive') + '">' + (isActive?'🟢 Active':'⛔ Inactive') + '</span>'
+      + '<button class="btn btn-outline btn-sm" data-deal-toggle="' + safeId + '" type="button">' + (isActive?'Deactivate':'Activate') + '</button>'
+      + '<button class="btn btn-red btn-sm" data-deal-delete="' + safeId + '" type="button">🗑️</button></div></div>';
   }).join('');
+  list.onclick = function(event) {
+    var toggle = event.target && event.target.closest ? event.target.closest('[data-deal-toggle]') : null;
+    var remove = event.target && event.target.closest ? event.target.closest('[data-deal-delete]') : null;
+    if (toggle && list.contains(toggle)) toggleDeal(Number(toggle.getAttribute('data-deal-toggle')) || 0);
+    else if (remove && list.contains(remove)) deleteDeal(Number(remove.getAttribute('data-deal-delete')) || 0);
+  };
 }
 
 function saveFlashDeal() {
@@ -5890,16 +5917,21 @@ function deleteDeal(id) {
 function renderBanners() {
   var list = document.getElementById('bannersList');
   if (!list) return;
-  var bans = DB.get('banners');
+  var raw = DB.get('banners');
+  var bans = Array.isArray(raw) ? raw.filter(function(b) { return b && typeof b === 'object'; }) : [];
   if (!bans.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No banners yet. Create your first banner!</div>'; return; }
   list.innerHTML = bans.map(function(b) {
-    return '<div class="deal-card">'
-      + '<div class="deal-info"><h4>' + b.title + '</h4><p>' + b.desc + '</p></div>'
-      + '<div style="display:flex;gap:6px">'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleBanner(' + b.id + ')" type="button">' + (b.status==='active'?'Deactivate':'Activate') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteBanner(' + b.id + ')" type="button">🗑️</button>'
-      + '</div></div>';
+    var id = Number(b.id), safeId = Number.isFinite(id) ? id : 0;
+    return '<div class="deal-card"><div class="deal-info"><h4>' + esc(String(b.title || 'Untitled banner')) + '</h4><p>' + esc(String(b.desc || '')) + '</p></div>'
+      + '<div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" data-banner-toggle="' + safeId + '" type="button">' + (b.status==='active'?'Deactivate':'Activate') + '</button>'
+      + '<button class="btn btn-red btn-sm" data-banner-delete="' + safeId + '" type="button">🗑️</button></div></div>';
   }).join('');
+  list.onclick = function(event) {
+    var toggle = event.target && event.target.closest ? event.target.closest('[data-banner-toggle]') : null;
+    var remove = event.target && event.target.closest ? event.target.closest('[data-banner-delete]') : null;
+    if (toggle && list.contains(toggle)) toggleBanner(Number(toggle.getAttribute('data-banner-toggle')) || 0);
+    else if (remove && list.contains(remove)) deleteBanner(Number(remove.getAttribute('data-banner-delete')) || 0);
+  };
 }
 
 function previewBannerImg(input) {
@@ -5965,17 +5997,23 @@ function deleteBanner(id) {
 function renderAnnouncements() {
   var list = document.getElementById('announceList');
   if (!list) return;
-  var anns = DB.get('announcements');
+  var raw = DB.get('announcements');
+  var anns = Array.isArray(raw) ? raw.filter(function(a) { return a && typeof a === 'object'; }) : [];
+  if (!anns.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No announcements yet.</div>'; return; }
   list.innerHTML = anns.map(function(a) {
-    return '<div class="announce-card">'
-      + '<span class="announce-text" style="color:' + a.color + '">' + a.text + '</span>'
-      + '<div class="announce-actions">'
-      + '<span class="deal-badge' + (a.status==='active'?'':' inactive') + '">' + (a.status==='active'?'Active':'Off') + '</span>'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleAnnounce(' + a.id + ')" type="button">' + (a.status==='active'?'Disable':'Enable') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteAnnounce(' + a.id + ')" type="button">🗑️</button>'
-      + '</div></div>';
+    var id = Number(a.id), safeId = Number.isFinite(id) ? id : 0;
+    var color = /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color || '')) ? String(a.color) : '#d4af37';
+    return '<div class="announce-card"><span class="announce-text" style="color:' + color + '">' + esc(String(a.text || '')) + '</span>'
+      + '<div class="announce-actions"><span class="deal-badge' + (a.status==='active'?'':' inactive') + '">' + (a.status==='active'?'Active':'Off') + '</span>'
+      + '<button class="btn btn-outline btn-sm" data-announce-toggle="' + safeId + '" type="button">' + (a.status==='active'?'Disable':'Enable') + '</button>'
+      + '<button class="btn btn-red btn-sm" data-announce-delete="' + safeId + '" type="button">🗑️</button></div></div>';
   }).join('');
-  if (!anns.length) list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No announcements yet.</div>';
+  list.onclick = function(event) {
+    var toggle = event.target && event.target.closest ? event.target.closest('[data-announce-toggle]') : null;
+    var remove = event.target && event.target.closest ? event.target.closest('[data-announce-delete]') : null;
+    if (toggle && list.contains(toggle)) toggleAnnounce(Number(toggle.getAttribute('data-announce-toggle')) || 0);
+    else if (remove && list.contains(remove)) deleteAnnounce(Number(remove.getAttribute('data-announce-delete')) || 0);
+  };
 }
 
 function saveAnnouncement() {
@@ -6135,14 +6173,16 @@ function addAuditLog(ico, type, msg) {
 function renderAuditLog() {
   var container = document.getElementById('auditLogList');
   if (!container) return;
-  var logs = DB.get('auditLog');
+  var raw = DB.get('auditLog');
+  var logs = Array.isArray(raw) ? raw.filter(function(l) { return l && typeof l === 'object'; }) : [];
   if (!logs.length) { container.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:16px">No audit logs yet.</div>'; return; }
+  var allowedTypes = ['action','success','warning','error','info'];
   container.innerHTML = logs.slice(0,30).map(function(l) {
-    return '<div class="audit-item">'
-      + '<div class="audit-ico ' + l.type + '">' + l.ico + '</div>'
-      + '<div><div class="audit-msg">' + l.msg + '</div>'
-      + '<div class="audit-time">' + new Date(l.time).toLocaleString() + '</div></div>'
-      + '</div>';
+    var type = allowedTypes.indexOf(l.type) > -1 ? l.type : 'info';
+    var date = l.time ? new Date(l.time) : null;
+    return '<div class="audit-item"><div class="audit-ico ' + type + '">' + esc(String(l.ico || '•')) + '</div>'
+      + '<div><div class="audit-msg">' + esc(String(l.msg || '')) + '</div>'
+      + '<div class="audit-time">' + (date && isFinite(date.getTime()) ? date.toLocaleString() : '-') + '</div></div></div>';
   }).join('');
 }
 
