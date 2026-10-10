@@ -2734,7 +2734,7 @@ function buildTicker() {
   inner.innerHTML=active.concat(active).map(function(a){
     var color=/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color||''))?String(a.color):'#ffffff';
     var rawUrl=String(a.url||'').trim();
-    var url=/^(https?:\/\/|\/|#)/i.test(rawUrl)&&!/^javascript:/i.test(rawUrl)?rawUrl:'';
+    var url=/^(https?:\/\/|\/(?!\/)|#)/i.test(rawUrl)&&!/^javascript:/i.test(rawUrl)?rawUrl:'';
     return '<span class="ticker-item" style="color:'+color+'">'+(url?'<a href="'+esc(url)+'" rel="noopener noreferrer" style="color:inherit;text-decoration:none">':'')+esc(String(a.text||''))+(url?'</a>':'')+'</span><span class="ticker-sep">❖</span>';
   }).join('');
 }
@@ -2752,7 +2752,7 @@ function buildCarousel() {
   slides.innerHTML=active.map(function(b){
     var c=String(b.color||'');
     var color=/^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\))$/i.test(c)?c:'var(--grad)';
-    var rawUrl=String(b.url||'#').trim(),url=/^(https?:\/\/|\/|#)/i.test(rawUrl)&&!/^javascript:/i.test(rawUrl)?rawUrl:'#';
+    var rawUrl=String(b.url||'#').trim(),url=/^(https?:\/\/|\/(?!\/)|#)/i.test(rawUrl)&&!/^javascript:/i.test(rawUrl)?rawUrl:'#';
     var rawImage=String(b.imgData||''),img=/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(rawImage)?rawImage:'';
     return '<div class="promo-slide" style="background:'+color+'">'+(img?'<img src="'+esc(img)+'" alt="'+esc(String(b.title||''))+'">':'')+'<div class="promo-overlay"></div><div class="promo-content"><h2>'+esc(String(b.title||''))+'</h2><p>'+esc(String(b.desc||''))+'</p>'+(b.btnText?'<a href="'+esc(url)+'" class="btn btn-primary btn-sm" rel="noopener noreferrer">'+esc(String(b.btnText))+'</a>':'')+'</div></div>';
   }).join('');
@@ -3164,6 +3164,7 @@ function renderBanners() {
 function previewBannerImg(input) {
   var prev = document.getElementById('bannerImgPreview');
   if (!prev || !input.files[0]) return;
+  if (!/^image\/(png|jpeg|gif|webp)$/i.test(String(input.files[0].type || ''))) { prev.textContent = 'Please choose a PNG, JPEG, GIF, or WebP image.'; input.value = ''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     prev.innerHTML = '<img src="' + e.target.result + '" style="max-height:100px;border-radius:8px">';
