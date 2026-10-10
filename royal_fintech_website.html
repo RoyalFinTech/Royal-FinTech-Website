@@ -7388,94 +7388,59 @@ function getFeatNames(features) {
 function renderClientTable() {
   var tbody = document.getElementById('clientTableBody');
   if (!tbody) return;
-
-  // Build country filter options
   var countryFilter = document.getElementById('clientCountryFilter');
-  var apps = DB.get('applications') || [];
+  var raw;
+  try { raw = DB.get('applications'); } catch(e) { raw = []; }
+  var apps = (Array.isArray(raw)?raw:[]).filter(function(a){return a&&typeof a==='object';});
   if (countryFilter && countryFilter.options.length <= 1) {
-    var countries = [...new Set(apps.map(function(a){ return a.country||''; }).filter(Boolean))].sort();
-    countries.forEach(function(ct) {
-      var opt = document.createElement('option'); opt.value = ct; opt.textContent = ct;
-      countryFilter.appendChild(opt);
+    [...new Set(apps.map(function(a){return String(a.country||'');}).filter(Boolean))].sort().forEach(function(ct){
+      var opt=document.createElement('option');opt.value=ct;opt.textContent=ct;countryFilter.appendChild(opt);
     });
   }
-
-  // Update stats strip
   renderCRMStatsStrip(apps);
-
-  var searchQ = ((document.getElementById('clientSearch')||{}).value||'').toLowerCase();
-  var statusQ = (document.getElementById('clientStatusFilter')||{}).value||'';
-  var countryQ = (document.getElementById('clientCountryFilter')||{}).value||'';
-
-  var filtered = apps.slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-  if (searchQ) {
-    filtered = filtered.filter(function(a) {
-      return (a.name||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.email||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.phone||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.projectName||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.company||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.quotNum||'').toLowerCase().indexOf(searchQ) > -1;
-    });
-  }
-  if (statusQ) filtered = filtered.filter(function(a){ return a.status === statusQ; });
-  if (countryQ) filtered = filtered.filter(function(a){ return a.country === countryQ; });
-
-  if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">' +
-      (apps.length ? 'No clients match your filter.' : 'No clients yet — submissions will appear here.') + '</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(function(a, i) {
-    var st = getCRMStatusObj(a.status);
-    var rec = getCRMRecord(a.id);
-    var star = rec.starred ? '<span style="color:#f59e0b" title="Starred">★</span> ' : '';
-    var amt = a.estimatedTotal ? convertPrice(a.estimatedTotal) : (a.budget||'—');
-    var typeNames = getTypeNames(a.types);
-    var projLabel = a.projectName || (typeNames[0]||'—');
-    return '<tr style="cursor:pointer" onclick="openCRMProfile(' + a.id + ')">' +
-      '<td style="font-size:0.78rem;color:var(--gray)">' + (i+1) + '</td>' +
-      '<td>' +
-        '<div style="display:flex;align-items:center;gap:8px">' +
-          '<div class="crm-avatar" style="width:34px;height:34px;font-size:0.75rem">' + esc(initials(a.name)) + '</div>' +
-          '<div><div style="font-weight:600;font-size:0.88rem">' + star + esc(a.name||'—') + '</div>' +
-          (a.company ? '<div style="font-size:0.72rem;color:var(--gray)">' + esc(a.company) + '</div>' : '') +
-          '</div></div></td>' +
-      '<td style="font-size:0.8rem"><div>' + esc(a.email||'—') + '</div>' +
-         '<div style="color:var(--gray);font-size:0.75rem">' + esc(a.phone||'') + '</div></td>' +
-      '<td style="font-size:0.82rem"><div style="font-weight:600">' + esc(projLabel) + '</div>' +
-         (typeNames.length ? '<div style="font-size:0.7rem;color:var(--blue)">' + esc(typeNames.slice(0,2).join(', ')) + '</div>' : '') + '</td>' +
-      '<td style="font-size:0.83rem;font-weight:700;color:var(--blue)">' + esc(amt) + '</td>' +
-      '<td>' + statusBadgeHtml(a.status) + '</td>' +
-      '<td style="font-size:0.75rem;color:var(--gray)">' + formatDateShort(a.date) + '</td>' +
-      '<td onclick="event.stopPropagation()">' +
-        '<button class="btn btn-outline btn-sm" onclick="openCRMProfile(' + a.id + ')" type="button">View</button>' +
-      '</td></tr>';
+  var searchQ=String((document.getElementById('clientSearch')||{}).value||'').toLowerCase();
+  var statusQ=String((document.getElementById('clientStatusFilter')||{}).value||'');
+  var countryQ=String((document.getElementById('clientCountryFilter')||{}).value||'');
+  var filtered=apps.slice().sort(function(a,b){var da=new Date(a.date).getTime(),db=new Date(b.date).getTime();return (isFinite(db)?db:0)-(isFinite(da)?da:0);});
+  if(searchQ)filtered=filtered.filter(function(a){return [a.name,a.email,a.phone,a.projectName,a.company,a.quotNum].some(function(v){return String(v||'').toLowerCase().indexOf(searchQ)>-1;});});
+  if(statusQ)filtered=filtered.filter(function(a){return a.status===statusQ;});
+  if(countryQ)filtered=filtered.filter(function(a){return String(a.country||'')===countryQ;});
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">'+(apps.length?'No clients match your filter.':'No clients yet — submissions will appear here.')+'</td></tr>';return;}
+  tbody.innerHTML=filtered.map(function(a,i){
+    var id=Number(a.id), safeId=Number.isFinite(id)&&id>0?id:0;
+    var rec=getCRMRecord(a.id), star=rec.starred?'<span style="color:#f59e0b" title="Starred">★</span> ':'';
+    var amt=a.estimatedTotal?convertPrice(a.estimatedTotal):(a.budget||'—');
+    var typeNames=getTypeNames(Array.isArray(a.types)?a.types:[]), projLabel=a.projectName||(typeNames[0]||'—');
+    return '<tr style="cursor:pointer" data-crm-app-id="'+safeId+'">'
+      +'<td style="font-size:0.78rem;color:var(--gray)">'+(i+1)+'</td>'
+      +'<td><div style="display:flex;align-items:center;gap:8px"><div class="crm-avatar" style="width:34px;height:34px;font-size:0.75rem">'+esc(initials(String(a.name||'')))+'</div><div><div style="font-weight:600;font-size:0.88rem">'+star+esc(String(a.name||'—'))+'</div>'
+      +(a.company?'<div style="font-size:0.72rem;color:var(--gray)">'+esc(String(a.company))+'</div>':'')
+      +'</div></div></td><td style="font-size:0.8rem"><div>'+esc(String(a.email||'—'))+'</div><div style="color:var(--gray);font-size:0.75rem">'+esc(String(a.phone||''))+'</div></td>'
+      +'<td style="font-size:0.82rem"><div style="font-weight:600">'+esc(String(projLabel))+'</div>'+(typeNames.length?'<div style="font-size:0.7rem;color:var(--blue)">'+esc(typeNames.slice(0,2).join(', '))+'</div>':'')+'</td>'
+      +'<td style="font-size:0.83rem;font-weight:700;color:var(--blue)">'+esc(String(amt))+'</td><td>'+statusBadgeHtml(a.status)+'</td>'
+      +'<td style="font-size:0.75rem;color:var(--gray)">'+esc(String(formatDateShort(a.date)||'—'))+'</td>'
+      +'<td><button class="btn btn-outline btn-sm" data-crm-view-id="'+safeId+'" type="button">View</button></td></tr>';
   }).join('');
+  tbody.onclick=function(event){
+    var button=event.target&&event.target.closest?event.target.closest('[data-crm-view-id]'):null;
+    var row=event.target&&event.target.closest?event.target.closest('[data-crm-app-id]'):null;
+    if(button&&tbody.contains(button)){event.preventDefault();event.stopPropagation();openCRMProfile(Number(button.getAttribute('data-crm-view-id'))||0);return;}
+    if(row&&tbody.contains(row))openCRMProfile(Number(row.getAttribute('data-crm-app-id'))||0);
+  };
 }
 
 function filterClients() { renderClientTable(); }
 
 function renderCRMStatsStrip(apps) {
-  var strip = document.getElementById('crmStatsStrip');
-  if (!strip) return;
-  var total = apps.length;
-  var pending = apps.filter(function(a){ return a.status==='pending'; }).length;
-  var active = apps.filter(function(a){ return ['approved','paid','in_development','testing'].indexOf(a.status)>-1; }).length;
-  var completed = apps.filter(function(a){ return a.status==='completed'; }).length;
-  var totalRev = apps.reduce(function(sum,a){ return sum + (a.estimatedTotal||0); }, 0);
-
-  var stats = [
-    { ico:'👥', val:total, lbl:'Total Clients' },
-    { ico:'⏳', val:pending, lbl:'Pending' },
-    { ico:'🚀', val:active, lbl:'Active Projects' },
-    { ico:'✅', val:completed, lbl:'Completed' },
-    { ico:'💰', val:convertPrice(totalRev), lbl:'Pipeline Value' },
-  ];
-  strip.innerHTML = stats.map(function(s) {
-    return '<div class="crm-stat-card"><div class="csv">' + s.ico + '</div><div class="cval">' + s.val + '</div><div class="clbl">' + s.lbl + '</div></div>';
-  }).join('');
+  var strip=document.getElementById('crmStatsStrip');if(!strip)return;
+  apps=Array.isArray(apps)?apps.filter(function(a){return a&&typeof a==='object';}):[];
+  var total=apps.length,pending=apps.filter(function(a){return a.status==='pending';}).length;
+  var active=apps.filter(function(a){return ['approved','paid','in_development','testing'].indexOf(a.status)>-1;}).length;
+  var completed=apps.filter(function(a){return a.status==='completed';}).length;
+  var totalRev=apps.reduce(function(sum,a){var amount=Number(a.estimatedTotal);return sum+(Number.isFinite(amount)?amount:0);},0);
+  var stats=[{ico:'👥',val:total,lbl:'Total Clients'},{ico:'⏳',val:pending,lbl:'Pending'},{ico:'🚀',val:active,lbl:'Active Projects'},{ico:'✅',val:completed,lbl:'Completed'},{ico:'💰',val:convertPrice(totalRev),lbl:'Pipeline Value'}];
+  strip.textContent='';
+  stats.forEach(function(stat){var card=document.createElement('div');card.className='crm-stat-card';var ico=document.createElement('div');ico.className='csv';ico.textContent=stat.ico;var val=document.createElement('div');val.className='cval';val.textContent=String(stat.val);var label=document.createElement('div');label.className='clbl';label.textContent=stat.lbl;card.appendChild(ico);card.appendChild(val);card.appendChild(label);strip.appendChild(card);});
 }
 
 // ── CRM PROFILE ───────────────────────────────────────────────
