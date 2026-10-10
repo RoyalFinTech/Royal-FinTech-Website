@@ -3098,20 +3098,15 @@ function showMktTab(tab) {
 }
 
 function renderDeals() {
-  var list = document.getElementById('dealsList');
-  if (!list) return;
-  var deals = DB.get('flashDeals');
-  if (!deals.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No flash deals yet. Create your first deal!</div>'; return; }
-  list.innerHTML = deals.map(function(d) {
-    var isActive = d.status === 'active' && new Date(d.end) > new Date();
-    return '<div class="deal-card' + (isActive?' active-deal':'') + '">'
-      + '<div class="deal-info"><h4>' + esc(String(d.title || 'Untitled deal')) + '</h4><p>' + esc(String(d.offer || '')) + ' · Ends: ' + (isFinite(new Date(d.end).getTime()) ? new Date(d.end).toLocaleDateString() : '-') + '</p></div>'
-      + '<div style="display:flex;gap:6px;align-items:center">'
-      + '<span class="deal-badge' + (isActive?'':' inactive') + '">' + (isActive?'🟢 Active':'⛔ Inactive') + '</span>'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleDeal(' + d.id + ')">' + (isActive?'Deactivate':'Activate') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteDeal(' + d.id + ')">🗑️</button>'
-      + '</div></div>';
+  var list=document.getElementById('dealsList');if(!list)return;
+  var raw=DB.get('flashDeals'),deals=Array.isArray(raw)?raw.filter(function(d){return d&&typeof d==='object';}):[];
+  if(!deals.length){list.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">No flash deals yet. Create your first deal!</div>';return;}
+  list.innerHTML=deals.map(function(d){
+    var id=Number(d.id),safeId=Number.isFinite(id)?id:0,end=d.end?new Date(d.end):null;
+    var active=d.status==='active'&&end&&isFinite(end.getTime())&&end>new Date();
+    return '<div class="deal-card'+(active?' active-deal':'')+'"><div class="deal-info"><h4>'+esc(String(d.title||'Untitled deal'))+'</h4><p>'+esc(String(d.offer||''))+' · Ends: '+(end&&isFinite(end.getTime())?end.toLocaleDateString():'-')+'</p></div><div style="display:flex;gap:6px;align-items:center"><span class="deal-badge'+(active?'':' inactive')+'">'+(active?'🟢 Active':'⛔ Inactive')+'</span><button class="btn btn-outline btn-sm" data-deal-toggle="'+safeId+'" type="button">'+(active?'Deactivate':'Activate')+'</button><button class="btn btn-red btn-sm" data-deal-delete="'+safeId+'" type="button">🗑️</button></div></div>';
   }).join('');
+  list.onclick=function(event){var t=event.target&&event.target.closest?event.target.closest('[data-deal-toggle]'):null;var d=event.target&&event.target.closest?event.target.closest('[data-deal-delete]'):null;if(t&&list.contains(t))toggleDeal(Number(t.getAttribute('data-deal-toggle'))||0);else if(d&&list.contains(d))deleteDeal(Number(d.getAttribute('data-deal-delete'))||0);};
 }
 
 function saveFlashDeal() {
@@ -3156,18 +3151,11 @@ function deleteDeal(id) {
 }
 
 function renderBanners() {
-  var list = document.getElementById('bannersList');
-  if (!list) return;
-  var bans = DB.get('banners');
-  if (!bans.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No banners yet. Create your first banner!</div>'; return; }
-  list.innerHTML = bans.map(function(b) {
-    return '<div class="deal-card">'
-      + '<div class="deal-info"><h4>' + esc(String(b.title || 'Untitled banner')) + '</h4><p>' + esc(String(b.desc || '')) + '</p></div>'
-      + '<div style="display:flex;gap:6px">'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleBanner(' + b.id + ')">' + (b.status==='active'?'Deactivate':'Activate') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteBanner(' + b.id + ')">🗑️</button>'
-      + '</div></div>';
-  }).join('');
+  var list=document.getElementById('bannersList');if(!list)return;
+  var raw=DB.get('banners'),bans=Array.isArray(raw)?raw.filter(function(b){return b&&typeof b==='object';}):[];
+  if(!bans.length){list.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">No banners yet. Create your first banner!</div>';return;}
+  list.innerHTML=bans.map(function(b){var id=Number(b.id),safeId=Number.isFinite(id)?id:0;return '<div class="deal-card"><div class="deal-info"><h4>'+esc(String(b.title||'Untitled banner'))+'</h4><p>'+esc(String(b.desc||''))+'</p></div><div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" data-banner-toggle="'+safeId+'" type="button">'+(b.status==='active'?'Deactivate':'Activate')+'</button><button class="btn btn-red btn-sm" data-banner-delete="'+safeId+'" type="button">🗑️</button></div></div>';}).join('');
+  list.onclick=function(event){var t=event.target&&event.target.closest?event.target.closest('[data-banner-toggle]'):null;var d=event.target&&event.target.closest?event.target.closest('[data-banner-delete]'):null;if(t&&list.contains(t))toggleBanner(Number(t.getAttribute('data-banner-toggle'))||0);else if(d&&list.contains(d))deleteBanner(Number(d.getAttribute('data-banner-delete'))||0);};
 }
 
 function previewBannerImg(input) {
@@ -3231,19 +3219,11 @@ function deleteBanner(id) {
 }
 
 function renderAnnouncements() {
-  var list = document.getElementById('announceList');
-  if (!list) return;
-  var anns = DB.get('announcements');
-  list.innerHTML = anns.map(function(a) {
-    return '<div class="announce-card">'
-      + '<span class="announce-text" style="color:' + (/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color||'')) ? a.color : '#d4af37') + '">' + esc(String(a.text||'')) + '</span>'
-      + '<div class="announce-actions">'
-      + '<span class="deal-badge' + (a.status==='active'?'':' inactive') + '">' + (a.status==='active'?'Active':'Off') + '</span>'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleAnnounce(' + a.id + ')">' + (a.status==='active'?'Disable':'Enable') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteAnnounce(' + a.id + ')">🗑️</button>'
-      + '</div></div>';
-  }).join('');
-  if (!anns.length) list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No announcements yet.</div>';
+  var list=document.getElementById('announceList');if(!list)return;
+  var raw=DB.get('announcements'),anns=Array.isArray(raw)?raw.filter(function(a){return a&&typeof a==='object';}):[];
+  if(!anns.length){list.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)">No announcements yet.</div>';return;}
+  list.innerHTML=anns.map(function(a){var id=Number(a.id),safeId=Number.isFinite(id)?id:0;var color=/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color||''))?String(a.color):'#d4af37';return '<div class="announce-card"><span class="announce-text" style="color:'+color+'">'+esc(String(a.text||''))+'</span><div class="announce-actions"><span class="deal-badge'+(a.status==='active'?'':' inactive')+'">'+(a.status==='active'?'Active':'Off')+'</span><button class="btn btn-outline btn-sm" data-announce-toggle="'+safeId+'" type="button">'+(a.status==='active'?'Disable':'Enable')+'</button><button class="btn btn-red btn-sm" data-announce-delete="'+safeId+'" type="button">🗑️</button></div></div>';}).join('');
+  list.onclick=function(event){var t=event.target&&event.target.closest?event.target.closest('[data-announce-toggle]'):null;var d=event.target&&event.target.closest?event.target.closest('[data-announce-delete]'):null;if(t&&list.contains(t))toggleAnnounce(Number(t.getAttribute('data-announce-toggle'))||0);else if(d&&list.contains(d))deleteAnnounce(Number(d.getAttribute('data-announce-delete'))||0);};
 }
 
 function saveAnnouncement() {
