@@ -7940,7 +7940,9 @@ function filterCRMList() {
     var card = document.createElement('div');
     card.className = 'crm-profile-card';
     card.style.cursor = 'pointer';
-    card.onclick = function(){ openCRMProfile(app.id); };
+    card.setAttribute('role', 'button'); card.tabIndex = 0;
+    card.onclick = function(){ openCRMProfile(Number(app.id) || 0); };
+    card.onkeydown = function(event){ if(event.key==='Enter'||event.key===' '){event.preventDefault();openCRMProfile(Number(app.id)||0);} };
     card.innerHTML =
       '<div class="crm-profile-header">' +
         '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
