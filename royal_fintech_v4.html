@@ -2234,10 +2234,10 @@ function renderNotifs() {
   body.innerHTML = notifs.map(function(n) {
     return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" onclick="markRead(this)">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div class="notif-ico">' + (n.title.charAt(0) === n.title.charAt(0) ? n.title.split(' ')[0] : '🔔') + '</div>'
-      + '<div style="flex:1"><div class="notif-title">' + esc(n.title.replace(/^[^ ]+ /, '')) + '</div>'
-      + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + n.time + '</div></div></div>';
+      + '<div class="notif-ico">' + esc(String(n.title || '🔔').split(' ')[0]) + '</div>'
+      + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || '').replace(/^[^ ]+ /, '')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
 }
 
@@ -2247,9 +2247,9 @@ function renderAdminNotifs() {
   body.innerHTML = adminNotifs.map(function(n) {
     return '<div class="notif-item' + (n.unread ? ' unread' : '') + '">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div style="flex:1"><div class="notif-title">' + esc(n.title) + '</div>'
-      + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + n.time + '</div></div></div>';
+      + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || '')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
 }
 
@@ -2877,55 +2877,58 @@ function requestBrowserNotifPermission() {
 function renderApplications(filterStatus, searchQuery) {
   var panel = document.getElementById('appListBody');
   if (!panel) return;
-  var apps = DB.get('applications');
-  if (filterStatus && filterStatus !== 'all') {
-    apps = apps.filter(function(a) { return a.status === filterStatus; });
-  }
-  if (searchQuery) {
-    var q = searchQuery.toLowerCase();
-    apps = apps.filter(function(a) {
-      return a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.service.toLowerCase().includes(q);
-    });
-  }
-  if (!apps.length) {
-    panel.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No applications found</td></tr>';
-    return;
-  }
+  var raw = DB.get('applications');
+  var apps = Array.isArray(raw) ? raw.filter(function(a) { return a && typeof a === 'object'; }) : [];
+  if (filterStatus && filterStatus !== 'all') apps = apps.filter(function(a) { return a.status === filterStatus; });
+  var q = String(searchQuery || '').trim().toLowerCase();
+  if (q) apps = apps.filter(function(a) {
+    return [a.name,a.email,a.service,a.projectName].some(function(v){return String(v==null?'':v).toLowerCase().indexOf(q)>-1;});
+  });
+  if (!apps.length) { panel.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No applications found</td></tr>'; return; }
+  var allowed = ['pending','reviewing','approved','rejected'];
+  var classes = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'};
   panel.innerHTML = apps.map(function(a) {
-    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[a.status] || 'app-pending';
-    var dateStr = new Date(a.date).toLocaleDateString();
-    return '<tr>'
-      + '<td>' + a.name + '</td>'
-      + '<td style="font-size:0.8rem;color:var(--gray)">' + a.email + '</td>'
-      + '<td style="font-size:0.8rem">' + a.service + '</td>'
-      + '<td style="font-size:0.8rem">' + dateStr + '</td>'
-      + '<td><span class="app-status ' + statusClass + '">' + a.status + '</span></td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + a.id + ')">View</button></td>'
-      + '</tr>';
+    var status = allowed.indexOf(a.status)>-1 ? a.status : 'pending';
+    var date = a.date ? new Date(a.date) : null;
+    var dateText = date && isFinite(date.getTime()) ? date.toLocaleDateString() : '-';
+    var id = Number(a.id);
+    return '<tr><td>' + esc(String(a.name||'-')) + '</td>'
+      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email||'-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + esc(String(a.service||a.projectName||'-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + dateText + '</td>'
+      + '<td><span class="app-status ' + classes[status] + '">' + status + '</span></td>'
+      + '<td><button class="btn btn-outline btn-sm" type="button" data-view-app-id="' + (Number.isFinite(id)?id:0) + '">View</button></td></tr>';
   }).join('');
+  panel.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-view-app-id]') : null;
+    if (!button || !panel.contains(button)) return;
+    event.preventDefault();
+    viewApp(button.getAttribute('data-view-app-id'));
+  };
 }
 
 function viewApp(id) {
-  var apps = DB.get('applications');
-  var app = apps.find(function(a) { return a.id === id; });
+  var raw = DB.get('applications');
+  var apps = Array.isArray(raw) ? raw : [];
+  var app = apps.find(function(a){return a && a.id != null && String(a.id)===String(id);});
   if (!app) return;
-  currentAppId = id;
+  currentAppId = app.id;
   var content = document.getElementById('appDetailContent');
-  if (!content) return;
+  var modal = document.getElementById('appDetailModal');
+  if (!content || !modal) return;
   var fields = [
-    ['Full Name', app.name], ['Email', app.email], ['Phone', app.phone],
-    ['Country', app.country || '-'], ['Service Requested', app.service],
-    ['Platforms', app.platforms || '-'], ['Budget', app.budget || '-'],
-    ['Timeline', app.timeline || '-'], ['Expected Users', app.users || '-'],
-    ['Features', app.features || '-'], ['Integrations', app.integrations || '-'],
-    ['Description', app.description || '-'], ['Status', app.status],
-    ['Submitted', new Date(app.date).toLocaleString()]
+    ['Full Name',app.name],['Email',app.email],['Phone',app.phone],['Country',app.country||'-'],
+    ['Service Requested',app.service],['Platforms',app.platforms||'-'],['Budget',app.budget||'-'],
+    ['Timeline',app.timeline||'-'],['Expected Users',app.users||'-'],['Features',app.features||'-'],
+    ['Integrations',app.integrations||'-'],['Description',app.description||'-'],['Status',app.status],
+    ['Submitted',app.date && isFinite(new Date(app.date).getTime()) ? new Date(app.date).toLocaleString() : '-']
   ];
-  content.innerHTML = fields.map(function(f) {
-    return '<div class="app-field"><label>' + f[0] + '</label><span>' + (f[1]||'-') + '</span></div>';
+  content.innerHTML = fields.map(function(f){
+    var value = f[1]==null || f[1]==='' ? '-' : (Array.isArray(f[1]) ? f[1].join(', ') : String(f[1]));
+    return '<div class="app-field"><label>' + esc(String(f[0])) + '</label><span>' + esc(value) + '</span></div>';
   }).join('');
-  document.getElementById('appDetailModal').classList.add('open');
-  addAuditLog('👁️', 'action', 'Viewed application from ' + app.name);
+  modal.classList.add('open');
+  try { addAuditLog('👁️','action','Viewed application from '+String(app.name||'Unknown applicant').slice(0,120)); } catch(e) {}
 }
 
 function closeAppModal() {
@@ -3115,7 +3118,7 @@ function renderDeals() {
   list.innerHTML = deals.map(function(d) {
     var isActive = d.status === 'active' && new Date(d.end) > new Date();
     return '<div class="deal-card' + (isActive?' active-deal':'') + '">'
-      + '<div class="deal-info"><h4>' + d.title + '</h4><p>' + d.offer + ' · Ends: ' + new Date(d.end).toLocaleDateString() + '</p></div>'
+      + '<div class="deal-info"><h4>' + esc(String(d.title || 'Untitled deal')) + '</h4><p>' + esc(String(d.offer || '')) + ' · Ends: ' + (isFinite(new Date(d.end).getTime()) ? new Date(d.end).toLocaleDateString() : '-') + '</p></div>'
       + '<div style="display:flex;gap:6px;align-items:center">'
       + '<span class="deal-badge' + (isActive?'':' inactive') + '">' + (isActive?'🟢 Active':'⛔ Inactive') + '</span>'
       + '<button class="btn btn-outline btn-sm" onclick="toggleDeal(' + d.id + ')">' + (isActive?'Deactivate':'Activate') + '</button>'
@@ -3172,7 +3175,7 @@ function renderBanners() {
   if (!bans.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No banners yet. Create your first banner!</div>'; return; }
   list.innerHTML = bans.map(function(b) {
     return '<div class="deal-card">'
-      + '<div class="deal-info"><h4>' + b.title + '</h4><p>' + b.desc + '</p></div>'
+      + '<div class="deal-info"><h4>' + esc(String(b.title || 'Untitled banner')) + '</h4><p>' + esc(String(b.desc || '')) + '</p></div>'
       + '<div style="display:flex;gap:6px">'
       + '<button class="btn btn-outline btn-sm" onclick="toggleBanner(' + b.id + ')">' + (b.status==='active'?'Deactivate':'Activate') + '</button>'
       + '<button class="btn btn-red btn-sm" onclick="deleteBanner(' + b.id + ')">🗑️</button>'
@@ -3246,7 +3249,7 @@ function renderAnnouncements() {
   var anns = DB.get('announcements');
   list.innerHTML = anns.map(function(a) {
     return '<div class="announce-card">'
-      + '<span class="announce-text" style="color:' + a.color + '">' + a.text + '</span>'
+      + '<span class="announce-text" style="color:' + (/^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color||'')) ? a.color : '#d4af37') + '">' + esc(String(a.text||'')) + '</span>'
       + '<div class="announce-actions">'
       + '<span class="deal-badge' + (a.status==='active'?'':' inactive') + '">' + (a.status==='active'?'Active':'Off') + '</span>'
       + '<button class="btn btn-outline btn-sm" onclick="toggleAnnounce(' + a.id + ')">' + (a.status==='active'?'Disable':'Enable') + '</button>'
@@ -3339,9 +3342,9 @@ function renderAuditLog() {
   if (!logs.length) { container.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:16px">No audit logs yet.</div>'; return; }
   container.innerHTML = logs.slice(0,30).map(function(l) {
     return '<div class="audit-item">'
-      + '<div class="audit-ico ' + l.type + '">' + l.ico + '</div>'
-      + '<div><div class="audit-msg">' + l.msg + '</div>'
-      + '<div class="audit-time">' + new Date(l.time).toLocaleString() + '</div></div>'
+      + '<div class="audit-ico ' + (['action','success','warning','error','info'].indexOf(l.type)>-1 ? l.type : 'info') + '">' + esc(String(l.ico||'•')) + '</div>'
+      + '<div><div class="audit-msg">' + esc(String(l.msg||'')) + '</div>'
+      + '<div class="audit-time">' + (isFinite(new Date(l.time).getTime()) ? new Date(l.time).toLocaleString() : '-') + '</div></div>'
       + '</div>';
   }).join('');
 }
