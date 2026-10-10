@@ -2246,11 +2246,11 @@ function renderNotifs() {
 
 function renderAdminNotifs() {
   const body = document.getElementById('admNotifBody'); if (!body) return;
-  if (!adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
-  body.innerHTML = adminNotifs.map(function(n) {
+  if (!Array.isArray(adminNotifs) || !adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
+  body.innerHTML = adminNotifs.filter(function(n){return n && typeof n === 'object';}).map(function(n) {
     return '<div class="notif-item' + (n.unread ? ' unread' : '') + '">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || '')) + '</div>'
+      + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || 'Notification')) + '</div>'
       + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
       + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
