@@ -2014,76 +2014,47 @@ function renderAISummaryPanel(app) {
 // ENHANCED VIEW APPLICATION MODAL (fixes field mismatches)
 // ============================================================
 window.viewApp = function(id) {
-  var apps = DB.get('applications');
-  var app = apps.find(function(a) { return a.id === id; });
+  var apps;
+  try { apps = DB.get('applications'); if (!Array.isArray(apps)) return; } catch (e) { return; }
+  var app = apps.find(function(a) { return a && a.id != null && String(a.id) === String(id); });
   if (!app) return;
-  currentAppId = id;
-  var content = document.getElementById('appDetailContent');
-  if (!content) return;
-
-  // Resolve type names
-  var typeNames = [];
-  try {
-    [APP_TYPES_BUSINESS, APP_TYPES_PERSONAL, APP_TYPES_PLATFORM].forEach(function(g) {
-      (g||[]).forEach(function(t) { if ((app.types||[]).indexOf(t.id) > -1) typeNames.push(t.ico + ' ' + t.name); });
-    });
-  } catch(e) {}
-  var featNames = [];
-  try {
-    (FEATURES_LIST||[]).forEach(function(f) { if ((app.features||[]).indexOf(f.id) > -1) featNames.push(f.ico + ' ' + f.name); });
-  } catch(e) {}
-  var platformNames = (app.platforms || []).join(', ') || '\u2014';
-  var safeStatus = ['pending','reviewing','approved','rejected','in_development','testing','paid','completed','closed','awaiting_payment'].indexOf(app.status)>-1 ? app.status : 'pending';
-
-  var html = '';
-  html += app.deliveryStatus === 'server-confirmed'
+  currentAppId = app.id;
+  var content = document.getElementById('appDetailContent'), modal = document.getElementById('appDetailModal');
+  if (!content || !modal) return;
+  var typeNames = [], featNames = [];
+  try { [APP_TYPES_BUSINESS,APP_TYPES_PERSONAL,APP_TYPES_PLATFORM].forEach(function(g) {
+    (g||[]).forEach(function(t) { if ((Array.isArray(app.types)?app.types:[]).indexOf(t.id)>-1) typeNames.push(t.ico+' '+t.name); });
+  }); } catch(e) {}
+  try { (FEATURES_LIST||[]).forEach(function(f) { if ((Array.isArray(app.features)?app.features:[]).indexOf(f.id)>-1) featNames.push(f.ico+' '+f.name); }); } catch(e) {}
+  var platformNames = (Array.isArray(app.platforms)?app.platforms:[]).map(function(v){return String(v);}).join(', ') || '—';
+  var allowed = ['pending','reviewing','approved','rejected','in_development','testing','paid','completed','closed','awaiting_payment'];
+  var safeStatus = allowed.indexOf(app.status)>-1 ? app.status : 'pending';
+  var date = app.date ? new Date(app.date) : null, dateText = date && isFinite(date.getTime()) ? date.toLocaleString() : '—';
+  var html = app.deliveryStatus === 'server-confirmed'
     ? '<div class="app-field-section" style="border-color:rgba(16,185,129,.35)"><h5>✅ Delivery Status</h5><div>Confirmed by configured applications API' + (app.serverId ? ' · Server ID ' + esc(String(app.serverId)) : '') + '</div></div>'
     : '<div class="app-field-section" style="border-color:rgba(251,191,36,.35)"><h5>⚠️ Browser-only Draft</h5><div>This request has not been synced across devices to the admin team. Configure an applications API before production.</div></div>';
-  // AI is used only when the configured server supplies a summary; otherwise this is rule-based triage.
   html += renderAISummaryPanel(app);
-
-  // Customer info
-  html += '<div class="app-field-section"><h5>\ud83d\udc64 Customer Information</h5><div class="app-field-grid">';
-  html += '<div class="app-field"><label>Full Name</label><span>' + esc(app.name||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Company</label><span>' + esc(app.company||'\u2014') + '</span></div>';
-  html += '<div class="app-field"><label>Email</label><span>' + esc(app.email||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Phone</label><span>' + esc(app.phone||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Country</label><span>' + esc(app.country||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Currency</label><span>' + esc(app.currency||'GMD') + '</span></div>';
-  html += '</div></div>';
-
-  // Project details
-  html += '<div class="app-field-section"><h5>\ud83d\udcbc Project Details</h5><div class="app-field-grid">';
-  html += '<div class="app-field"><label>Project Name</label><span>' + esc(app.projectName||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Quotation #</label><span>' + esc(app.quotNum||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Reference #</label><span>' + esc(app.refNum||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Submitted</label><span>' + new Date(app.date).toLocaleString() + '</span></div>';
-  html += '</div>';
-  html += '<div class="app-field" style="margin-top:10px"><label>Description</label><span style="white-space:pre-wrap">' + esc(app.desc||'\u2014') + '</span></div>';
-  html += '</div>';
-
-  // Selections
-  html += '<div class="app-field-section"><h5>\ud83d\udce6 Selected Services</h5>';
-  html += '<div class="app-field" style="margin-bottom:10px"><label>Project Type(s)</label><div class="app-pill-list">' + (typeNames.length ? typeNames.map(function(t){return '<span>'+t+'</span>';}).join('') : '<span>\u2014</span>') + '</div></div>';
-  html += '<div class="app-field" style="margin-bottom:10px"><label>Platforms</label><span>' + esc(platformNames) + '</span></div>';
-  html += '<div class="app-field"><label>Requested Features (' + (app.features||[]).length + ')</label><div class="app-pill-list">' + (featNames.length ? featNames.map(function(f){return '<span>'+f+'</span>';}).join('') : '<span>\u2014</span>') + '</div></div>';
-  html += '</div>';
-
-  // Budget & timeline
-  html += '<div class="app-field-section"><h5>\ud83d\udcb0 Budget &amp; Timeline</h5><div class="app-field-grid">';
-  html += '<div class="app-field"><label>Estimated Total</label><span style="color:var(--blue);font-weight:700">' + convertPrice(app.estimatedTotal||0) + '</span></div>';
-  html += '<div class="app-field"><label>Status</label><span><span class="app-status app-' + safeStatus + '">' + safeStatus + '</span></span></div>';
-  html += '</div></div>';
-
-  // Internal notes (editable)
-  html += '<div class="app-field-section"><h5>\ud83d\udcdd Internal Notes</h5>';
-  html += '<textarea class="notes-textarea" id="appNotesField" placeholder="Add internal notes about this request...">' + esc(app.notes||'') + '</textarea>';
-  html += '<button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="saveAppNotes(' + app.id + ')" type="button">\ud83d\udcbe Save Notes</button>';
-  html += '</div>';
-
+  html += '<div class="app-field-section"><h5>👤 Customer Information</h5><div class="app-field-grid">';
+  [['Full Name',app.name||'-'],['Company',app.company||'—'],['Email',app.email||'-'],['Phone',app.phone||'-'],['Country',app.country||'-'],['Currency',app.currency||'GMD']].forEach(function(f) {
+    html += '<div class="app-field"><label>'+esc(f[0])+'</label><span>'+esc(String(f[1]))+'</span></div>';
+  });
+  html += '</div></div><div class="app-field-section"><h5>💼 Project Details</h5><div class="app-field-grid">';
+  [['Project Name',app.projectName||'-'],['Quotation #',app.quotNum||'-'],['Reference #',app.refNum||'-'],['Submitted',dateText]].forEach(function(f) {
+    html += '<div class="app-field"><label>'+esc(f[0])+'</label><span>'+esc(String(f[1]))+'</span></div>';
+  });
+  html += '</div><div class="app-field" style="margin-top:10px"><label>Description</label><span style="white-space:pre-wrap">'+esc(String(app.desc||'—'))+'</span></div></div>';
+  html += '<div class="app-field-section"><h5>📦 Selected Services</h5><div class="app-field" style="margin-bottom:10px"><label>Project Type(s)</label><div class="app-pill-list">'+(typeNames.length?typeNames.map(function(t){return '<span>'+esc(t)+'</span>';}).join(''):'<span>—</span>')+'</div></div>';
+  html += '<div class="app-field" style="margin-bottom:10px"><label>Platforms</label><span>'+esc(platformNames)+'</span></div>';
+  html += '<div class="app-field"><label>Requested Features ('+(Array.isArray(app.features)?app.features.length:0)+')</label><div class="app-pill-list">'+(featNames.length?featNames.map(function(v){return '<span>'+esc(v)+'</span>';}).join(''):'<span>—</span>')+'</div></div></div>';
+  html += '<div class="app-field-section"><h5>💰 Budget &amp; Timeline</h5><div class="app-field-grid"><div class="app-field"><label>Estimated Total</label><span style="color:var(--blue);font-weight:700">'+esc(convertPrice(app.estimatedTotal||0))+'</span></div><div class="app-field"><label>Status</label><span><span class="app-status app-'+safeStatus+'">'+safeStatus+'</span></span></div></div></div>';
+  html += '<div class="app-field-section"><h5>📝 Internal Notes</h5><textarea class="notes-textarea" id="appNotesField" placeholder="Add internal notes about this request...">'+esc(String(app.notes||''))+'</textarea><button class="btn btn-outline btn-sm" style="margin-top:8px" data-save-app-notes type="button">💾 Save Notes</button></div>';
   content.innerHTML = html;
-  document.getElementById('appDetailModal').classList.add('open');
-  try { addAuditLog('\ud83d\udc41\ufe0f', 'action', 'Viewed application from ' + app.name); } catch(e) {}
+  content.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-save-app-notes]') : null;
+    if (button && content.contains(button)) { event.preventDefault(); saveAppNotes(app.id); }
+  };
+  modal.classList.add('open');
+  try { addAuditLog('👁️', 'action', 'Viewed application from ' + String(app.name||'Unknown applicant').slice(0,120)); } catch(e) {}
 };
 
 function saveAppNotes(id) {
@@ -4519,16 +4490,28 @@ function pushAdminNotif(title, msg) {
 }
 
 function renderNotifs() {
-  const body = document.getElementById('notifBody'); if (!body) return;
-  if (!notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
-  body.innerHTML = notifs.map(function(n) {
-    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" onclick="markRead(this)">'
+  var body = document.getElementById('notifBody'); if (!body) return;
+  if (!Array.isArray(notifs) || !notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
+  body.innerHTML = notifs.map(function(n, index) {
+    n = n && typeof n === 'object' ? n : {};
+    var title = String(n.title || '🔔 Notification');
+    var first = title.split(' ')[0] || '🔔';
+    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" data-notif-index="' + index + '" role="button" tabindex="0">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div class="notif-ico">' + (n.title.charAt(0) === n.title.charAt(0) ? n.title.split(' ')[0] : '🔔') + '</div>'
-      + '<div style="flex:1"><div class="notif-title">' + esc(n.title.replace(/^[^ ]+ /, '')) + '</div>'
-      + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + n.time + '</div></div></div>';
+      + '<div class="notif-ico">' + esc(first) + '</div>'
+      + '<div style="flex:1"><div class="notif-title">' + esc(title.replace(/^[^ ]+ /, '')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
+  function markFromEvent(event) {
+    var item = event.target && event.target.closest ? event.target.closest('[data-notif-index]') : null;
+    if (!item || !body.contains(item)) return;
+    var index = Number(item.getAttribute('data-notif-index'));
+    if (!Number.isInteger(index) || index < 0 || index >= notifs.length) return;
+    notifs[index].unread = false; renderNotifs();
+  }
+  body.onclick = markFromEvent;
+  body.onkeydown = function(event) { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); markFromEvent(event); } };
 }
 
 function renderAdminNotifs() {
@@ -5504,42 +5487,22 @@ function updateCountdown(endDate) {
 // ---- POPUP NOTIFICATION ----
 var popupQueue = [];
 function showPopupNotif(title, body, icon) {
-  icon = icon || '🔔';
-  var container = document.getElementById('popupNotif');
-  if (!container) return;
-  var item = document.createElement('div');
-  item.className = 'popup-notif-item';
-  var timeStr = new Date().toLocaleTimeString();
-  item.innerHTML = '<div class="pn-hdr">'
-    + '<span class="pn-ico">' + icon + '</span>'
-    + '<span class="pn-title">' + title + '</span>'
-    + '<button class="pn-close" onclick="this.parentNode.parentNode.remove()" type="button">✕</button>'
-    + '</div>'
-    + '<div class="pn-body">' + body + '</div>'
-    + '<div class="pn-time">' + timeStr + '</div>';
-  container.appendChild(item);
-  setTimeout(function() { item.classList.add('show'); }, 50);
-  // Play sound
-  try {
-    var ctx = new (window.AudioContext || window.webkitAudioContext)();
-    var osc = ctx.createOscillator();
-    var g = ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
-    g.gain.setValueAtTime(0.08, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-    osc.start(); osc.stop(ctx.currentTime + 0.4);
-  } catch(e) {}
-  // Auto-remove after 6s
-  setTimeout(function() {
-    item.classList.remove('show');
-    setTimeout(function() { if (item.parentNode) item.remove(); }, 500);
-  }, 6000);
-  // Browser notification
-  if (window.Notification && Notification.permission === 'granted') {
-    new Notification(title, { body: body, icon: '' });
-  }
+  icon = String(icon || '🔔'); title = String(title == null ? '' : title); body = String(body == null ? '' : body);
+  var container = document.getElementById('popupNotif'); if (!container) return;
+  var item = document.createElement('div'); item.className = 'popup-notif-item';
+  var header = document.createElement('div'); header.className = 'pn-hdr';
+  var iconEl = document.createElement('span'); iconEl.className = 'pn-ico'; iconEl.textContent = icon;
+  var titleEl = document.createElement('span'); titleEl.className = 'pn-title'; titleEl.textContent = title;
+  var close = document.createElement('button'); close.className = 'pn-close'; close.type = 'button'; close.textContent = '✕'; close.setAttribute('aria-label','Close notification');
+  close.addEventListener('click',function(){item.remove();});
+  header.appendChild(iconEl); header.appendChild(titleEl); header.appendChild(close);
+  var bodyEl = document.createElement('div'); bodyEl.className = 'pn-body'; bodyEl.textContent = body;
+  var timeEl = document.createElement('div'); timeEl.className = 'pn-time'; timeEl.textContent = new Date().toLocaleTimeString();
+  item.appendChild(header); item.appendChild(bodyEl); item.appendChild(timeEl); container.appendChild(item);
+  setTimeout(function(){item.classList.add('show');},50);
+  try { var ctx=new (window.AudioContext||window.webkitAudioContext)(), osc=ctx.createOscillator(), g=ctx.createGain(); osc.connect(g);g.connect(ctx.destination);osc.frequency.setValueAtTime(880,ctx.currentTime);osc.frequency.setValueAtTime(660,ctx.currentTime+0.1);g.gain.setValueAtTime(0.08,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);osc.start();osc.stop(ctx.currentTime+0.4); } catch(e) {}
+  setTimeout(function(){item.classList.remove('show');setTimeout(function(){if(item.parentNode)item.remove();},500);},6000);
+  if (window.Notification && Notification.permission==='granted') new Notification(title,{body:body,icon:''});
 }
 
 // Request browser notification permission
@@ -6941,23 +6904,18 @@ function renderTypeGrid(cid, types) {
 
 function renderPlatformGrid() {
   var grid = document.getElementById('platformGrid'); if (!grid) return;
-  grid.innerHTML = '';
+  grid.textContent = '';
   PLATFORM_OPTIONS.forEach(function(p) {
-    var card = document.createElement('div');
-    card.className = 'req-platform-card' + (rqSelectedPlatforms.indexOf(p.id)>-1?' selected':'');
-    var priceLabel = p.price > 0 ? '+' + convertPrice(p.price) : 'Included';
-    card.innerHTML = '<div class="plat-ico">' + p.ico + '</div><div class="plat-name">' + p.name + '</div><div class="plat-price">' + priceLabel + '</div>';
-    card.onclick = (function(plat) {
-      return function() {
-        if (plat.id === 'all') { rqSelectedPlatforms = ['all']; }
-        else {
-          rqSelectedPlatforms = rqSelectedPlatforms.filter(function(x){return x!=='all';});
-          var idx = rqSelectedPlatforms.indexOf(plat.id);
-          if (idx > -1) rqSelectedPlatforms.splice(idx,1); else rqSelectedPlatforms.push(plat.id);
-        }
-        renderPlatformGrid();
-      };
-    })(p);
+    var card = document.createElement('div'); card.className = 'req-platform-card' + (rqSelectedPlatforms.indexOf(p.id)>-1?' selected':'');
+    var icon = document.createElement('div'); icon.className='plat-ico'; icon.textContent=String(p.ico||'');
+    var name = document.createElement('div'); name.className='plat-name'; name.textContent=String(p.name||'');
+    var price = document.createElement('div'); price.className='plat-price'; price.textContent=p.price>0?'+'+convertPrice(p.price):'Included';
+    card.appendChild(icon);card.appendChild(name);card.appendChild(price);
+    card.addEventListener('click',function(){
+      if(p.id==='all')rqSelectedPlatforms=['all'];
+      else{rqSelectedPlatforms=rqSelectedPlatforms.filter(function(x){return x!=='all';});var idx=rqSelectedPlatforms.indexOf(p.id);if(idx>-1)rqSelectedPlatforms.splice(idx,1);else rqSelectedPlatforms.push(p.id);}
+      renderPlatformGrid();
+    });
     grid.appendChild(card);
   });
 }
@@ -7798,20 +7756,18 @@ function buildNotesTab(app, rec, appId) {
 }
 
 function renderNotesSection(tc, rec, appId) {
-  var sec = tc.querySelector('#crmNotesSection_' + appId);
-  if (!sec) return;
-  var notes = (rec.notes||[]).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-  if (!notes.length) {
-    sec.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">No notes yet. Add your first note above.</div>';
-    return;
-  }
-  sec.innerHTML = notes.map(function(n) {
-    return '<div class="crm-note-card">' +
-      '<div class="crm-note-time">📌 ' + new Date(n.date).toLocaleString() + '</div>' +
-      '<div class="crm-note-text">' + esc(n.text) + '</div>' +
-      '<button onclick="deleteCRMNote(' + appId + ',' + n.id + ',this)" style="background:none;border:none;color:var(--gray);font-size:0.72rem;cursor:pointer;margin-top:6px" type="button">🗑️ Delete</button>' +
-      '</div>';
-  }).join('');
+  var sec = tc.querySelector('#crmNotesSection_' + appId); if (!sec) return;
+  var notes = (Array.isArray(rec.notes)?rec.notes:[]).filter(function(n){return n&&typeof n==='object';}).slice().sort(function(a,b){return new Date(b.date).getTime()-new Date(a.date).getTime();});
+  if (!notes.length) { sec.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">No notes yet. Add your first note above.</div>'; return; }
+  sec.textContent = '';
+  notes.forEach(function(n) {
+    var card=document.createElement('div');card.className='crm-note-card';
+    var time=document.createElement('div');time.className='crm-note-time';var date=n.date?new Date(n.date):null;time.textContent='📌 '+(date&&isFinite(date.getTime())?date.toLocaleString():'—');
+    var noteText=document.createElement('div');noteText.className='crm-note-text';noteText.textContent=String(n.text||'');
+    var button=document.createElement('button');button.type='button';button.className='crm-note-delete';button.style.cssText='background:none;border:none;color:var(--gray);font-size:0.72rem;cursor:pointer;margin-top:6px';button.textContent='🗑️ Delete';
+    button.addEventListener('click',function(){deleteCRMNote(appId,n.id,button);});
+    card.appendChild(time);card.appendChild(noteText);card.appendChild(button);sec.appendChild(card);
+  });
 }
 
 function deleteCRMNote(appId, noteId, btn) {
