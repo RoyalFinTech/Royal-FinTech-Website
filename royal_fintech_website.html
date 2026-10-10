@@ -1365,8 +1365,8 @@ function openProductModal(id) {
   if (!box) return;
   box.innerHTML = '';
   var hdr = document.createElement('div'); hdr.style.cssText='text-align:center;padding:10px 0 20px';
-  if (p.logo) {
-    var li=document.createElement('img'); li.src=p.logo; li.style.cssText='max-height:130px;max-width:85%;object-fit:contain;margin-bottom:14px;border-radius:10px'; hdr.appendChild(li);
+  if (p.logo && /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(String(p.logo))) {
+    var li=document.createElement('img'); li.src=String(p.logo); li.alt=String(p.name || 'Product logo'); li.referrerPolicy='no-referrer'; li.style.cssText='max-height:130px;max-width:85%;object-fit:contain;margin-bottom:14px;border-radius:10px'; hdr.appendChild(li);
   }
   var sb=document.createElement('div'); sb.style.cssText='display:inline-block;padding:4px 14px;border-radius:20px;font-size:0.7rem;font-weight:700;background:var(--glass);border:1px solid var(--gborder);margin-bottom:8px';
   sb.textContent=sLbl[p.status]||p.status;
@@ -1381,8 +1381,10 @@ function openProductModal(id) {
     box.appendChild(fh); box.appendChild(fw);
   }
   var ar=document.createElement('div'); ar.style.cssText='display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding-top:14px;border-top:1px solid var(--gborder);margin-top:10px';
-  if (p.link) { var vb=document.createElement('a'); vb.href=p.link; vb.target='_blank'; vb.className='btn btn-primary'; vb.textContent='Visit Website \u2192'; ar.appendChild(vb); }
-  if (p.downloadLink) { var db5=document.createElement('a'); db5.href=p.downloadLink; db5.target='_blank'; db5.className='btn btn-primary'; db5.textContent='Download App'; ar.appendChild(db5); }
+  var productUrl=String(p.link || '').trim();
+  if (/^https?:\/\//i.test(productUrl)) { var vb=document.createElement('a'); vb.href=productUrl; vb.target='_blank'; vb.rel='noopener noreferrer'; vb.className='btn btn-primary'; vb.textContent='Visit Website \u2192'; ar.appendChild(vb); }
+  var downloadUrl=String(p.downloadLink || '').trim();
+  if (/^https?:\/\//i.test(downloadUrl)) { var db5=document.createElement('a'); db5.href=downloadUrl; db5.target='_blank'; db5.rel='noopener noreferrer'; db5.className='btn btn-primary'; db5.textContent='Download App'; ar.appendChild(db5); }
   var cb=document.createElement('button'); cb.className='btn'; cb.style.border='1px solid var(--gborder)'; cb.textContent='Contact Us';
   cb.onclick=function(){ try{gotoSection('contact');}catch(e){} try{closeModal('productModal');}catch(e){} };
   ar.appendChild(cb); box.appendChild(ar);
@@ -5364,7 +5366,7 @@ function buildTicker() {
   var items = active.concat(active).map(function(a) {
     var color = /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color || '')) ? String(a.color) : '#ffffff';
     var rawUrl = String(a.url || '').trim();
-    var safeUrl = /^(https?:\/\/|\/|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '';
+    var safeUrl = /^(https?:\/\/|\/(?!\/)|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '';
     return '<span class="ticker-item" style="color:' + color + '">'
       + (safeUrl ? '<a href="' + esc(safeUrl) + '" style="color:inherit;text-decoration:none" rel="noopener noreferrer">' : '')
       + esc(String(a.text || ''))
@@ -5391,7 +5393,7 @@ function buildCarousel() {
     var rawColor = String(b.color || '');
     var safeColor = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\))$/i.test(rawColor) ? rawColor : 'var(--grad)';
     var rawUrl = String(b.url || '#').trim();
-    var safeUrl = /^(https?:\/\/|\/|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '#';
+    var safeUrl = /^(https?:\/\/|\/(?!\/)|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '#';
     var rawImage = String(b.imgData || '');
     var safeImage = /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(rawImage) ? rawImage : '';
     return '<div class="promo-slide" style="background:' + safeColor + '">'
@@ -5922,6 +5924,7 @@ function renderBanners() {
 function previewBannerImg(input) {
   var prev = document.getElementById('bannerImgPreview');
   if (!prev || !input.files[0]) return;
+  if (!/^image\/(png|jpeg|gif|webp)$/i.test(String(input.files[0].type || ''))) { prev.textContent = 'Please choose a PNG, JPEG, GIF, or WebP image.'; input.value = ''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     prev.innerHTML = '<img alt="" src="' + e.target.result + '" style="max-height:100px;border-radius:8px">';
