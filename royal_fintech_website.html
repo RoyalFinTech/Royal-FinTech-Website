@@ -5383,15 +5383,18 @@ function buildTicker() {
   var bar = document.getElementById('tickerBar');
   var inner = document.getElementById('tickerInner');
   if (!bar || !inner) return;
-  var active = announcements.filter(function(a) { return a.status === 'active'; });
-  if (!active.length) { bar.classList.remove('active'); return; }
+  var source = Array.isArray(announcements) ? announcements : [];
+  var active = source.filter(function(a) { return a && a.status === 'active'; });
+  if (!active.length) { bar.classList.remove('active'); inner.textContent = ''; return; }
   bar.classList.add('active');
-  // Build double set for seamless loop
   var items = active.concat(active).map(function(a) {
-    return '<span class="ticker-item" style="color:' + a.color + '">'
-      + (a.url ? '<a href="' + a.url + '" style="color:inherit;text-decoration:none">' : '')
-      + a.text
-      + (a.url ? '</a>' : '')
+    var color = /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color || '')) ? String(a.color) : '#ffffff';
+    var rawUrl = String(a.url || '').trim();
+    var safeUrl = /^(https?:\/\/|\/|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '';
+    return '<span class="ticker-item" style="color:' + color + '">'
+      + (safeUrl ? '<a href="' + esc(safeUrl) + '" style="color:inherit;text-decoration:none" rel="noopener noreferrer">' : '')
+      + esc(String(a.text || ''))
+      + (safeUrl ? '</a>' : '')
       + '</span><span class="ticker-sep">❖</span>';
   }).join('');
   inner.innerHTML = items;
@@ -5403,28 +5406,43 @@ var carouselInterval = null;
 function buildCarousel() {
   var wrap = document.getElementById('promoCarousel');
   if (!wrap) return;
-  var active = banners.filter(function(b) { return b.status === 'active'; });
+  var source = Array.isArray(banners) ? banners : [];
+  var active = source.filter(function(b) { return b && b.status === 'active'; });
   if (!active.length) { wrap.classList.remove('active'); return; }
   wrap.classList.add('active');
   var slides = document.getElementById('promoSlides');
   var dots = document.getElementById('promoDots');
   if (!slides || !dots) return;
-  slides.innerHTML = active.map(function(b, i) {
-    return '<div class="promo-slide" style="background:' + (b.color || 'var(--grad)') + '">'
-      + (b.imgData ? '<img src="' + b.imgData + '" alt="' + b.title + '">' : '')
-      + '<div class="promo-overlay"></div>'
-      + '<div class="promo-content">'
-      + '<h2>' + b.title + '</h2>'
-      + '<p>' + b.desc + '</p>'
-      + (b.btnText ? '<a href="' + (b.url||'#') + '" class="btn btn-primary btn-sm">' + b.btnText + '</a>' : '')
+  slides.innerHTML = active.map(function(b) {
+    var rawColor = String(b.color || '');
+    var safeColor = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\))$/i.test(rawColor) ? rawColor : 'var(--grad)';
+    var rawUrl = String(b.url || '#').trim();
+    var safeUrl = /^(https?:\/\/|\/|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '#';
+    var rawImage = String(b.imgData || '');
+    var safeImage = /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(rawImage) ? rawImage : '';
+    return '<div class="promo-slide" style="background:' + safeColor + '">'
+      + (safeImage ? '<img src="' + esc(safeImage) + '" alt="' + esc(String(b.title || '')) + '">' : '')
+      + '<div class="promo-overlay"></div><div class="promo-content">'
+      + '<h2>' + esc(String(b.title || '')) + '</h2><p>' + esc(String(b.desc || '')) + '</p>'
+      + (b.btnText ? '<a href="' + esc(safeUrl) + '" class="btn btn-primary btn-sm" rel="noopener noreferrer">' + esc(String(b.btnText)) + '</a>' : '')
       + '</div></div>';
   }).join('');
   dots.innerHTML = active.map(function(_, i) {
-    return '<span class="promo-dot' + (i===0?' active':'') + '" onclick="gotoSlide(' + i + ')"></span>';
+    return '<span class="promo-dot' + (i===0?' active':'') + '" data-promo-slide="' + i + '" role="button" tabindex="0" aria-label="Go to slide ' + (i+1) + '"></span>';
   }).join('');
+  dots.onclick = function(event) {
+    var dot = event.target && event.target.closest ? event.target.closest('[data-promo-slide]') : null;
+    if (dot && dots.contains(dot)) gotoSlide(Number(dot.getAttribute('data-promo-slide')) || 0);
+  };
+  dots.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var dot = event.target && event.target.closest ? event.target.closest('[data-promo-slide]') : null;
+    if (dot && dots.contains(dot)) { event.preventDefault(); gotoSlide(Number(dot.getAttribute('data-promo-slide')) || 0); }
+  };
   if (carouselInterval) clearInterval(carouselInterval);
   if (active.length > 1) carouselInterval = setInterval(function() { nextSlide(); }, 5000);
 }
+
 function nextSlide() {
   var slides = document.getElementById('promoSlides');
   if (!slides) return;
