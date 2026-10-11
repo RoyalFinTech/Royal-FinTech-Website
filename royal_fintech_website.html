@@ -1300,11 +1300,13 @@ function renderPublicProducts() {
     // Logo wrap
     var lw = document.createElement('div');
     lw.style.cssText = 'width:100%;height:160px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);padding:20px;box-sizing:border-box;position:relative;overflow:hidden';
-    if (p.logo && p.logo.length > 20) {
+    var productLogo = String(p.logo || '');
+    if (/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(productLogo)) {
       var img = document.createElement('img');
-      img.src = p.logo;
-      img.alt = p.name;
+      img.src = productLogo;
+      img.alt = String(p.name || 'Product logo');
       img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
       img.style.cssText = 'max-height:120px;max-width:100%;object-fit:contain;border-radius:8px;display:block';
       img.onerror = function(){ this.style.display='none'; };
       lw.appendChild(img);
