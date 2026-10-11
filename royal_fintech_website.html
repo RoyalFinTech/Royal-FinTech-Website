@@ -1340,11 +1340,11 @@ function renderPublicProducts() {
     lb.addEventListener('mouseout',  function(){ this.style.background='transparent'; this.style.color='#3b82f6'; });
     lb.addEventListener('click', (function(id){ return function(e){ e.stopPropagation(); openProductModal(id); }; })(p.id));
     ac.appendChild(lb);
-    if (p.link) {
+    if (p.link && /^https?:\/\//i.test(String(p.link).trim())) {
       var vb = document.createElement('button');
       vb.style.cssText = 'padding:7px 14px;border-radius:10px;background:#3b82f6;color:#fff;border:none;font-size:0.76rem;font-weight:600;cursor:pointer';
       vb.textContent = 'Visit \u2192';
-      vb.addEventListener('click', (function(u){ return function(e){ e.stopPropagation(); window.open(u,'_blank'); }; })(p.link));
+      vb.addEventListener('click', (function(u){ return function(e){ e.stopPropagation(); var opened = window.open(u,'_blank','noopener,noreferrer'); if (opened) opened.opener = null; }; })(String(p.link).trim()));
       ac.appendChild(vb);
     }
     body.appendChild(te); body.appendChild(ne); body.appendChild(de); body.appendChild(ac);
@@ -1577,9 +1577,9 @@ function showProductDetail(id) {
   hero.style.cssText = 'background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(124,58,237,0.1));border:1px solid var(--gborder);border-radius:20px;padding:30px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:28px';
   var logoWrap = document.createElement('div');
   logoWrap.style.cssText = 'width:140px;height:140px;background:var(--bg2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:12px;box-sizing:border-box';
-  if (p.logo) {
-    var li = document.createElement('img');
-    li.src=p.logo; li.style.cssText='max-width:100%;max-height:100%;object-fit:contain'; logoWrap.appendChild(li);
+  if (p.logo && /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(String(p.logo))) {
+     var li = document.createElement('img');
+     li.src=String(p.logo); li.style.cssText='max-width:100%;max-height:100%;object-fit:contain'; logoWrap.appendChild(li);
   }
   var heroText = document.createElement('div');
   heroText.style.flex='1';
@@ -1659,8 +1659,9 @@ function showProductDetail(id) {
     var sh2 = document.createElement('h2'); sh2.style.cssText='font-size:1.1rem;font-weight:700;margin:0 0 14px'; sh2.textContent='?? Screenshots';
     var sg = document.createElement('div'); sg.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px';
     p.screenshots.forEach(function(src){
-      var si=document.createElement('img');
-      si.src=src; si.style.cssText='width:100%;border-radius:10px;object-fit:cover'; si.loading='lazy';
+       if (!/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(String(src))) return;
+       var si=document.createElement('img');
+       si.src=String(src); si.style.cssText='width:100%;border-radius:10px;object-fit:cover'; si.loading='lazy';
       sg.appendChild(si);
     });
     screenSection.appendChild(sh2); screenSection.appendChild(sg);
