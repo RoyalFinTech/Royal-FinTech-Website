@@ -8036,7 +8036,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var parsed = new URL(raw);
       var localHost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname === '[::1]';
       if (parsed.username || parsed.password || (parsed.protocol !== 'https:' && !(localHost && parsed.protocol === 'http:'))) return '';
-      return raw.replace(/\\/+$/, '');
+      return raw.replace(/\/+$/, '');
     } catch (e) { return ''; }
   }
   function namesForTypes(ids) {
