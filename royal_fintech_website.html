@@ -6526,25 +6526,33 @@ function showPriceTab(tab, btn) {
 }
 
 function renderPricingTab(tab) {
-  var items = PRICING_DATA[tab] || [];
+  var items = Array.isArray(PRICING_DATA[tab]) ? PRICING_DATA[tab] : [];
   var html = '<div class="pricing-grid">';
   items.forEach(function(item) {
-    html += '<div class="price-card' + (item.featured?' featured':'') + '">';
+    if (!item || typeof item !== 'object') return;
+    html += '<div class="price-card' + (item.featured ? ' featured' : '') + '">';
     if (item.featured) html += '<div class="feat-badge">POPULAR</div>';
-    html += '<div class="price-ico">' + item.ico + '</div>';
-    html += '<div class="price-name">' + item.name + '</div>';
-    html += '<div class="price-amt">' + convertPrice(item.price) + ' <span>base price</span></div>';
-    if (item.features) {
+    html += '<div class="price-ico">' + esc(String(item.ico || '')) + '</div>';
+    html += '<div class="price-name">' + esc(String(item.name || 'Service')) + '</div>';
+    html += '<div class="price-amt">' + esc(convertPrice(item.price)) + ' <span>base price</span></div>';
+    if (Array.isArray(item.features) && item.features.length) {
       html += '<ul class="price-features">';
-      item.features.forEach(function(f) { html += '<li>' + f + '</li>'; });
+      item.features.forEach(function(feature) {
+        html += '<li>' + esc(String(feature == null ? '' : feature)) + '</li>';
+      });
       html += '</ul>';
     }
-    html += '<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="showPage(\'requestPage\')" type="button">Get Quote</button>';
+    html += '<button class="btn btn-primary" style="width:100%;margin-top:12px" data-request-quote type="button">Get Quote</button>';
     html += '</div>';
   });
   html += '</div>';
   var el = document.getElementById('pricingContent');
-  if (el) el.innerHTML = html;
+  if (!el) return;
+  el.innerHTML = html;
+  el.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-request-quote]') : null;
+    if (button && el.contains(button)) showPage('requestPage');
+  };
 }
 
 // ============================================================
@@ -7916,48 +7924,67 @@ function renderCRMListView() {
 }
 
 function filterCRMList() {
-  var q = ((document.getElementById('crmListSearch')||{}).value||'').toLowerCase();
-  var statusQ = (document.getElementById('crmListFilter')||{}).value||'';
-  var apps = (DB.get('applications')||[]).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+  var q = String(((document.getElementById('crmListSearch') || {}).value) || '').toLowerCase();
+  var statusQ = String(((document.getElementById('crmListFilter') || {}).value) || '');
+  var raw;
+  try { raw = DB.get('applications'); } catch (e) { raw = []; }
+  var apps = (Array.isArray(raw) ? raw : []).filter(function(app) { return app && typeof app === 'object'; });
+  apps.sort(function(a,b) {
+    var da = new Date(a.date).getTime(), db = new Date(b.date).getTime();
+    return (isFinite(db) ? db : 0) - (isFinite(da) ? da : 0);
+  });
   var filtered = apps.filter(function(app) {
-    var matchQ = !q || (app.name||'').toLowerCase().indexOf(q)>-1 || (app.email||'').toLowerCase().indexOf(q)>-1 || (app.projectName||'').toLowerCase().indexOf(q)>-1;
-    var matchS = !statusQ || app.status === statusQ;
-    return matchQ && matchS;
+    var matchQ = !q || [app.name, app.email, app.projectName].some(function(v) {
+      return String(v == null ? '' : v).toLowerCase().indexOf(q) > -1;
+    });
+    return matchQ && (!statusQ || app.status === statusQ);
   });
   var grid = document.getElementById('crmCardGrid');
   if (!grid) return;
-  if (!filtered.length) { grid.innerHTML = '<div style="padding:24px;color:var(--muted);grid-column:1/-1">No results found.</div>'; return; }
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="padding:24px;color:var(--muted);grid-column:1/-1">No results found.</div>';
+    return;
+  }
   grid.innerHTML = '';
   filtered.forEach(function(app) {
-    var rec = getCRMRecord(app.id);
-    var pct = completionPct(app.status);
-    var typeNames = getTypeNames(app.types);
+    var rec = getCRMRecord(app.id) || {};
+    var pct = Math.max(0, Math.min(100, Number(completionPct(app.status)) || 0));
+    var typeNames = getTypeNames(Array.isArray(app.types) ? app.types : []);
     var star = rec.starred ? '<span style="color:#f59e0b;margin-left:4px">★</span>' : '';
     var card = document.createElement('div');
     card.className = 'crm-profile-card';
     card.style.cursor = 'pointer';
-    card.setAttribute('role', 'button'); card.tabIndex = 0;
-    card.onclick = function(){ openCRMProfile(Number(app.id) || 0); };
-    card.onkeydown = function(event){ if(event.key==='Enter'||event.key===' '){event.preventDefault();openCRMProfile(Number(app.id)||0);} };
+    card.setAttribute('role', 'button');
+    card.tabIndex = 0;
+    card.setAttribute('data-crm-open-id', String(Number(app.id) || 0));
     card.innerHTML =
       '<div class="crm-profile-header">' +
         '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
-          '<div class="crm-avatar">' + esc(initials(app.name)) + '</div>' +
-          '<div class="crm-profile-meta"><h4>' + esc(app.name||'—') + star + '</h4><p>' + esc(app.company||app.email||'') + '</p></div>' +
+          '<div class="crm-avatar">' + esc(initials(String(app.name || ''))) + '</div>' +
+          '<div class="crm-profile-meta"><h4>' + esc(String(app.name || '—')) + star + '</h4><p>' + esc(String(app.company || app.email || '')) + '</p></div>' +
         '</div>' +
         '<div>' + statusBadgeHtml(app.status) + '</div>' +
       '</div>' +
       '<div style="padding:0 16px 14px">' +
-        '<div style="font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px">' + esc(app.projectName||(typeNames[0]||'Custom')) + '</div>' +
+        '<div style="font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px">' + esc(String(app.projectName || typeNames[0] || 'Custom')) + '</div>' +
         '<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:8px">' +
-          '<span>' + esc(app.country||'') + '</span>' +
-          '<span style="font-weight:700;color:var(--blue)">' + convertPrice(app.estimatedTotal||0) + '</span>' +
+          '<span>' + esc(String(app.country || '')) + '</span>' +
+          '<span style="font-weight:700;color:var(--blue)">' + esc(String(convertPrice(app.estimatedTotal || 0))) + '</span>' +
         '</div>' +
-        '<div class="crm-progress-wrap"><div class="crm-progress-bar" style="width:'+pct+'%"></div></div>' +
-        '<div style="font-size:0.68rem;color:var(--gray);margin-top:3px">'+pct+'% · ' + formatDateShort(app.date) + '</div>' +
+        '<div class="crm-progress-wrap"><div class="crm-progress-bar" style="width:' + pct + '%"></div></div>' +
+        '<div style="font-size:0.68rem;color:var(--gray);margin-top:3px">' + pct + '% · ' + esc(String(formatDateShort(app.date) || '')) + '</div>' +
       '</div>';
     grid.appendChild(card);
   });
+  grid.onclick = function(event) {
+    var card = event.target && event.target.closest ? event.target.closest('[data-crm-open-id]') : null;
+    if (card && grid.contains(card)) openCRMProfile(Number(card.getAttribute('data-crm-open-id')) || 0);
+  };
+  grid.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var card = event.target && event.target.closest ? event.target.closest('[data-crm-open-id]') : null;
+    if (card && grid.contains(card)) { event.preventDefault(); openCRMProfile(Number(card.getAttribute('data-crm-open-id')) || 0); }
+  };
 }
 
 // ── ALSO KEEP updateAppStatus WORKING ────────────────────────
