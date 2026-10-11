@@ -1630,7 +1630,7 @@ function showProductDetail(id) {
     extra.benefits.forEach(function(b){
       var bc=document.createElement('div');
       bc.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;font-size:0.82rem';
-      bc.innerHTML='<span style="color:#10b981;font-size:1.1rem;flex-shrink:0">✔️</span><span style="color:var(--gray)">'+esc(String(b))+'</span>';
+      var bcMark=document.createElement('span'); bcMark.textContent='✔️'; bcMark.style.cssText='color:#10b981;font-size:1.1rem;flex-shrink:0'; var bcText=document.createElement('span'); bcText.style.color='var(--gray)'; bcText.textContent=String(b == null ? '' : b); bc.appendChild(bcMark); bc.appendChild(bcText);
       bg2.appendChild(bc);
     });
     benefitSection.appendChild(bh); benefitSection.appendChild(bg2);
@@ -1676,7 +1676,7 @@ function showProductDetail(id) {
       var faqItem=document.createElement('div');
       faqItem.style.cssText='border-bottom:1px solid var(--gborder);padding:14px 0;cursor:pointer';
       var q=document.createElement('div'); q.style.cssText='font-weight:700;font-size:0.88rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center';
-      q.innerHTML=esc(String(item.q || ''))+' <span style="color:var(--blue);font-size:1rem">▼</span>';
+      var qText=document.createElement('span'); qText.textContent=String(item.q == null ? '' : item.q); var qArrow=document.createElement('span'); qArrow.textContent='▼'; qArrow.style.cssText='color:var(--blue);font-size:1rem'; q.appendChild(qText); q.appendChild(qArrow);
       var a=document.createElement('div'); a.style.cssText='color:var(--gray);font-size:0.82rem;line-height:1.7'; a.textContent=item.a;
       faqItem.appendChild(q); faqItem.appendChild(a); faqSection.appendChild(faqItem);
     });
