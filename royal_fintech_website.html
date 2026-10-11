@@ -8029,6 +8029,16 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="rft-request-flow-qa">
 (function () {
   function val(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+  function secureApiBase(config) {
+    var raw = config && typeof config.apiBaseUrl === 'string' ? config.apiBaseUrl.trim() : '';
+    if (!raw) return '';
+    try {
+      var parsed = new URL(raw);
+      var localHost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname === '[::1]';
+      if (parsed.username || parsed.password || (parsed.protocol !== 'https:' && !(localHost && parsed.protocol === 'http:'))) return '';
+      return raw.replace(/\\/+$/, '');
+    } catch (e) { return ''; }
+  }
   function namesForTypes(ids) {
     var out=[];
     [APP_TYPES_BUSINESS,APP_TYPES_PERSONAL,APP_TYPES_PLATFORM].forEach(function(group){
@@ -8060,7 +8070,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   window.loadServerApplications = async function () {
     var config=window.RFT_CONFIG||{};
-    var base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\/$/,''):'';
+    var base=secureApiBase(config);
     if(!base) return false;
     var token='';
     try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
@@ -8107,7 +8117,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var email=emailEl?emailEl.value.trim():'',password=passEl?passEl.value:'';
       if(!email||!validEmail(email)){showFgErr('adminEmail','emailErr','Enter a valid email address.');return;}
       if(!password){showFgErr('adminPass','passErr','Password is required.');return;}
-      var config=window.RFT_CONFIG||{},base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\/$/,''):'';
+      var config=window.RFT_CONFIG||{},base=secureApiBase(config);
       if(!base){showLoginErr('Admin sign-in is not configured. Add the secure API base URL and admin login endpoint before enabling admin access.');return;}
       if(button){button.disabled=true;button.textContent='Verifying securely…';}
       var response=await fetch(base+(config.adminAuthPath||'/api/admin/login'),{
@@ -8167,7 +8177,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     app.aiSummary=generateAISummary(app);
     app.aiSummarySource='rule-based';
-    var config=window.RFT_CONFIG||{},base=typeof config.apiBaseUrl==='string'?config.apiBaseUrl.replace(/\/$/,''):'';
+    var config=window.RFT_CONFIG||{},base=secureApiBase(config);
     var delivery='local-only';
     if(base&&config.aiEnabled){
       try{
