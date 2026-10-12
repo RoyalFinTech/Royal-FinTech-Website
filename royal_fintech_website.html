@@ -7808,34 +7808,36 @@ function buildStatusTab(app, appId) {
 }
 
 function updateClientStatus(appId, newStatus) {
-  var apps = DB.get('applications') || [];
-  var oldStatus = '';
+  var id = Number(appId);
+  if (!Number.isFinite(id) || id <= 0) return;
+  var allowedStatuses = Array.isArray(CRM_STATUSES) ? CRM_STATUSES.map(function(s) { return String(s.id); }) : [];
+  newStatus = String(newStatus || '');
+  if (allowedStatuses.indexOf(newStatus) < 0) { showToast('Invalid client status.', 'error'); return; }
+  var raw = DB.get('applications');
+  var apps = Array.isArray(raw) ? raw : [];
+  var oldStatus = '', found = false;
   apps = apps.map(function(a) {
-    if (a.id === appId) { oldStatus = a.status; a.status = newStatus; }
+    if (a && Number(a.id) === id) { oldStatus = String(a.status || 'pending'); a.status = newStatus; found = true; }
     return a;
   });
+  if (!found) { showToast('Client record could not be found.', 'error'); return; }
   DB.set('applications', apps);
-
   var note = '';
-  var noteEl = document.getElementById('statusNote_' + appId);
-  if (noteEl && noteEl.value.trim()) { note = noteEl.value.trim(); noteEl.value = ''; }
-
+  var noteEl = document.getElementById('statusNote_' + id);
+  if (noteEl && typeof noteEl.value === 'string' && noteEl.value.trim()) { note = noteEl.value.trim().slice(0,2000); noteEl.value = ''; }
   var oldLabel = getCRMStatusObj(oldStatus).label;
   var newLabel = getCRMStatusObj(newStatus).label;
-  addCRMTimeline(appId, '🔄 Status changed', oldLabel + ' → ' + newLabel + (note ? ': ' + note : ''));
+  addCRMTimeline(id, '🔄 Status changed', oldLabel + ' → ' + newLabel + (note ? ': ' + note : ''));
   if (note) {
-    var rec = getCRMRecord(appId);
-    rec.notes = rec.notes || [];
+    var rec = getCRMRecord(id);
+    rec.notes = Array.isArray(rec.notes) ? rec.notes : [];
     rec.notes.unshift({ id:Date.now(), text:'[Status Update] ' + oldLabel + ' → ' + newLabel + ': ' + note, date:new Date().toISOString() });
-    saveCRMRecord(appId, rec);
+    saveCRMRecord(id, rec);
   }
-
   showToast('Status updated to ' + newLabel, 'success');
-  try { addAuditLog('🔄','action','Status: '+oldLabel+' → '+newLabel+' for application #'+appId); } catch(e) {}
+  try { addAuditLog('🔄','action','Status: '+oldLabel+' → '+newLabel+' for application #'+id); } catch(e) {}
   try { updateOverviewWidgets(); } catch(e) {}
-
-  // Re-render profile with updated data
-  renderCRMFullProfile(appId);
+  renderCRMFullProfile(id);
 }
 
 // ── HELPER: field HTML ────────────────────────────────────────
