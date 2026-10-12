@@ -1300,11 +1300,13 @@ function renderPublicProducts() {
     // Logo wrap
     var lw = document.createElement('div');
     lw.style.cssText = 'width:100%;height:160px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);padding:20px;box-sizing:border-box;position:relative;overflow:hidden';
-    if (p.logo && p.logo.length > 20) {
+    var productLogo = String(p.logo || '');
+    if (/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(productLogo)) {
       var img = document.createElement('img');
-      img.src = p.logo;
-      img.alt = p.name;
+      img.src = productLogo;
+      img.alt = String(p.name || 'Product logo');
       img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
       img.style.cssText = 'max-height:120px;max-width:100%;object-fit:contain;border-radius:8px;display:block';
       img.onerror = function(){ this.style.display='none'; };
       lw.appendChild(img);
@@ -1338,11 +1340,11 @@ function renderPublicProducts() {
     lb.addEventListener('mouseout',  function(){ this.style.background='transparent'; this.style.color='#3b82f6'; });
     lb.addEventListener('click', (function(id){ return function(e){ e.stopPropagation(); openProductModal(id); }; })(p.id));
     ac.appendChild(lb);
-    if (p.link) {
+    if (p.link && /^https?:\/\//i.test(String(p.link).trim())) {
       var vb = document.createElement('button');
       vb.style.cssText = 'padding:7px 14px;border-radius:10px;background:#3b82f6;color:#fff;border:none;font-size:0.76rem;font-weight:600;cursor:pointer';
       vb.textContent = 'Visit \u2192';
-      vb.addEventListener('click', (function(u){ return function(e){ e.stopPropagation(); window.open(u,'_blank'); }; })(p.link));
+      vb.addEventListener('click', (function(u){ return function(e){ e.stopPropagation(); var opened = window.open(u,'_blank','noopener,noreferrer'); if (opened) opened.opener = null; }; })(String(p.link).trim()));
       ac.appendChild(vb);
     }
     body.appendChild(te); body.appendChild(ne); body.appendChild(de); body.appendChild(ac);
@@ -1365,8 +1367,8 @@ function openProductModal(id) {
   if (!box) return;
   box.innerHTML = '';
   var hdr = document.createElement('div'); hdr.style.cssText='text-align:center;padding:10px 0 20px';
-  if (p.logo) {
-    var li=document.createElement('img'); li.src=p.logo; li.style.cssText='max-height:130px;max-width:85%;object-fit:contain;margin-bottom:14px;border-radius:10px'; hdr.appendChild(li);
+  if (p.logo && /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(String(p.logo))) {
+    var li=document.createElement('img'); li.src=String(p.logo); li.alt=String(p.name || 'Product logo'); li.referrerPolicy='no-referrer'; li.style.cssText='max-height:130px;max-width:85%;object-fit:contain;margin-bottom:14px;border-radius:10px'; hdr.appendChild(li);
   }
   var sb=document.createElement('div'); sb.style.cssText='display:inline-block;padding:4px 14px;border-radius:20px;font-size:0.7rem;font-weight:700;background:var(--glass);border:1px solid var(--gborder);margin-bottom:8px';
   sb.textContent=sLbl[p.status]||p.status;
@@ -1381,8 +1383,10 @@ function openProductModal(id) {
     box.appendChild(fh); box.appendChild(fw);
   }
   var ar=document.createElement('div'); ar.style.cssText='display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding-top:14px;border-top:1px solid var(--gborder);margin-top:10px';
-  if (p.link) { var vb=document.createElement('a'); vb.href=p.link; vb.target='_blank'; vb.className='btn btn-primary'; vb.textContent='Visit Website \u2192'; ar.appendChild(vb); }
-  if (p.downloadLink) { var db5=document.createElement('a'); db5.href=p.downloadLink; db5.target='_blank'; db5.className='btn btn-primary'; db5.textContent='Download App'; ar.appendChild(db5); }
+  var productUrl=String(p.link || '').trim();
+  if (/^https?:\/\//i.test(productUrl)) { var vb=document.createElement('a'); vb.href=productUrl; vb.target='_blank'; vb.rel='noopener noreferrer'; vb.className='btn btn-primary'; vb.textContent='Visit Website \u2192'; ar.appendChild(vb); }
+  var downloadUrl=String(p.downloadLink || '').trim();
+  if (/^https?:\/\//i.test(downloadUrl)) { var db5=document.createElement('a'); db5.href=downloadUrl; db5.target='_blank'; db5.rel='noopener noreferrer'; db5.className='btn btn-primary'; db5.textContent='Download App'; ar.appendChild(db5); }
   var cb=document.createElement('button'); cb.className='btn'; cb.style.border='1px solid var(--gborder)'; cb.textContent='Contact Us';
   cb.onclick=function(){ try{gotoSection('contact');}catch(e){} try{closeModal('productModal');}catch(e){} };
   ar.appendChild(cb); box.appendChild(ar);
@@ -1573,9 +1577,9 @@ function showProductDetail(id) {
   hero.style.cssText = 'background:linear-gradient(135deg,rgba(37,99,235,0.15),rgba(124,58,237,0.1));border:1px solid var(--gborder);border-radius:20px;padding:30px;display:flex;align-items:center;gap:30px;flex-wrap:wrap;margin-bottom:28px';
   var logoWrap = document.createElement('div');
   logoWrap.style.cssText = 'width:140px;height:140px;background:var(--bg2);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;padding:12px;box-sizing:border-box';
-  if (p.logo) {
-    var li = document.createElement('img');
-    li.src=p.logo; li.style.cssText='max-width:100%;max-height:100%;object-fit:contain'; logoWrap.appendChild(li);
+  if (p.logo && /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(String(p.logo))) {
+     var li = document.createElement('img');
+     li.src=String(p.logo); li.style.cssText='max-width:100%;max-height:100%;object-fit:contain'; logoWrap.appendChild(li);
   }
   var heroText = document.createElement('div');
   heroText.style.flex='1';
@@ -1611,7 +1615,7 @@ function showProductDetail(id) {
     p.features.forEach(function(ft){
       var fc=document.createElement('div');
       fc.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);border-radius:10px;font-size:0.82rem;font-weight:600';
-      fc.innerHTML='✓ '+ft; fg.appendChild(fc);
+      fc.innerHTML='<span aria-hidden="true">✓</span> <span>' + esc(String(ft)) + '</span>'; fg.appendChild(fc);
     });
     featSection.appendChild(fh); featSection.appendChild(fg);
   }
@@ -1626,7 +1630,7 @@ function showProductDetail(id) {
     extra.benefits.forEach(function(b){
       var bc=document.createElement('div');
       bc.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;font-size:0.82rem';
-      bc.innerHTML='<span style="color:#10b981;font-size:1.1rem;flex-shrink:0">✔️</span><span style="color:var(--gray)">'+b+'</span>';
+      var bcMark=document.createElement('span'); bcMark.textContent='✔️'; bcMark.style.cssText='color:#10b981;font-size:1.1rem;flex-shrink:0'; var bcText=document.createElement('span'); bcText.style.color='var(--gray)'; bcText.textContent=String(b == null ? '' : b); bc.appendChild(bcMark); bc.appendChild(bcText);
       bg2.appendChild(bc);
     });
     benefitSection.appendChild(bh); benefitSection.appendChild(bg2);
@@ -1655,8 +1659,9 @@ function showProductDetail(id) {
     var sh2 = document.createElement('h2'); sh2.style.cssText='font-size:1.1rem;font-weight:700;margin:0 0 14px'; sh2.textContent='?? Screenshots';
     var sg = document.createElement('div'); sg.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px';
     p.screenshots.forEach(function(src){
-      var si=document.createElement('img');
-      si.src=src; si.style.cssText='width:100%;border-radius:10px;object-fit:cover'; si.loading='lazy';
+       if (!/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(String(src))) return;
+       var si=document.createElement('img');
+       si.src=String(src); si.style.cssText='width:100%;border-radius:10px;object-fit:cover'; si.loading='lazy';
       sg.appendChild(si);
     });
     screenSection.appendChild(sh2); screenSection.appendChild(sg);
@@ -1672,7 +1677,7 @@ function showProductDetail(id) {
       var faqItem=document.createElement('div');
       faqItem.style.cssText='border-bottom:1px solid var(--gborder);padding:14px 0;cursor:pointer';
       var q=document.createElement('div'); q.style.cssText='font-weight:700;font-size:0.88rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center';
-      q.innerHTML=item.q+' <span style="color:var(--blue);font-size:1rem">▼</span>';
+      var qText=document.createElement('span'); qText.textContent=String(item.q == null ? '' : item.q); var qArrow=document.createElement('span'); qArrow.textContent='▼'; qArrow.style.cssText='color:var(--blue);font-size:1rem'; q.appendChild(qText); q.appendChild(qArrow);
       var a=document.createElement('div'); a.style.cssText='color:var(--gray);font-size:0.82rem;line-height:1.7'; a.textContent=item.a;
       faqItem.appendChild(q); faqItem.appendChild(a); faqSection.appendChild(faqItem);
     });
@@ -1913,6 +1918,23 @@ function validateContactPhone() {
 // AI SUMMARY ENGINE - auto-generate request summary for admin
 // ============================================================
 function generateAISummary(app) {
+  if (app && app.aiSummary && typeof app.aiSummary === 'object' && app.aiSummary.purpose) {
+    var remote = app.aiSummary;
+    var list = function(value, fallback) {
+      return Array.isArray(value) ? value.map(function(item){return String(item);}) : fallback;
+    };
+    return {
+      purpose:String(remote.purpose),
+      typeNames:list(remote.typeNames, getTypeNames(app.types)),
+      complexity:['Low','Medium','High'].indexOf(remote.complexity)>-1 ? remote.complexity : 'Medium',
+      approach:String(remote.approach || 'Confirm the scope with the client before implementation planning.'),
+      techStack:list(remote.techStack, []),
+      suggestedFeatures:list(remote.suggestedFeatures, getFeatNames(app.features)),
+      phases:list(remote.phases, []),
+      challenges:list(remote.challenges, []),
+      recommendations:list(remote.recommendations, [])
+    };
+  }
   var typeNames = [];
   try {
     [APP_TYPES_BUSINESS, APP_TYPES_PERSONAL, APP_TYPES_PLATFORM].forEach(function(g) {
@@ -1979,16 +2001,16 @@ function renderAISummaryPanel(app) {
   var summary = generateAISummary(app);
   var complexityClass = {Low:'complexity-low',Medium:'complexity-medium',High:'complexity-high'}[summary.complexity];
   var html = '<div class="ai-summary-box">';
-  html += '<h4>\ud83e\udd16 AI Request Summary</h4>';
+  html += '<h4>\ud83e\udd16 ' + (app.aiSummarySource === 'server-ai' ? 'AI Project Summary' : 'Automated Project Triage Summary') + '</h4>';
   html += '<div class="ai-sum-row"><b>What the client wants</b>' + esc(summary.purpose) + '</div>';
-  html += '<div class="ai-sum-row"><b>Project Type</b>' + (summary.typeNames.join(', ') || 'Custom') + '</div>';
-  html += '<div class="ai-sum-row"><b>Complexity</b><span class="complexity-badge ' + complexityClass + '">' + summary.complexity + '</span></div>';
-  html += '<div class="ai-sum-row"><b>Suggested Approach</b>' + summary.approach + '</div>';
-  html += '<div class="ai-sum-row"><b>Recommended Tech Stack</b>' + summary.techStack.join(' \u2022 ') + '</div>';
-  html += '<div class="ai-sum-row"><b>Suggested Features</b>' + summary.suggestedFeatures.join(', ') + '</div>';
-  html += '<div class="ai-sum-row"><b>Estimated Development Phases</b><ol style="margin:6px 0 0 18px;padding:0">' + summary.phases.map(function(p){return '<li style="margin-bottom:3px">'+p+'</li>';}).join('') + '</ol></div>';
-  html += '<div class="ai-sum-row"><b>Possible Challenges</b><ul style="margin:6px 0 0 18px;padding:0">' + summary.challenges.map(function(c){return '<li style="margin-bottom:3px">'+c+'</li>';}).join('') + '</ul></div>';
-  html += '<div class="ai-sum-row"><b>Recommendations</b><ul style="margin:6px 0 0 18px;padding:0">' + summary.recommendations.map(function(r){return '<li style="margin-bottom:3px">'+r+'</li>';}).join('') + '</ul></div>';
+  html += '<div class="ai-sum-row"><b>Project Type</b>' + esc(summary.typeNames.join(', ') || 'Custom') + '</div>';
+  html += '<div class="ai-sum-row"><b>Complexity</b><span class="complexity-badge ' + complexityClass + '">' + esc(summary.complexity) + '</span></div>';
+  html += '<div class="ai-sum-row"><b>Suggested Approach</b>' + esc(summary.approach) + '</div>';
+  html += '<div class="ai-sum-row"><b>Recommended Tech Stack</b>' + esc(summary.techStack.join(' \u2022 ')) + '</div>';
+  html += '<div class="ai-sum-row"><b>Suggested Features</b>' + esc(summary.suggestedFeatures.join(', ')) + '</div>';
+  html += '<div class="ai-sum-row"><b>Estimated Development Phases</b><ol style="margin:6px 0 0 18px;padding:0">' + summary.phases.map(function(p){return '<li style="margin-bottom:3px">'+esc(p)+'</li>';}).join('') + '</ol></div>';
+  html += '<div class="ai-sum-row"><b>Possible Challenges</b><ul style="margin:6px 0 0 18px;padding:0">' + summary.challenges.map(function(c){return '<li style="margin-bottom:3px">'+esc(c)+'</li>';}).join('') + '</ul></div>';
+  html += '<div class="ai-sum-row"><b>Recommendations</b><ul style="margin:6px 0 0 18px;padding:0">' + summary.recommendations.map(function(r){return '<li style="margin-bottom:3px">'+esc(r)+'</li>';}).join('') + '</ul></div>';
   html += '</div>';
   return html;
 }
@@ -1997,79 +2019,59 @@ function renderAISummaryPanel(app) {
 // ENHANCED VIEW APPLICATION MODAL (fixes field mismatches)
 // ============================================================
 window.viewApp = function(id) {
-  var apps = DB.get('applications');
-  var app = apps.find(function(a) { return a.id === id; });
+  var apps;
+  try { apps = DB.get('applications'); if (!Array.isArray(apps)) return; } catch (e) { return; }
+  var app = apps.find(function(a) { return a && a.id != null && String(a.id) === String(id); });
   if (!app) return;
-  currentAppId = id;
-  var content = document.getElementById('appDetailContent');
-  if (!content) return;
-
-  // Resolve type names
-  var typeNames = [];
-  try {
-    [APP_TYPES_BUSINESS, APP_TYPES_PERSONAL, APP_TYPES_PLATFORM].forEach(function(g) {
-      (g||[]).forEach(function(t) { if ((app.types||[]).indexOf(t.id) > -1) typeNames.push(t.ico + ' ' + t.name); });
-    });
-  } catch(e) {}
-  var featNames = [];
-  try {
-    (FEATURES_LIST||[]).forEach(function(f) { if ((app.features||[]).indexOf(f.id) > -1) featNames.push(f.ico + ' ' + f.name); });
-  } catch(e) {}
-  var platformNames = (app.platforms || []).join(', ') || '\u2014';
-
-  var html = '';
-  // AI Summary first
+  currentAppId = app.id;
+  var content = document.getElementById('appDetailContent'), modal = document.getElementById('appDetailModal');
+  if (!content || !modal) return;
+  var typeNames = [], featNames = [];
+  try { [APP_TYPES_BUSINESS,APP_TYPES_PERSONAL,APP_TYPES_PLATFORM].forEach(function(g) {
+    (g||[]).forEach(function(t) { if ((Array.isArray(app.types)?app.types:[]).indexOf(t.id)>-1) typeNames.push(t.ico+' '+t.name); });
+  }); } catch(e) {}
+  try { (FEATURES_LIST||[]).forEach(function(f) { if ((Array.isArray(app.features)?app.features:[]).indexOf(f.id)>-1) featNames.push(f.ico+' '+f.name); }); } catch(e) {}
+  var platformNames = (Array.isArray(app.platforms)?app.platforms:[]).map(function(v){return String(v);}).join(', ') || '—';
+  var allowed = ['pending','reviewing','approved','rejected','in_development','testing','paid','completed','closed','awaiting_payment'];
+  var safeStatus = allowed.indexOf(app.status)>-1 ? app.status : 'pending';
+  var date = app.date ? new Date(app.date) : null, dateText = date && isFinite(date.getTime()) ? date.toLocaleString() : '—';
+  var html = app.deliveryStatus === 'server-confirmed'
+    ? '<div class="app-field-section" style="border-color:rgba(16,185,129,.35)"><h5>✅ Delivery Status</h5><div>Confirmed by configured applications API' + (app.serverId ? ' · Server ID ' + esc(String(app.serverId)) : '') + '</div></div>'
+    : '<div class="app-field-section" style="border-color:rgba(251,191,36,.35)"><h5>⚠️ Browser-only Draft</h5><div>This request has not been synced across devices to the admin team. Configure an applications API before production.</div></div>';
   html += renderAISummaryPanel(app);
-
-  // Customer info
-  html += '<div class="app-field-section"><h5>\ud83d\udc64 Customer Information</h5><div class="app-field-grid">';
-  html += '<div class="app-field"><label>Full Name</label><span>' + esc(app.name||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Company</label><span>' + esc(app.company||'\u2014') + '</span></div>';
-  html += '<div class="app-field"><label>Email</label><span>' + esc(app.email||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Phone</label><span>' + esc(app.phone||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Country</label><span>' + esc(app.country||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Currency</label><span>' + esc(app.currency||'GMD') + '</span></div>';
-  html += '</div></div>';
-
-  // Project details
-  html += '<div class="app-field-section"><h5>\ud83d\udcbc Project Details</h5><div class="app-field-grid">';
-  html += '<div class="app-field"><label>Project Name</label><span>' + esc(app.projectName||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Quotation #</label><span>' + esc(app.quotNum||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Reference #</label><span>' + esc(app.refNum||'-') + '</span></div>';
-  html += '<div class="app-field"><label>Submitted</label><span>' + new Date(app.date).toLocaleString() + '</span></div>';
-  html += '</div>';
-  html += '<div class="app-field" style="margin-top:10px"><label>Description</label><span style="white-space:pre-wrap">' + esc(app.desc||'\u2014') + '</span></div>';
-  html += '</div>';
-
-  // Selections
-  html += '<div class="app-field-section"><h5>\ud83d\udce6 Selected Services</h5>';
-  html += '<div class="app-field" style="margin-bottom:10px"><label>Project Type(s)</label><div class="app-pill-list">' + (typeNames.length ? typeNames.map(function(t){return '<span>'+t+'</span>';}).join('') : '<span>\u2014</span>') + '</div></div>';
-  html += '<div class="app-field" style="margin-bottom:10px"><label>Platforms</label><span>' + esc(platformNames) + '</span></div>';
-  html += '<div class="app-field"><label>Requested Features (' + (app.features||[]).length + ')</label><div class="app-pill-list">' + (featNames.length ? featNames.map(function(f){return '<span>'+f+'</span>';}).join('') : '<span>\u2014</span>') + '</div></div>';
-  html += '</div>';
-
-  // Budget & timeline
-  html += '<div class="app-field-section"><h5>\ud83d\udcb0 Budget &amp; Timeline</h5><div class="app-field-grid">';
-  html += '<div class="app-field"><label>Estimated Total</label><span style="color:var(--blue);font-weight:700">' + convertPrice(app.estimatedTotal||0) + '</span></div>';
-  html += '<div class="app-field"><label>Status</label><span><span class="app-status app-' + (app.status||'pending') + '">' + (app.status||'pending') + '</span></span></div>';
-  html += '</div></div>';
-
-  // Internal notes (editable)
-  html += '<div class="app-field-section"><h5>\ud83d\udcdd Internal Notes</h5>';
-  html += '<textarea class="notes-textarea" id="appNotesField" placeholder="Add internal notes about this request...">' + esc(app.notes||'') + '</textarea>';
-  html += '<button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="saveAppNotes(' + app.id + ')" type="button">\ud83d\udcbe Save Notes</button>';
-  html += '</div>';
-
+  html += '<div class="app-field-section"><h5>👤 Customer Information</h5><div class="app-field-grid">';
+  [['Full Name',app.name||'-'],['Company',app.company||'—'],['Email',app.email||'-'],['Phone',app.phone||'-'],['Country',app.country||'-'],['Currency',app.currency||'GMD']].forEach(function(f) {
+    html += '<div class="app-field"><label>'+esc(f[0])+'</label><span>'+esc(String(f[1]))+'</span></div>';
+  });
+  html += '</div></div><div class="app-field-section"><h5>💼 Project Details</h5><div class="app-field-grid">';
+  [['Project Name',app.projectName||'-'],['Quotation #',app.quotNum||'-'],['Reference #',app.refNum||'-'],['Submitted',dateText]].forEach(function(f) {
+    html += '<div class="app-field"><label>'+esc(f[0])+'</label><span>'+esc(String(f[1]))+'</span></div>';
+  });
+  html += '</div><div class="app-field" style="margin-top:10px"><label>Description</label><span style="white-space:pre-wrap">'+esc(String(app.desc||'—'))+'</span></div></div>';
+  html += '<div class="app-field-section"><h5>📦 Selected Services</h5><div class="app-field" style="margin-bottom:10px"><label>Project Type(s)</label><div class="app-pill-list">'+(typeNames.length?typeNames.map(function(t){return '<span>'+esc(t)+'</span>';}).join(''):'<span>—</span>')+'</div></div>';
+  html += '<div class="app-field" style="margin-bottom:10px"><label>Platforms</label><span>'+esc(platformNames)+'</span></div>';
+  html += '<div class="app-field"><label>Requested Features ('+(Array.isArray(app.features)?app.features.length:0)+')</label><div class="app-pill-list">'+(featNames.length?featNames.map(function(v){return '<span>'+esc(v)+'</span>';}).join(''):'<span>—</span>')+'</div></div></div>';
+  html += '<div class="app-field-section"><h5>💰 Budget &amp; Timeline</h5><div class="app-field-grid"><div class="app-field"><label>Estimated Total</label><span style="color:var(--blue);font-weight:700">'+esc(convertPrice(app.estimatedTotal||0))+'</span></div><div class="app-field"><label>Status</label><span><span class="app-status app-'+safeStatus+'">'+safeStatus+'</span></span></div></div></div>';
+  html += '<div class="app-field-section"><h5>📝 Internal Notes</h5><textarea class="notes-textarea" id="appNotesField" placeholder="Add internal notes about this request...">'+esc(String(app.notes||''))+'</textarea><button class="btn btn-outline btn-sm" style="margin-top:8px" data-save-app-notes type="button">💾 Save Notes</button></div>';
   content.innerHTML = html;
-  document.getElementById('appDetailModal').classList.add('open');
-  try { addAuditLog('\ud83d\udc41\ufe0f', 'action', 'Viewed application from ' + app.name); } catch(e) {}
+  content.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('[data-save-app-notes]') : null;
+    if (button && content.contains(button)) { event.preventDefault(); saveAppNotes(app.id); }
+  };
+  modal.classList.add('open');
+  try { addAuditLog('👁️', 'action', 'Viewed application from ' + String(app.name||'Unknown applicant').slice(0,120)); } catch(e) {}
 };
 
 function saveAppNotes(id) {
   var notesField = document.getElementById('appNotesField');
   if (!notesField) return;
-  var apps = DB.get('applications');
-  apps = apps.map(function(a) { if (a.id === id) a.notes = notesField.value; return a; });
+  var apps;
+  try { apps = DB.get('applications'); } catch (e) { apps = []; }
+  if (!Array.isArray(apps)) apps = [];
+  apps = apps.map(function(a) {
+    if (a && typeof a === 'object' && a.id != null && String(a.id) === String(id)) a.notes = notesField.value;
+    return a;
+  });
   DB.set('applications', apps);
   showToast('Notes saved!', 'success');
   try { addAuditLog('\ud83d\udcdd', 'action', 'Notes updated for application #' + id); } catch(e) {}
@@ -2081,35 +2083,40 @@ function saveAppNotes(id) {
 window.renderApplications = function(filterStatus, searchQuery) {
   var panel = document.getElementById('appListBody');
   if (!panel) return;
-  var apps = DB.get('applications') || [];
-  if (filterStatus && filterStatus !== 'all') {
-    apps = apps.filter(function(a) { return a.status === filterStatus; });
-  }
-  if (searchQuery) {
-    var q = searchQuery.toLowerCase();
-    apps = apps.filter(function(a) {
-      return (a.name||'').toLowerCase().indexOf(q) > -1 ||
-             (a.email||'').toLowerCase().indexOf(q) > -1 ||
-             (a.projectName||'').toLowerCase().indexOf(q) > -1;
-    });
-  }
-  apps = apps.slice().sort(function(a,b) { return new Date(b.date) - new Date(a.date); });
+  var apps;
+  try { apps = DB.get('applications'); if (!Array.isArray(apps)) apps = []; }
+  catch (e) { panel.textContent = 'Applications could not be loaded.'; return; }
+  apps = apps.filter(function(a) { return a && typeof a === 'object'; });
+  if (filterStatus && filterStatus !== 'all') apps = apps.filter(function(a) { return a.status === filterStatus; });
+  var q = String(searchQuery || '').trim().toLowerCase();
+  if (q) apps = apps.filter(function(a) {
+    return [a.name, a.email, a.projectName, a.service].some(function(v) { return String(v == null ? '' : v).toLowerCase().indexOf(q) > -1; });
+  });
+  apps.sort(function(a,b) { var da = new Date(a.date).getTime(), db = new Date(b.date).getTime(); return (isFinite(db)?db:0)-(isFinite(da)?da:0); });
   if (!apps.length) {
     panel.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">No applications found</td></tr>';
     return;
   }
+  var allowed = ['pending','reviewing','approved','rejected'];
+  var classes = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'};
   panel.innerHTML = apps.map(function(a) {
-    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[a.status] || 'app-pending';
-    var dateStr = new Date(a.date).toLocaleDateString();
-    return '<tr>'
-      + '<td>' + esc(a.name||'-') + '</td>'
-      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(a.email||'-') + '</td>'
-      + '<td style="font-size:0.8rem">' + esc(a.projectName||'-') + '</td>'
+    var status = allowed.indexOf(a.status) > -1 ? a.status : 'pending';
+    var date = a.date ? new Date(a.date) : null;
+    var dateStr = date && isFinite(date.getTime()) ? date.toLocaleDateString() : '-';
+    var id = Number(a.id);
+    return '<tr><td>' + esc(String(a.name || '-')) + '</td>'
+      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email || '-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + esc(String(a.projectName || a.service || '-')) + '</td>'
       + '<td style="font-size:0.8rem">' + dateStr + '</td>'
-      + '<td><span class="app-status ' + statusClass + '">' + (a.status||'pending') + '</span></td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + a.id + ')" type="button">View</button></td>'
-      + '</tr>';
+      + '<td><span class="app-status ' + classes[status] + '">' + status + '</span></td>'
+      + '<td><button class="btn btn-outline btn-sm" data-view-app-id="' + (Number.isFinite(id) ? id : 0) + '" type="button">View</button></td></tr>';
   }).join('');
+  panel.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('button[data-view-app-id]') : null;
+    if (!button || !panel.contains(button)) return;
+    event.preventDefault();
+    viewApp(button.getAttribute('data-view-app-id'));
+  };
 };
 
 // ============================================================
@@ -2174,6 +2181,80 @@ document.addEventListener('DOMContentLoaded', function() {
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
   <meta name="robots" content="index, follow">
+<style id="rft-premium-qa-upgrade">
+:root{--rf-line:rgba(148,163,184,.18)}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{background:radial-gradient(ellipse at 12% 0%,rgba(37,99,235,.12),transparent 38%),var(--bg,#0A0F1C);text-rendering:optimizeLegibility}
+#mainNav,.req-nav{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:var(--rf-line)!important}
+#mainNav{box-shadow:0 10px 34px rgba(0,0,0,.12)}
+#hero{position:relative;isolation:isolate;overflow:hidden}
+#hero:after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 78% 35%,rgba(37,99,235,.14),transparent 38%),linear-gradient(180deg,transparent 75%,rgba(7,13,25,.25))}
+.hero-badge{border-color:rgba(246,200,106,.24)!important;background:rgba(246,200,106,.06)!important}
+.hero-title{letter-spacing:-.045em;text-wrap:balance}
+.hero-sub{max-width:620px;text-wrap:pretty}
+.btn{min-height:44px;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.btn:focus-visible,.icon-btn:focus-visible,.hamburger:focus-visible,.p-tab:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid rgba(59,130,246,.75);outline-offset:3px}
+.price-card,.req-section-card,.form-box,.ai-summary-box,.app-field-section{border-color:var(--rf-line)!important;box-shadow:0 14px 40px rgba(0,0,0,.10)}
+.price-card{background:linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.018))!important}
+.price-card:hover{transform:translateY(-4px);border-color:rgba(96,165,250,.44)!important;box-shadow:0 22px 48px rgba(0,0,0,.20)}
+.price-amt{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.p-tab{min-height:42px}
+.req-section-card{background:linear-gradient(155deg,rgba(255,255,255,.045),rgba(255,255,255,.018))}
+.req-input{min-height:44px;border-color:var(--rf-line)!important}
+.req-input:focus{border-color:rgba(59,130,246,.72)!important;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.req-type-chip,.req-platform-card,.feat-card{transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.req-type-chip:hover,.req-platform-card:hover,.feat-card:hover{transform:translateY(-2px)}
+#reqStep4 button:disabled{opacity:.6;cursor:wait;transform:none}
+footer{border-top:1px solid var(--rf-line)}
+@media(max-width:640px){.hero-title{letter-spacing:-.035em}.req-nav{padding-inline:14px!important}#reqLocalOnlyNotice{font-size:.8rem!important}#reqStep5 .req-section-card{padding:16px!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Royal FinTech immersive experience layer */
+.rf-live-strip{position:relative;overflow:hidden;border-block:1px solid rgba(96,165,250,.2);background:linear-gradient(110deg,rgba(5,12,30,.98),rgba(8,28,65,.94));padding:28px 0}
+.rf-live-inner{max-width:1180px;margin:auto;padding:0 24px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(280px,.95fr);gap:28px;align-items:center}
+.rf-eyebrow{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#f6c86a;font-weight:800}
+.rf-live-title{font:700 clamp(1.5rem,3vw,2.35rem)/1.12 'Space Grotesk',sans-serif;letter-spacing:-.04em;margin:10px 0}
+.rf-live-copy{color:#bdcbe3;line-height:1.7;max-width:560px}
+.rf-signal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:20px}
+.rf-signal{border:1px solid rgba(96,165,250,.23);border-radius:14px;padding:12px;background:rgba(255,255,255,.035)}
+.rf-signal strong{display:block;color:#f6c86a;font-size:1.2rem;font-variant-numeric:tabular-nums}
+.rf-signal span{display:block;color:#aebfda;font-size:.7rem;margin-top:4px}
+.rf-network-card{position:relative;min-height:260px;overflow:hidden;border:1px solid rgba(96,165,250,.3);border-radius:22px;background:radial-gradient(circle at 50% 45%,rgba(37,99,235,.3),transparent 48%),linear-gradient(140deg,#07142e,#030816);box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.rf-network-card:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(96,165,250,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(96,165,250,.07) 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(to bottom,#000,transparent)}
+.rf-network-card canvas{position:absolute;inset:0;width:100%;height:100%}
+.rf-network-label{position:absolute;left:18px;top:16px;color:#dbeafe;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.rf-network-live{position:absolute;right:16px;top:16px;color:#86efac;font-size:.7rem;display:flex;align-items:center;gap:7px}
+.rf-network-live:before{content:"";width:7px;height:7px;background:#4ade80;border-radius:50%;box-shadow:0 0 14px #4ade80;animation:rfPulse 1.7s infinite}
+.rf-network-foot{position:absolute;left:18px;right:18px;bottom:15px;display:flex;justify-content:space-between;gap:10px;color:#a9bddc;font-size:.68rem}
+.rf-orbit{position:absolute;width:150px;height:150px;border:1px solid rgba(96,165,250,.28);border-radius:50%;left:50%;top:51%;transform:translate(-50%,-50%);box-shadow:0 0 45px rgba(37,99,235,.1),inset 0 0 40px rgba(37,99,235,.08)}
+.rf-orbit:before,.rf-orbit:after{content:"";position:absolute;inset:17px;border:1px dashed rgba(246,200,106,.36);border-radius:50%;animation:rfSpin 18s linear infinite}
+.rf-orbit:after{inset:-18px;transform:rotateX(65deg);border-color:rgba(96,165,250,.25);animation-duration:25s}
+.rf-orbit-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(145deg,#f8d67c,#bd8b2f);color:#07142e;font-weight:900;font-size:1.55rem;box-shadow:0 0 36px rgba(246,200,106,.3)}
+.rf-request-hero{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.85fr);gap:26px;align-items:center;margin:0 0 28px;padding:26px;border:1px solid rgba(96,165,250,.24);border-radius:24px;background:radial-gradient(ellipse at 82% 30%,rgba(37,99,235,.2),transparent 45%),linear-gradient(130deg,rgba(6,15,34,.98),rgba(9,28,61,.92));box-shadow:0 22px 65px rgba(0,0,0,.22)}
+.rf-request-hero h1{font:700 clamp(1.55rem,3.2vw,2.4rem)/1.12 'Space Grotesk',sans-serif;letter-spacing:-.04em;margin:10px 0}
+.rf-request-hero p{color:#bdcbe3;line-height:1.7;margin:0}
+.rf-request-hero .rf-hero-visual{position:relative;min-height:205px;overflow:hidden;border:1px solid rgba(96,165,250,.25);border-radius:18px;background:linear-gradient(135deg,rgba(14,36,76,.9),rgba(3,10,25,.95))}
+.rf-hero-visual:before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(96,165,250,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(96,165,250,.09) 1px,transparent 1px);background-size:22px 22px}
+.rf-hero-visual img{position:absolute;width:54%;height:78%;object-fit:cover;border-radius:12px;border:1px solid rgba(147,197,253,.4);box-shadow:0 16px 35px rgba(0,0,0,.35)}
+.rf-hero-visual img:first-child{left:8%;top:10%;transform:rotate(-7deg)}
+.rf-hero-visual img:nth-child(2){right:8%;bottom:8%;transform:rotate(6deg)}
+.rf-hero-visual .rf-floating-chip{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);padding:9px 12px;border:1px solid rgba(246,200,106,.42);border-radius:12px;background:rgba(5,15,35,.92);color:#f6c86a;font-size:.72rem;font-weight:800;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.rf-request-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+.rf-request-trust div{font-size:.72rem;color:#c6d4e8;border:1px solid rgba(96,165,250,.2);background:rgba(255,255,255,.035);border-radius:12px;padding:11px}
+.rf-request-trust b{display:block;color:#f6c86a;margin-bottom:4px}
+.rf-project-visuals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0}
+.rf-project-visual{position:relative;min-height:150px;overflow:hidden;border:1px solid var(--rf-line);border-radius:16px;background:#07142e}
+.rf-project-visual img{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;opacity:.72;transition:transform .5s ease,opacity .3s ease}
+.rf-project-visual:hover img{transform:scale(1.06);opacity:.9}
+.rf-project-visual:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(2,8,22,.95))}
+.rf-project-visual span{position:absolute;z-index:1;left:13px;right:13px;bottom:12px;color:white;font-weight:700;font-size:.82rem}
+@keyframes rfPulse{50%{opacity:.45;box-shadow:0 0 3px #4ade80}}
+@keyframes rfSpin{to{transform:rotate(360deg)}}
+@media(max-width:760px){.rf-live-inner,.rf-request-hero{grid-template-columns:1fr}.rf-network-card{min-height:220px}.rf-request-hero{padding:18px}.rf-request-hero .rf-hero-visual{min-height:175px}.rf-signal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.rf-project-visuals{grid-template-columns:1fr}.rf-project-visual{min-height:180px}}
+@media(prefers-reduced-motion:reduce){.rf-orbit:before,.rf-orbit:after,.rf-network-live:before{animation:none!important}.rf-hero-visual img,.rf-project-visual img{transition:none!important}}
+
+</style>
 </head>
 <body>
 <!-- LOADER -->
@@ -2278,7 +2359,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </select>
     <select id="currSelect" class="lc-select" onchange="setCurrency(this.value)" title="Currency">
       <option value="GMD">🇬🇲 GMD</option>
-      <option value="USD">🇺🇸 USD</option>
+      <option value="USD" selected>🇺🇸 USD</option>
       <option value="EUR">🇪🇺 EUR</option>
       <option value="GBP">🇬🇧 GBP</option>
       <option value="NGN">🇳🇬 NGN</option>
@@ -2345,7 +2426,7 @@ document.addEventListener('DOMContentLoaded', function() {
       <label for="currSelectMob" class="sr-only">Currency</label>
       <select id="currSelectMob" class="lc-select drawer-select" onchange="setCurrency(this.value)" title="Currency">
         <option value="GMD">🇬🇲 GMD</option>
-        <option value="USD">🇺🇸 USD</option>
+        <option value="USD" selected>🇺🇸 USD</option>
         <option value="EUR">🇪🇺 EUR</option>
         <option value="GBP">🇬🇧 GBP</option>
         <option value="NGN">🇳🇬 NGN</option>
@@ -2427,6 +2508,28 @@ document.addEventListener('DOMContentLoaded', function() {
       <img data-brand-logo="true" alt="Royal FinTech Logo" loading="eager" decoding="async" width="36" height="36" style="aspect-ratio:1/1;background:var(--bg2,#0A0F1C);object-fit:contain;" >
       <div class="oring or1"><span class="rdot b"></span><span class="rdot c"></span></div>
       <div class="oring or2"></div>
+    </div>
+  </div>
+</section>
+
+<section class="rf-live-strip" aria-labelledby="rfLiveTitle">
+  <div class="rf-live-inner">
+    <div>
+      <div class="rf-eyebrow">Connected ideas · Global possibilities</div>
+      <h2 class="rf-live-title" id="rfLiveTitle">Your next big idea deserves a world-class digital foundation.</h2>
+      <p class="rf-live-copy">Explore a live visual simulation of a connected digital ecosystem. From personal productivity and healthcare to commerce, education and finance, we help turn everyday challenges into thoughtful software experiences.</p>
+      <div class="rf-signal-grid" aria-label="Illustrative digital ecosystem indicators">
+        <div class="rf-signal"><strong id="rfLiveNodes">128</strong><span>Simulated network nodes</span></div>
+        <div class="rf-signal"><strong id="rfLiveRoutes">36</strong><span>Illustrative connections</span></div>
+        <div class="rf-signal"><strong id="rfLiveRegions">06</strong><span>Sample regions</span></div>
+      </div>
+      <p style="font-size:.68rem;color:#7f95b8;margin-top:10px">Visual simulation only — these are illustrative values, not live customer or network metrics.</p>
+    </div>
+    <div class="rf-network-card" aria-label="Animated illustration of a global technology network">
+      <div class="rf-network-label">Royal FinTech · Network visualizer</div><div class="rf-network-live">Animation active</div>
+      <canvas id="rfNetworkCanvas" aria-hidden="true"></canvas>
+      <div class="rf-orbit"><div class="rf-orbit-core">R</div></div>
+      <div class="rf-network-foot"><span>Ideas → Products → Impact</span><span id="rfNetworkStatus">Rendering network</span></div>
     </div>
   </div>
 </section>
@@ -2584,7 +2687,7 @@ document.addEventListener('DOMContentLoaded', function() {
   <div class="center">
     <div class="tag rev">Transparent Pricing</div>
     <h2 class="section-title rev">Simple, <span class="hi">Honest Pricing</span></h2>
-    <p class="section-desc rev">Every project is unique. Here are our base prices in <strong id="priceCurrLabel">GMD (Gambian Dalasi)</strong>.</p>
+    <p class="section-desc rev">Every project is unique. Here are our base prices in <strong id="priceCurrLabel">USD (US Dollar)</strong>.</p>
   </div>
   <div class="pricing-tabs">
     <button class="p-tab active" onclick="showPriceTab('websites',this)" type="button">Websites</button>
@@ -2595,7 +2698,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
   <div id="pricingContent"></div>
   <div class="center" style="margin-top:30px">
-    <p style="color:var(--gray);font-size:0.85rem;margin-bottom:16px">All prices are in GMD by default. Change your currency above to see converted prices.</p>
+    <p style="color:var(--gray);font-size:0.85rem;margin-bottom:16px">Prices default to USD. Switch currency above to see indicative converted prices; final quotes are confirmed by our team.</p>
     <button class="btn btn-primary" onclick="showPage('requestPage')" type="button">Get Free Quotation →</button>
   </div>
 </section>
@@ -2749,9 +2852,34 @@ document.addEventListener('DOMContentLoaded', function() {
   <div id="reqProgressBar" style="height:3px;background:linear-gradient(90deg,var(--blue),#7C3AED);width:20%;transition:width 0.4s"></div>
 </div>
 
-<div style="max-width:860px;margin:0 auto;padding:30px 20px 80px">
+<div style="max-width:1120px;margin:0 auto;padding:28px 20px 0">
+  <section class="rf-request-hero" aria-labelledby="rfRequestTitle">
+    <div>
+      <div class="rf-eyebrow">Start with a clear brief</div>
+      <h1 id="rfRequestTitle">Let's build something people will love to use.</h1>
+      <p>Tell us about the problem you want to solve. Whether it is a mobile app, a website, a customer portal, a healthcare tool, a fitness tracker or business software, this guided request helps us understand your goals before we discuss the next steps.</p>
+      <div class="rf-request-trust">
+        <div><b>01 · Explain</b>Share your idea in plain language.</div>
+        <div><b>02 · Shape</b>Choose platforms and useful features.</div>
+        <div><b>03 · Discuss</b>Review your brief before contacting us.</div>
+      </div>
+    </div>
+    <div class="rf-hero-visual" aria-label="Illustrative software design workspace">
+      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=720&q=80" alt="Developer workspace with laptop displaying code" loading="lazy" decoding="async">
+      <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=720&q=80" alt="Technology team collaborating in a modern office" loading="lazy" decoding="async">
+      <span class="rf-floating-chip">Your idea · Designed with purpose</span>
+    </div>
+  </section>
+</div>
+
+<div style="max-width:860px;margin:0 auto;padding:12px 20px 80px">
 
 <!-- ═══ STEP 1: PROJECT BASICS ═══ -->
+<div class="rf-project-visuals" aria-label="Examples of digital products we can help plan">
+  <div class="rf-project-visual"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=720&q=80" alt="Healthcare technology concept" loading="lazy" decoding="async"><span>Healthcare &amp; wellbeing</span></div>
+  <div class="rf-project-visual"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=720&q=80" alt="Business software and digital collaboration" loading="lazy" decoding="async"><span>Business &amp; productivity</span></div>
+  <div class="rf-project-visual"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=720&q=80" alt="Analytics dashboard on a screen" loading="lazy" decoding="async"><span>Analytics &amp; finance</span></div>
+</div>
 <div id="reqStep1" class="req-step active">
   <div style="text-align:center;margin-bottom:30px">
     <div style="font-size:2.5rem;margin-bottom:10px">🚀</div>
@@ -2886,9 +3014,9 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
       <div class="req-field">
         <label>Preferred Currency</label>
-        <select id="rqCurrency" class="req-input">
+        <select id="rqCurrency" class="req-input" onchange="setCurrency(this.value)">
           <option value="GMD">🇬🇲 GMD - Gambian Dalasi</option>
-          <option value="USD">🇺🇸 USD - US Dollar</option>
+          <option value="USD" selected>🇺🇸 USD - US Dollar</option>
           <option value="EUR">🇪🇺 EUR - Euro</option>
           <option value="GBP">🇬🇧 GBP - British Pound</option>
           <option value="NGN">🇳🇬 NGN - Nigerian Naira</option>
@@ -3140,7 +3268,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <form id="loginForm" novalidate autocomplete="off">
       <div class="fg">
         <label for="adminEmail">Email Address</label>
-        <input type="email" id="adminEmail" placeholder="admin@royalfintech.com" required autocomplete="username" spellcheck="false">
+        <input type="email" id="adminEmail" placeholder="Your administrator email" required autocomplete="username" spellcheck="false">
         <div class="fg-err" id="emailErr">Please enter a valid email.</div>
       </div>
       <div class="fg">
@@ -3158,7 +3286,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </form>
     <br>
     <button class="btn btn-ghost btn-sm" onclick="showPage('mainSite')" style="width:100%;margin-top:6px" type="button">← Back to Website</button>
-    <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6"><strong style="color:var(--gray)">Demo Access:</strong><br>Email: admin@royalfintech.com<br>Password: admin2026</p>
+    <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6">Secure admin authentication must be connected to a server before managing real customer requests. Browser-only credentials are not production security.</p>
   </div>
 </div>
 </div>
@@ -3654,8 +3782,8 @@ function esc(s) {
 // ---- SESSION MANAGEMENT ----
 const SK = 'rft_admin_v3';
 const ST = 60 * 60 * 1000;
-let ADMIN_EMAIL = 'admin@royalfintech.com';
-let ADMIN_PASS  = 'admin2026';
+let ADMIN_EMAIL = '';
+let ADMIN_PASS  = '';
 let soundEnabled = true;
 
 function saveSession(email) {
@@ -3668,8 +3796,8 @@ function getSession() {
     return d;
   } catch(e) { return null; }
 }
-function clearSession() { try { sessionStorage.removeItem(SK); } catch(e){} }
-function isAuth() { return !!getSession(); }
+function clearSession() { try { sessionStorage.removeItem(SK); sessionStorage.removeItem('rft_admin_access_token'); } catch(e){} }
+function isAuth() { try { return !!getSession() && !!sessionStorage.getItem('rft_admin_access_token'); } catch(e) { return false; } }
 
 // ---- RATE LIMITER ----
 let loginTries = 0, lockUntil = 0;
@@ -4141,6 +4269,10 @@ function performLogin() {
     }
     if (!ok) { return; }
 
+    if (!ADMIN_EMAIL || !ADMIN_PASS) {
+      showLoginErr('Admin sign-in is not configured. Connect secure server-side authentication before enabling access to customer data.');
+      return;
+    }
     // Set loading state
     if (btn) { btn.textContent = '⏳ Signing in...'; btn.disabled = true; }
     showLoginOk('Verifying credentials...');
@@ -4322,22 +4454,37 @@ function showPanel(id) {
 function renderMessagesPanel() {
   var container = document.getElementById('msgListContainer');
   if (!container) return;
-  var msgs = (DB.get('contactMessages') || []).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+  var raw = DB.get('contactMessages');
+  var msgs = (Array.isArray(raw) ? raw : []).filter(function(m) { return m && typeof m === 'object'; })
+    .slice().sort(function(a,b) { return new Date(b.date).getTime() - new Date(a.date).getTime(); });
   if (!msgs.length) {
     container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No messages yet — contact form submissions will appear here.</div>';
     return;
   }
   container.innerHTML = msgs.map(function(m) {
-    var initials = (m.name||'?').split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+    var name = String(m.name || 'Unknown');
+    var initialsText = name.split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+    var id = Number(m.id);
     var timeAgo = timeAgoStr(m.date);
     var unreadDot = m.status === 'new' ? '<div class="msg-dot"></div>' : '';
-    return '<div class="msg-item" onclick="openMessageDetail(' + m.id + ')">'
-      + '<div class="msg-av">' + esc(initials) + '</div>'
-      + '<div style="flex:1"><div class="msg-name">' + esc(m.name||'Unknown') + '</div>'
-      + '<div class="msg-prev">' + esc((m.message||'').substring(0,80)) + '</div></div>'
-      + '<div class="msg-time">' + timeAgo + '</div>' + unreadDot
-      + '</div>';
+    return '<div class="msg-item" data-message-id="' + (Number.isFinite(id) ? id : 0) + '" role="button" tabindex="0">'
+      + '<div class="msg-av">' + esc(initialsText) + '</div>'
+      + '<div style="flex:1"><div class="msg-name">' + esc(name) + '</div>'
+      + '<div class="msg-prev">' + esc(String(m.message || '').substring(0,80)) + '</div></div>'
+      + '<div class="msg-time">' + esc(String(timeAgo)) + '</div>' + unreadDot + '</div>';
   }).join('');
+  container.onclick = function(event) {
+    var item = event.target && event.target.closest ? event.target.closest('[data-message-id]') : null;
+    if (!item || !container.contains(item)) return;
+    openMessageDetail(Number(item.getAttribute('data-message-id')) || 0);
+  };
+  container.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var item = event.target && event.target.closest ? event.target.closest('[data-message-id]') : null;
+    if (!item || !container.contains(item)) return;
+    event.preventDefault();
+    openMessageDetail(Number(item.getAttribute('data-message-id')) || 0);
+  };
 }
 
 function timeAgoStr(dateStr) {
@@ -4446,26 +4593,43 @@ function pushAdminNotif(title, msg) {
 
 function renderNotifs() {
   const body = document.getElementById('notifBody'); if (!body) return;
-  if (!notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
-  body.innerHTML = notifs.map(function(n) {
-    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" onclick="markRead(this)">'
+  const items = (Array.isArray(notifs) ? notifs : []).filter(function(n) { return n && typeof n === 'object'; });
+  if (!items.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
+  body.innerHTML = items.map(function(n, index) {
+    const title = String(n.title || 'Notification');
+    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" data-notif-index="' + index + '" role="button" tabindex="0">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div class="notif-ico">' + (n.title.charAt(0) === n.title.charAt(0) ? n.title.split(' ')[0] : '🔔') + '</div>'
-      + '<div style="flex:1"><div class="notif-title">' + esc(n.title.replace(/^[^ ]+ /, '')) + '</div>'
-      + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + n.time + '</div></div></div>';
+      + '<div class="notif-ico">' + esc(title.split(' ')[0] || '🔔') + '</div>'
+      + '<div style="flex:1"><div class="notif-title">' + esc(title.replace(/^[^ ]+ /, '')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
+  body.onclick = function(event) {
+    const item = event.target && event.target.closest ? event.target.closest('[data-notif-index]') : null;
+    if (!item || !body.contains(item)) return;
+    const n = items[Number(item.getAttribute('data-notif-index'))];
+    if (n) n.unread = false;
+    item.classList.remove('unread');
+    const dot = item.querySelector('.notif-unread-dot'); if (dot) dot.remove();
+  };
+  body.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const item = event.target && event.target.closest ? event.target.closest('[data-notif-index]') : null;
+    if (!item || !body.contains(item)) return;
+    event.preventDefault(); item.click();
+  };
 }
 
 function renderAdminNotifs() {
   const body = document.getElementById('admNotifBody'); if (!body) return;
-  if (!adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
-  body.innerHTML = adminNotifs.map(function(n) {
+  const items = (Array.isArray(adminNotifs) ? adminNotifs : []).filter(function(n) { return n && typeof n === 'object'; });
+  if (!items.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
+  body.innerHTML = items.map(function(n) {
     return '<div class="notif-item' + (n.unread ? ' unread' : '') + '">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
-      + '<div style="flex:1"><div class="notif-title">' + esc(n.title) + '</div>'
-      + '<div class="notif-msg">' + esc(n.msg) + '</div>'
-      + '<div class="notif-time">' + n.time + '</div></div></div>';
+      + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || 'Notification')) + '</div>'
+      + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
+      + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
 }
 
@@ -4765,18 +4929,18 @@ var AI_INTENTS = [
       if (ctx.productId) {
         var prod = RFT_KB.products.find(function(p){ return p.id === ctx.productId; });
         if (prod) {
-          return 'For a project similar to ' + prod.name + ' (' + prod.type + '), pricing depends on the features you choose. Most ' + prod.type.toLowerCase() + ' projects start around D80,000–D250,000 depending on complexity. The best way to get an exact number is the Request App form, which calculates your price live as you select features. Want me to open it with ' + prod.type + ' pre-selected?';
+          return 'For a project similar to ' + prod.name + ' (' + prod.type + '), pricing depends on the features you choose. Most ' + prod.type.toLowerCase() + ' projects start around ' + convertPrice(80000) + '–' + convertPrice(250000) + ' depending on complexity. The best way to get an exact number is the Request App form, which calculates your price live as you select features. Want me to open it with ' + prod.type + ' pre-selected?';
         }
       }
       var p = RFT_KB.pricing;
-      return 'Here\'s a quick overview of our base pricing in GMD:\n\n🌐 Websites: Personal D10,000 · Business D20,000 · Church D25,000 · School D40,000\n📱 Apps: Basic D35,000 · Business D50,000 · Marketplace D100,000 · Healthcare D150,000 · Wallet/FinTech D250,000\n🏢 Enterprise: starting from D500,000\n\nAdd-ons like Admin Portal, AI Integration, or Payment Gateway are priced separately. You can see the full breakdown in our Pricing section, or use the Request App form to get an exact itemized quote. Want me to open the pricing page or the request form?';
+      return 'Here\'s a quick overview of our base pricing in ' + currentCurrency + ':\n\n🌐 Websites: Personal ' + convertPrice(10000) + ' · Business ' + convertPrice(20000) + ' · Church ' + convertPrice(25000) + ' · School ' + convertPrice(40000) + '\n📱 Apps: Basic ' + convertPrice(35000) + ' · Business ' + convertPrice(50000) + ' · Marketplace ' + convertPrice(100000) + ' · Healthcare ' + convertPrice(150000) + ' · Wallet/FinTech ' + convertPrice(250000) + '\n🏢 Enterprise: starting from ' + convertPrice(500000) + '\n\nAdd-ons are priced separately. Converted amounts are indicative; final quotes are confirmed by our team. Want me to open the pricing page or the request form?';
     }
   },
   {
     name: 'pricing_currency',
     patterns: [/change.*currency/i, /\b(usd|dollar|euro|naira|cedi)\b.*price/i, /currency/i],
     handle: function() {
-      return 'You can change your preferred currency anytime — just use the currency selector (showing GMD by default) in the top navigation bar or the mobile menu. All prices across the site, including the Request App quotation, update automatically to your selected currency. We support GMD, USD, EUR, GBP, NGN, GHS, KES, ZAR, XOF, CAD and AED.';
+      return 'You can change your preferred currency from the top navigation or mobile menu. Pricing cards, budget ranges, feature add-ons and quotations follow the selected currency; USD is the first-visit default. Converted values are indicative; Royal FinTech confirms the final quote. Supported currencies include GMD, USD, EUR, GBP, NGN, GHS, KES, ZAR, XOF, CAD, AUD, AED and SAR.';
     }
   },
   {
@@ -5259,6 +5423,13 @@ document.addEventListener('touchend', function(e) {
    Marketing Center, Email, Applications, Notifications
    ============================================================ */
 
+// ---- OPTIONAL SERVER INTEGRATION ----
+// Example deployment configuration: window.RFT_CONFIG = { apiBaseUrl:'https://your-api.example.com',
+// applicationsPath:'/api/applications', adminAuthPath:'/api/admin/login', aiSummaryPath:'/api/ai/summarize', aiEnabled:true }.
+// The server must authenticate and authorize admin actions, persist requests centrally, validate inputs,
+// and keep AI provider secrets server-side. localStorage alone is not a shared admin inbox.
+window.RFT_CONFIG = window.RFT_CONFIG || { apiBaseUrl:'', applicationsPath:'/api/applications', adminAuthPath:'/api/admin/login', aiSummaryPath:'/api/ai/summarize', aiEnabled:false };
+
 // ---- IN-MEMORY DATABASE (localStorage-backed) ----
 var DB = {
   get: function(key) {
@@ -5286,17 +5457,7 @@ var templates    = DB.get('emailTemplates');
 var auditLog     = DB.get('auditLog');
 var currentAppId = null;
 
-// Initialize demo data if empty
-if (!applications.length) {
-  var demoApps = [
-    { id: 1001, name: 'Aminata Mendy', email: 'aminata@example.com', phone: '+220 777 1234', country: 'The Gambia', service: 'Mobile App Development', platforms: 'Android, iOS', budget: '$5,000 – $15,000', timeline: '3–6 months', description: 'A marketplace app for Gambian businesses.', status: 'approved', date: new Date(Date.now()-86400000*3).toISOString(), files: [] },
-    { id: 1002, name: 'Omar Kah', email: 'omar@example.com', phone: '+220 778 5678', country: 'The Gambia', service: 'FinTech Solutions', platforms: 'Web App', budget: '$15,000 – $50,000', timeline: '6–12 months', description: 'Digital payment platform for local banks.', status: 'reviewing', date: new Date(Date.now()-86400000*1).toISOString(), files: [] },
-    { id: 1003, name: 'Fatou Diallo', email: 'fatou@example.com', phone: '+220 779 9012', country: 'Senegal', service: 'AI Development', platforms: 'Web App, AI Assistant', budget: '$5,000 – $15,000', timeline: '3–6 months', description: 'AI customer support chatbot.', status: 'pending', date: new Date().toISOString(), files: [] },
-    { id: 1004, name: 'Lamin Jallow', email: 'lamin@example.com', phone: '+220 776 3456', country: 'The Gambia', service: 'Delivery Systems', platforms: 'Android, iOS', budget: '$2,000 – $5,000', timeline: '1–3 months', description: 'Last-mile delivery app for local businesses.', status: 'pending', date: new Date().toISOString(), files: [] }
-  ];
-  DB.set('applications', demoApps);
-  applications = demoApps;
-}
+// No demo applicants are seeded; this panel starts empty until genuine requests arrive.
 if (!announcements.length) {
   var demoAnnouncements = [
     { id: 1, text: '🔥 20% Discount on Website Development this month!', url: '', color: '#ffffff', status: 'active' },
@@ -5312,15 +5473,18 @@ function buildTicker() {
   var bar = document.getElementById('tickerBar');
   var inner = document.getElementById('tickerInner');
   if (!bar || !inner) return;
-  var active = announcements.filter(function(a) { return a.status === 'active'; });
-  if (!active.length) { bar.classList.remove('active'); return; }
+  var source = Array.isArray(announcements) ? announcements : [];
+  var active = source.filter(function(a) { return a && a.status === 'active'; });
+  if (!active.length) { bar.classList.remove('active'); inner.textContent = ''; return; }
   bar.classList.add('active');
-  // Build double set for seamless loop
   var items = active.concat(active).map(function(a) {
-    return '<span class="ticker-item" style="color:' + a.color + '">'
-      + (a.url ? '<a href="' + a.url + '" style="color:inherit;text-decoration:none">' : '')
-      + a.text
-      + (a.url ? '</a>' : '')
+    var color = /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color || '')) ? String(a.color) : '#ffffff';
+    var rawUrl = String(a.url || '').trim();
+    var safeUrl = /^(https?:\/\/|\/(?!\/)|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '';
+    return '<span class="ticker-item" style="color:' + color + '">'
+      + (safeUrl ? '<a href="' + esc(safeUrl) + '" style="color:inherit;text-decoration:none" rel="noopener noreferrer">' : '')
+      + esc(String(a.text || ''))
+      + (safeUrl ? '</a>' : '')
       + '</span><span class="ticker-sep">❖</span>';
   }).join('');
   inner.innerHTML = items;
@@ -5332,28 +5496,43 @@ var carouselInterval = null;
 function buildCarousel() {
   var wrap = document.getElementById('promoCarousel');
   if (!wrap) return;
-  var active = banners.filter(function(b) { return b.status === 'active'; });
+  var source = Array.isArray(banners) ? banners : [];
+  var active = source.filter(function(b) { return b && b.status === 'active'; });
   if (!active.length) { wrap.classList.remove('active'); return; }
   wrap.classList.add('active');
   var slides = document.getElementById('promoSlides');
   var dots = document.getElementById('promoDots');
   if (!slides || !dots) return;
-  slides.innerHTML = active.map(function(b, i) {
-    return '<div class="promo-slide" style="background:' + (b.color || 'var(--grad)') + '">'
-      + (b.imgData ? '<img src="' + b.imgData + '" alt="' + b.title + '">' : '')
-      + '<div class="promo-overlay"></div>'
-      + '<div class="promo-content">'
-      + '<h2>' + b.title + '</h2>'
-      + '<p>' + b.desc + '</p>'
-      + (b.btnText ? '<a href="' + (b.url||'#') + '" class="btn btn-primary btn-sm">' + b.btnText + '</a>' : '')
+  slides.innerHTML = active.map(function(b) {
+    var rawColor = String(b.color || '');
+    var safeColor = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\))$/i.test(rawColor) ? rawColor : 'var(--grad)';
+    var rawUrl = String(b.url || '#').trim();
+    var safeUrl = /^(https?:\/\/|\/(?!\/)|#)/i.test(rawUrl) && !/^\s*javascript:/i.test(rawUrl) ? rawUrl : '#';
+    var rawImage = String(b.imgData || '');
+    var safeImage = /^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(rawImage) ? rawImage : '';
+    return '<div class="promo-slide" style="background:' + safeColor + '">'
+      + (safeImage ? '<img src="' + esc(safeImage) + '" alt="' + esc(String(b.title || '')) + '">' : '')
+      + '<div class="promo-overlay"></div><div class="promo-content">'
+      + '<h2>' + esc(String(b.title || '')) + '</h2><p>' + esc(String(b.desc || '')) + '</p>'
+      + (b.btnText ? '<a href="' + esc(safeUrl) + '" class="btn btn-primary btn-sm" rel="noopener noreferrer">' + esc(String(b.btnText)) + '</a>' : '')
       + '</div></div>';
   }).join('');
   dots.innerHTML = active.map(function(_, i) {
-    return '<span class="promo-dot' + (i===0?' active':'') + '" onclick="gotoSlide(' + i + ')"></span>';
+    return '<span class="promo-dot' + (i===0?' active':'') + '" data-promo-slide="' + i + '" role="button" tabindex="0" aria-label="Go to slide ' + (i+1) + '"></span>';
   }).join('');
+  dots.onclick = function(event) {
+    var dot = event.target && event.target.closest ? event.target.closest('[data-promo-slide]') : null;
+    if (dot && dots.contains(dot)) gotoSlide(Number(dot.getAttribute('data-promo-slide')) || 0);
+  };
+  dots.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    var dot = event.target && event.target.closest ? event.target.closest('[data-promo-slide]') : null;
+    if (dot && dots.contains(dot)) { event.preventDefault(); gotoSlide(Number(dot.getAttribute('data-promo-slide')) || 0); }
+  };
   if (carouselInterval) clearInterval(carouselInterval);
   if (active.length > 1) carouselInterval = setInterval(function() { nextSlide(); }, 5000);
 }
+
 function nextSlide() {
   var slides = document.getElementById('promoSlides');
   if (!slides) return;
@@ -5422,15 +5601,15 @@ function showPopupNotif(title, body, icon) {
   item.className = 'popup-notif-item';
   var timeStr = new Date().toLocaleTimeString();
   item.innerHTML = '<div class="pn-hdr">'
-    + '<span class="pn-ico">' + icon + '</span>'
-    + '<span class="pn-title">' + title + '</span>'
-    + '<button class="pn-close" onclick="this.parentNode.parentNode.remove()" type="button">✕</button>'
+    + '<span class="pn-ico">' + esc(String(icon)) + '</span>'
+    + '<span class="pn-title">' + esc(String(title || '')) + '</span>'
+    + '<button class="pn-close" type="button" aria-label="Close notification">✕</button>'
     + '</div>'
-    + '<div class="pn-body">' + body + '</div>'
-    + '<div class="pn-time">' + timeStr + '</div>';
+    + '<div class="pn-body">' + esc(String(body || '')) + '</div>'
+    + '<div class="pn-time">' + esc(timeStr) + '</div>';
+  item.querySelector('.pn-close').addEventListener('click', function() { item.remove(); });
   container.appendChild(item);
   setTimeout(function() { item.classList.add('show'); }, 50);
-  // Play sound
   try {
     var ctx = new (window.AudioContext || window.webkitAudioContext)();
     var osc = ctx.createOscillator();
@@ -5442,20 +5621,13 @@ function showPopupNotif(title, body, icon) {
     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
     osc.start(); osc.stop(ctx.currentTime + 0.4);
   } catch(e) {}
-  // Auto-remove after 6s
   setTimeout(function() {
     item.classList.remove('show');
     setTimeout(function() { if (item.parentNode) item.remove(); }, 500);
   }, 6000);
-  // Browser notification
   if (window.Notification && Notification.permission === 'granted') {
-    new Notification(title, { body: body, icon: '' });
-  }
-}
-
-// Request browser notification permission
-function requestBrowserNotifPermission() {
-  if (window.Notification && Notification.permission === 'default') {
+    try { new Notification(String(title || 'Royal FinTech'), { body: String(body || '') }); } catch(e) {}
+  } else if (window.Notification && Notification.permission === 'default') {
     Notification.requestPermission();
   }
 }
@@ -5464,55 +5636,85 @@ function requestBrowserNotifPermission() {
 function renderApplications(filterStatus, searchQuery) {
   var panel = document.getElementById('appListBody');
   if (!panel) return;
-  var apps = DB.get('applications');
+  var apps;
+  try {
+    apps = DB.get('applications');
+    if (!Array.isArray(apps)) apps = [];
+  } catch (e) {
+    panel.textContent = 'Applications could not be loaded.';
+    return;
+  }
+  apps = apps.filter(function(a) { return a && typeof a === 'object'; });
   if (filterStatus && filterStatus !== 'all') {
     apps = apps.filter(function(a) { return a.status === filterStatus; });
   }
-  if (searchQuery) {
-    var q = searchQuery.toLowerCase();
+  var q = String(searchQuery || '').trim().toLowerCase();
+  if (q) {
     apps = apps.filter(function(a) {
-      return a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.service.toLowerCase().includes(q);
+      return [a.name, a.email, a.service, a.projectName].some(function(value) {
+        return String(value == null ? '' : value).toLowerCase().includes(q);
+      });
     });
   }
   if (!apps.length) {
     panel.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">No applications found</td></tr>';
     return;
   }
+  var allowedStatuses = ['pending', 'reviewing', 'approved', 'rejected'];
+  var statusClasses = {pending:'app-pending', reviewing:'app-reviewing', approved:'app-approved', rejected:'app-rejected'};
   panel.innerHTML = apps.map(function(a) {
-    var statusClass = {pending:'app-pending',reviewing:'app-reviewing',approved:'app-approved',rejected:'app-rejected'}[a.status] || 'app-pending';
-    var dateStr = new Date(a.date).toLocaleDateString();
+    var safeStatus = allowedStatuses.indexOf(a.status) > -1 ? a.status : 'pending';
+    var statusClass = statusClasses[safeStatus];
+    var parsedDate = a.date ? new Date(a.date) : null;
+    var dateStr = parsedDate && !isNaN(parsedDate.getTime()) ? parsedDate.toLocaleDateString() : '-';
+    var appId = a.id == null ? '' : String(a.id);
     return '<tr>'
-      + '<td>' + a.name + '</td>'
-      + '<td style="font-size:0.8rem;color:var(--gray)">' + a.email + '</td>'
-      + '<td style="font-size:0.8rem">' + a.service + '</td>'
+      + '<td>' + esc(String(a.name || '-')) + '</td>'
+      + '<td style="font-size:0.8rem;color:var(--gray)">' + esc(String(a.email || '-')) + '</td>'
+      + '<td style="font-size:0.8rem">' + esc(String(a.service || a.projectName || '-')) + '</td>'
       + '<td style="font-size:0.8rem">' + dateStr + '</td>'
-      + '<td><span class="app-status ' + statusClass + '">' + a.status + '</span></td>'
-      + '<td><button class="btn btn-outline btn-sm" onclick="viewApp(' + a.id + ')" type="button">View</button></td>'
+      + '<td><span class="app-status ' + statusClass + '">' + safeStatus + '</span></td>'
+      + '<td><button class="btn btn-outline btn-sm" data-view-app-id="' + esc(appId) + '" type="button">View</button></td>'
       + '</tr>';
   }).join('');
+  // Delegated listener avoids placing applicant-controlled values in executable HTML.
+  panel.onclick = function(event) {
+    var button = event.target && event.target.closest ? event.target.closest('button[data-view-app-id]') : null;
+    if (!button || !panel.contains(button)) return;
+    event.preventDefault();
+    viewApp(button.getAttribute('data-view-app-id'));
+  };
 }
 
 function viewApp(id) {
-  var apps = DB.get('applications');
-  var app = apps.find(function(a) { return a.id === id; });
+  var apps;
+  try {
+    apps = DB.get('applications');
+    if (!Array.isArray(apps)) return;
+  } catch (e) { return; }
+  var app = apps.find(function(a) { return a && a.id != null && String(a.id) === String(id); });
   if (!app) return;
-  currentAppId = id;
   var content = document.getElementById('appDetailContent');
-  if (!content) return;
+  var modal = document.getElementById('appDetailModal');
+  if (!content || !modal) return;
+  currentAppId = app.id;
+  var displayTypes = Array.isArray(app.types) && typeof getTypeNames === 'function' ? getTypeNames(app.types) : (app.types || '-');
+  var displayFeatures = Array.isArray(app.features) && typeof getFeatNames === 'function' ? getFeatNames(app.features) : (app.features || '-');
   var fields = [
     ['Full Name', app.name], ['Email', app.email], ['Phone', app.phone],
-    ['Country', app.country || '-'], ['Service Requested', app.service],
-    ['Platforms', app.platforms || '-'], ['Budget', app.budget || '-'],
+    ['Country', app.country || '-'], ['Service / Project', app.service || app.projectName || '-'],
+    ['Project Types', displayTypes], ['Platforms', app.platforms || '-'], ['Budget', app.budget || '-'],
     ['Timeline', app.timeline || '-'], ['Expected Users', app.users || '-'],
-    ['Features', app.features || '-'], ['Integrations', app.integrations || '-'],
-    ['Description', app.description || '-'], ['Status', app.status],
-    ['Submitted', new Date(app.date).toLocaleString()]
+    ['Features', displayFeatures], ['Integrations', app.integrations || '-'],
+    ['Description', app.description || app.desc || '-'], ['Status', app.status],
+    ['Submitted', app.date && !isNaN(new Date(app.date).getTime()) ? new Date(app.date).toLocaleString() : '-']
   ];
   content.innerHTML = fields.map(function(f) {
-    return '<div class="app-field"><label>' + f[0] + '</label><span>' + (f[1]||'-') + '</span></div>';
+    var value = f[1] == null || f[1] === '' ? '-' : (Array.isArray(f[1]) ? f[1].join(', ') : String(f[1]));
+    return '<div class="app-field"><label>' + esc(String(f[0])) + '</label><span>' + esc(value) + '</span></div>';
   }).join('');
-  document.getElementById('appDetailModal').classList.add('open');
-  addAuditLog('👁️', 'action', 'Viewed application from ' + app.name);
+  modal.classList.add('open');
+  try { addAuditLog('👁️', 'action', 'Viewed application from ' + String(app.name || 'Unknown applicant').slice(0, 120)); } catch (e) {}
 }
 
 function closeAppModal() {
@@ -5718,16 +5920,16 @@ function saveTemplate() {
 function renderEmailHistory() {
   var body = document.getElementById('emailHistBody');
   if (!body) return;
-  var hist = DB.get('emailHistory');
+  var raw = DB.get('emailHistory');
+  var hist = Array.isArray(raw) ? raw.filter(function(e) { return e && typeof e === 'object'; }) : [];
   if (!hist.length) { body.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No emails sent yet</div>'; return; }
   body.innerHTML = hist.slice(0,20).map(function(e) {
-    return '<div class="email-history-item">'
-      + '<div class="email-hist-ico">📧</div>'
-      + '<div style="flex:1"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px">' + e.subject + '</div>'
-      + '<div style="color:var(--gray);font-size:0.78rem">To: ' + e.to + '</div>'
-      + '<div style="color:var(--muted);font-size:0.72rem">' + new Date(e.date).toLocaleString() + '</div></div>'
-      + '<div class="email-status-sent">✅ Sent</div>'
-      + '</div>';
+    var date = e.date ? new Date(e.date) : null;
+    return '<div class="email-history-item"><div class="email-hist-ico">📧</div>'
+      + '<div style="flex:1"><div style="font-weight:600;font-size:0.88rem;margin-bottom:2px">' + esc(String(e.subject || '(No subject)')) + '</div>'
+      + '<div style="color:var(--gray);font-size:0.78rem">To: ' + esc(String(e.to || '')) + '</div>'
+      + '<div style="color:var(--muted);font-size:0.72rem">' + (date && isFinite(date.getTime()) ? date.toLocaleString() : '-') + '</div></div>'
+      + '<div class="email-status-sent">✅ Sent</div></div>';
   }).join('');
 }
 
@@ -5753,18 +5955,25 @@ function showMktTab(tab) {
 function renderDeals() {
   var list = document.getElementById('dealsList');
   if (!list) return;
-  var deals = DB.get('flashDeals');
+  var raw = DB.get('flashDeals');
+  var deals = Array.isArray(raw) ? raw.filter(function(d) { return d && typeof d === 'object'; }) : [];
   if (!deals.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No flash deals yet. Create your first deal!</div>'; return; }
   list.innerHTML = deals.map(function(d) {
-    var isActive = d.status === 'active' && new Date(d.end) > new Date();
-    return '<div class="deal-card' + (isActive?' active-deal':'') + '">'
-      + '<div class="deal-info"><h4>' + d.title + '</h4><p>' + d.offer + ' · Ends: ' + new Date(d.end).toLocaleDateString() + '</p></div>'
-      + '<div style="display:flex;gap:6px;align-items:center">'
-      + '<span class="deal-badge' + (isActive?'':' inactive') + '">' + (isActive?'🟢 Active':'⛔ Inactive') + '</span>'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleDeal(' + d.id + ')" type="button">' + (isActive?'Deactivate':'Activate') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteDeal(' + d.id + ')" type="button">🗑️</button>'
-      + '</div></div>';
+    var id = Number(d.id), end = d.end ? new Date(d.end) : null;
+    var isActive = d.status === 'active' && end && isFinite(end.getTime()) && end > new Date();
+    var endText = end && isFinite(end.getTime()) ? end.toLocaleDateString() : 'No valid end date';
+    var safeId = Number.isFinite(id) ? id : 0;
+    return '<div class="deal-card' + (isActive?' active-deal':'') + '"><div class="deal-info"><h4>' + esc(String(d.title || 'Untitled deal')) + '</h4><p>' + esc(String(d.offer || '')) + ' · Ends: ' + endText + '</p></div>'
+      + '<div style="display:flex;gap:6px;align-items:center"><span class="deal-badge' + (isActive?'':' inactive') + '">' + (isActive?'🟢 Active':'⛔ Inactive') + '</span>'
+      + '<button class="btn btn-outline btn-sm" data-deal-toggle="' + safeId + '" type="button">' + (isActive?'Deactivate':'Activate') + '</button>'
+      + '<button class="btn btn-red btn-sm" data-deal-delete="' + safeId + '" type="button">🗑️</button></div></div>';
   }).join('');
+  list.onclick = function(event) {
+    var toggle = event.target && event.target.closest ? event.target.closest('[data-deal-toggle]') : null;
+    var remove = event.target && event.target.closest ? event.target.closest('[data-deal-delete]') : null;
+    if (toggle && list.contains(toggle)) toggleDeal(Number(toggle.getAttribute('data-deal-toggle')) || 0);
+    else if (remove && list.contains(remove)) deleteDeal(Number(remove.getAttribute('data-deal-delete')) || 0);
+  };
 }
 
 function saveFlashDeal() {
@@ -5811,21 +6020,27 @@ function deleteDeal(id) {
 function renderBanners() {
   var list = document.getElementById('bannersList');
   if (!list) return;
-  var bans = DB.get('banners');
+  var raw = DB.get('banners');
+  var bans = Array.isArray(raw) ? raw.filter(function(b) { return b && typeof b === 'object'; }) : [];
   if (!bans.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No banners yet. Create your first banner!</div>'; return; }
   list.innerHTML = bans.map(function(b) {
-    return '<div class="deal-card">'
-      + '<div class="deal-info"><h4>' + b.title + '</h4><p>' + b.desc + '</p></div>'
-      + '<div style="display:flex;gap:6px">'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleBanner(' + b.id + ')" type="button">' + (b.status==='active'?'Deactivate':'Activate') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteBanner(' + b.id + ')" type="button">🗑️</button>'
-      + '</div></div>';
+    var id = Number(b.id), safeId = Number.isFinite(id) ? id : 0;
+    return '<div class="deal-card"><div class="deal-info"><h4>' + esc(String(b.title || 'Untitled banner')) + '</h4><p>' + esc(String(b.desc || '')) + '</p></div>'
+      + '<div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" data-banner-toggle="' + safeId + '" type="button">' + (b.status==='active'?'Deactivate':'Activate') + '</button>'
+      + '<button class="btn btn-red btn-sm" data-banner-delete="' + safeId + '" type="button">🗑️</button></div></div>';
   }).join('');
+  list.onclick = function(event) {
+    var toggle = event.target && event.target.closest ? event.target.closest('[data-banner-toggle]') : null;
+    var remove = event.target && event.target.closest ? event.target.closest('[data-banner-delete]') : null;
+    if (toggle && list.contains(toggle)) toggleBanner(Number(toggle.getAttribute('data-banner-toggle')) || 0);
+    else if (remove && list.contains(remove)) deleteBanner(Number(remove.getAttribute('data-banner-delete')) || 0);
+  };
 }
 
 function previewBannerImg(input) {
   var prev = document.getElementById('bannerImgPreview');
   if (!prev || !input.files[0]) return;
+  if (!/^image\/(png|jpeg|gif|webp)$/i.test(String(input.files[0].type || ''))) { prev.textContent = 'Please choose a PNG, JPEG, GIF, or WebP image.'; input.value = ''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     prev.innerHTML = '<img alt="" src="' + e.target.result + '" style="max-height:100px;border-radius:8px">';
@@ -5886,17 +6101,23 @@ function deleteBanner(id) {
 function renderAnnouncements() {
   var list = document.getElementById('announceList');
   if (!list) return;
-  var anns = DB.get('announcements');
+  var raw = DB.get('announcements');
+  var anns = Array.isArray(raw) ? raw.filter(function(a) { return a && typeof a === 'object'; }) : [];
+  if (!anns.length) { list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No announcements yet.</div>'; return; }
   list.innerHTML = anns.map(function(a) {
-    return '<div class="announce-card">'
-      + '<span class="announce-text" style="color:' + a.color + '">' + a.text + '</span>'
-      + '<div class="announce-actions">'
-      + '<span class="deal-badge' + (a.status==='active'?'':' inactive') + '">' + (a.status==='active'?'Active':'Off') + '</span>'
-      + '<button class="btn btn-outline btn-sm" onclick="toggleAnnounce(' + a.id + ')" type="button">' + (a.status==='active'?'Disable':'Enable') + '</button>'
-      + '<button class="btn btn-red btn-sm" onclick="deleteAnnounce(' + a.id + ')" type="button">🗑️</button>'
-      + '</div></div>';
+    var id = Number(a.id), safeId = Number.isFinite(id) ? id : 0;
+    var color = /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/i.test(String(a.color || '')) ? String(a.color) : '#d4af37';
+    return '<div class="announce-card"><span class="announce-text" style="color:' + color + '">' + esc(String(a.text || '')) + '</span>'
+      + '<div class="announce-actions"><span class="deal-badge' + (a.status==='active'?'':' inactive') + '">' + (a.status==='active'?'Active':'Off') + '</span>'
+      + '<button class="btn btn-outline btn-sm" data-announce-toggle="' + safeId + '" type="button">' + (a.status==='active'?'Disable':'Enable') + '</button>'
+      + '<button class="btn btn-red btn-sm" data-announce-delete="' + safeId + '" type="button">🗑️</button></div></div>';
   }).join('');
-  if (!anns.length) list.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No announcements yet.</div>';
+  list.onclick = function(event) {
+    var toggle = event.target && event.target.closest ? event.target.closest('[data-announce-toggle]') : null;
+    var remove = event.target && event.target.closest ? event.target.closest('[data-announce-delete]') : null;
+    if (toggle && list.contains(toggle)) toggleAnnounce(Number(toggle.getAttribute('data-announce-toggle')) || 0);
+    else if (remove && list.contains(remove)) deleteAnnounce(Number(remove.getAttribute('data-announce-delete')) || 0);
+  };
 }
 
 function saveAnnouncement() {
@@ -5949,21 +6170,37 @@ function setMediaFolder(folder) {
   renderMediaLibrary();
 }
 
+function isSafeMediaImageSource(value) {
+  var src = String(value || '').trim();
+  return /^(https:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(src) ? src : '';
+}
+
 function renderMediaLibrary() {
   var lib = document.getElementById('mediaLibrary');
   if (!lib) return;
-  var items = DB.get('mediaItems');
+  var raw;
+  try { raw = DB.get('mediaItems'); } catch (e) { raw = []; }
+  var items = Array.isArray(raw) ? raw.filter(function(item) { return item && typeof item === 'object'; }) : [];
   var filtered = activeMediaFolder === 'all' ? items : items.filter(function(i) { return i.folder === activeMediaFolder; });
-  lib.innerHTML = '';
+  lib.textContent = '';
   filtered.forEach(function(item) {
     var card = document.createElement('div');
     card.style.cssText = 'border:1px solid var(--gborder);border-radius:14px;overflow:hidden;position:relative;background:var(--glass)';
     var imgW = document.createElement('div');
     imgW.style.cssText = 'width:100%;aspect-ratio:1;overflow:hidden;cursor:pointer';
     var img = document.createElement('img');
-    img.src = item.data; img.alt = item.name;
+    var source = isSafeMediaImageSource(item.data);
+    if (source) img.src = source;
+    else {
+      imgW.style.display = 'flex';
+      imgW.style.alignItems = 'center';
+      imgW.style.justifyContent = 'center';
+      imgW.textContent = 'Image unavailable';
+    }
+    img.alt = String(item.name || 'Media image');
+    img.referrerPolicy = 'no-referrer';
     img.style.cssText = 'width:100%;height:100%;object-fit:cover;pointer-events:none';
-    imgW.appendChild(img);
+    if (source) imgW.appendChild(img);
     imgW.onclick = (function(id) { return function() { previewMedia(id); }; })(item.id);
     var row = document.createElement('div');
     row.style.cssText = 'position:absolute;top:4px;right:4px;display:flex;gap:3px';
@@ -5979,53 +6216,42 @@ function renderMediaLibrary() {
     row.appendChild(mkBtn('Del', 'var(--red)', deleteMedia, item.id));
     var lbl = document.createElement('div');
     lbl.style.cssText = 'padding:4px 6px;font-size:0.62rem;color:var(--gray);overflow:hidden;white-space:nowrap;text-overflow:ellipsis';
-    lbl.textContent = item.name + ' | ' + item.folder;
+    lbl.textContent = String(item.name || 'Untitled') + ' | ' + String(item.folder || 'Unsorted');
     card.appendChild(imgW); card.appendChild(row); card.appendChild(lbl);
     lib.appendChild(card);
   });
   var plus = document.createElement('div');
   plus.style.cssText = 'aspect-ratio:1;border:2px dashed var(--gborder);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:2rem;cursor:pointer';
   plus.textContent = '+';
-  plus.onclick = function() { document.getElementById('adminFiles').click(); };
+  plus.onclick = function() { var input = document.getElementById('adminFiles'); if (input) input.click(); };
   lib.appendChild(plus);
 }
 
 function previewMedia(id) {
-  var items = DB.get('mediaItems');
-  var item = items.find(function(i) { return String(i.id) === String(id); });
+  var raw;
+  try { raw = DB.get('mediaItems'); } catch (e) { raw = []; }
+  var items = Array.isArray(raw) ? raw : [];
+  var item = items.find(function(i) { return i && String(i.id) === String(id); });
   if (!item) return;
+  var source = isSafeMediaImageSource(item.data);
+  if (!source) { showToast('This media item has an unsupported image source.', 'error'); return; }
   var ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;cursor:pointer';
   ov.onclick = function() { ov.remove(); };
   var img = document.createElement('img');
-  img.src = item.data;
+  img.src = source;
+  img.alt = String(item.name || 'Media image');
+  img.referrerPolicy = 'no-referrer';
   img.style.cssText = 'max-width:90vw;max-height:75vh;border-radius:12px;object-fit:contain';
   var cap = document.createElement('div');
   cap.style.cssText = 'color:#fff;margin-top:12px;font-size:0.85rem;opacity:0.7';
-  cap.textContent = item.name + ' | ' + item.folder;
+  cap.textContent = String(item.name || 'Untitled') + ' | ' + String(item.folder || 'Unsorted');
   var btn = document.createElement('button');
-  btn.style.cssText = 'margin-top:12px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-weight:700';
-  btn.textContent = 'Publish to Site';
-  btn.onclick = function(e) { e.stopPropagation(); publishMedia(id); ov.remove(); };
+  btn.textContent = 'Close';
+  btn.style.cssText = 'margin-top:12px;padding:8px 20px;border:1px solid #fff;border-radius:8px;background:transparent;color:#fff;cursor:pointer';
+  btn.onclick = function(e) { e.stopPropagation(); ov.remove(); };
   ov.appendChild(img); ov.appendChild(cap); ov.appendChild(btn);
   document.body.appendChild(ov);
-}
-
-function editMedia(id) {
-  var items = DB.get('mediaItems');
-  var item = items.find(function(i) { return String(i.id) === String(id); });
-  if (!item) return;
-  var f = prompt('Change folder (logos, banners, products, gallery):', item.folder);
-  if (f && f.trim()) {
-    items = items.map(function(i) { if (String(i.id) === String(id)) i.folder = f.trim(); return i; });
-    DB.set('mediaItems', items); renderMediaLibrary(); showToast('Media updated!', 'success');
-  }
-}
-
-function deleteMedia(id) {
-  if (!confirm('Delete this media item?')) return;
-  DB.set('mediaItems', DB.get('mediaItems').filter(function(i) { return String(i.id) !== String(id); }));
-  renderMediaLibrary(); showToast('Media deleted', 'success');
 }
 
 function publishMedia(id) {
@@ -6056,14 +6282,16 @@ function addAuditLog(ico, type, msg) {
 function renderAuditLog() {
   var container = document.getElementById('auditLogList');
   if (!container) return;
-  var logs = DB.get('auditLog');
+  var raw = DB.get('auditLog');
+  var logs = Array.isArray(raw) ? raw.filter(function(l) { return l && typeof l === 'object'; }) : [];
   if (!logs.length) { container.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:16px">No audit logs yet.</div>'; return; }
+  var allowedTypes = ['action','success','warning','error','info'];
   container.innerHTML = logs.slice(0,30).map(function(l) {
-    return '<div class="audit-item">'
-      + '<div class="audit-ico ' + l.type + '">' + l.ico + '</div>'
-      + '<div><div class="audit-msg">' + l.msg + '</div>'
-      + '<div class="audit-time">' + new Date(l.time).toLocaleString() + '</div></div>'
-      + '</div>';
+    var type = allowedTypes.indexOf(l.type) > -1 ? l.type : 'info';
+    var date = l.time ? new Date(l.time) : null;
+    return '<div class="audit-item"><div class="audit-ico ' + type + '">' + esc(String(l.ico || '•')) + '</div>'
+      + '<div><div class="audit-msg">' + esc(String(l.msg || '')) + '</div>'
+      + '<div class="audit-time">' + (date && isFinite(date.getTime()) ? date.toLocaleString() : '-') + '</div></div></div>';
   }).join('');
 }
 
@@ -6278,7 +6506,7 @@ var TRANSLATIONS = {
 };
 
 var currentLang = 'en';
-var currentCurrency = 'GMD';
+var currentCurrency = 'USD';
 
 // Currency exchange rates (approximate, relative to GMD)
 var CURRENCY_RATES = {
@@ -6313,37 +6541,45 @@ function setLanguage(lang) {
   document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
 }
 
+function updateRequestBudgetLabels() {
+  var budget = document.getElementById('rqBudget');
+  var currencyLabel = document.getElementById('rqBudgetCurrLabel');
+  if (currencyLabel) currencyLabel.textContent = currentCurrency;
+  if (!budget) return;
+  var bands = {'10000':[10000,30000],'30000':[30000,80000],'80000':[80000,150000],'150000':[150000,300000],'300000':[300000,500000],'500000':[500000,null]};
+  Array.from(budget.options).forEach(function(option) {
+    var range = bands[option.value];
+    if (!range) return;
+    option.textContent = range[1] === null ? convertPrice(range[0]) + '+' : convertPrice(range[0]) + ' – ' + convertPrice(range[1]);
+  });
+}
 function setCurrency(curr) {
+  if (!Object.prototype.hasOwnProperty.call(CURRENCY_RATES, curr)) curr = 'USD';
   currentCurrency = curr;
   try { localStorage.setItem('rft_currency', curr); } catch(e) {}
-  ['currSelect','currSelectMob'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.value = curr;
-  });
-  var label = document.getElementById('priceCurrLabel');
-  var names = { GMD:'GMD (Gambian Dalasi)',USD:'USD (US Dollar)',EUR:'EUR (Euro)',GBP:'GBP (British Pound)',NGN:'NGN (Nigerian Naira)',GHS:'GHS (Ghanaian Cedi)',KES:'KES (Kenyan Shilling)',ZAR:'ZAR (South African Rand)',XOF:'XOF (CFA Franc)',CAD:'CAD (Canadian Dollar)',AED:'AED (UAE Dirham)' };
-  if (label) label.textContent = names[curr] || curr;
-  // Re-render pricing with new currency
-  if (typeof renderPricingTab === 'function') {
-    var activeTab = document.querySelector('.p-tab.active');
-    if (activeTab) renderPricingTab(activeTab.getAttribute('data-tab') || 'websites');
-  }
+  ['currSelect','currSelectMob','rqCurrency'].forEach(function(id) { var el=document.getElementById(id); if(el) el.value=curr; });
+  var label=document.getElementById('priceCurrLabel');
+  var names={GMD:'GMD (Gambian Dalasi)',USD:'USD (US Dollar)',EUR:'EUR (Euro)',GBP:'GBP (British Pound)',NGN:'NGN (Nigerian Naira)',GHS:'GHS (Ghanaian Cedi)',KES:'KES (Kenyan Shilling)',ZAR:'ZAR (South African Rand)',XOF:'XOF (CFA Franc)',XAF:'XAF (CFA Franc)',CAD:'CAD (Canadian Dollar)',AUD:'AUD (Australian Dollar)',AED:'AED (UAE Dirham)',SAR:'SAR (Saudi Riyal)'};
+  if(label) label.textContent=names[curr]||curr;
+  updateRequestBudgetLabels();
+  var activeStep=document.querySelector('.req-step.active');
+  if(activeStep&&activeStep.id==='reqStep2'&&typeof renderPlatformGrid==='function') renderPlatformGrid();
+  if(activeStep&&activeStep.id==='reqStep3'&&typeof initFeaturesGrid==='function') initFeaturesGrid();
+  if(activeStep&&activeStep.id==='reqStep4'&&typeof buildQuotation==='function'&&window._rqQuotNum) buildQuotation();
+  if(typeof renderPricingTab==='function'){var activeTab=document.querySelector('.p-tab.active');if(activeTab)renderPricingTab(activeTab.getAttribute('data-tab')||'websites');}
+  try{if(typeof renderClientTable==='function')renderClientTable();}catch(e){}
+  try{if(typeof updateOverviewWidgets==='function')updateOverviewWidgets();}catch(e){}
 }
-
 function convertPrice(gmdAmount) {
-  var rate = CURRENCY_RATES[currentCurrency] || 1;
-  var sym = CURRENCY_SYMBOLS[currentCurrency] || 'D';
-  var converted = Math.round(gmdAmount * rate);
-  return sym + ' ' + converted.toLocaleString();
+  var amount=Number(gmdAmount); if(!Number.isFinite(amount)) amount=0;
+  var rate=CURRENCY_RATES[currentCurrency]||1, sym=CURRENCY_SYMBOLS[currentCurrency]||currentCurrency;
+  return sym+' '+Math.round(amount*rate).toLocaleString(undefined,{maximumFractionDigits:0});
 }
-
 function initLangCurrency() {
-  try {
-    var savedLang = localStorage.getItem('rft_lang');
-    var savedCurr = localStorage.getItem('rft_currency');
-    if (savedLang) setLanguage(savedLang);
-    if (savedCurr) setCurrency(savedCurr);
-  } catch(e) {}
+  var savedLang=null,savedCurr=null;
+  try{savedLang=localStorage.getItem('rft_lang');savedCurr=localStorage.getItem('rft_currency');}catch(e){}
+  if(savedLang)setLanguage(savedLang);
+  setCurrency(savedCurr||'USD');
 }
 
 // ============================================================
@@ -6411,25 +6647,32 @@ function showPriceTab(tab, btn) {
 }
 
 function renderPricingTab(tab) {
-  var items = PRICING_DATA[tab] || [];
+  var items = Array.isArray(PRICING_DATA[tab]) ? PRICING_DATA[tab] : [];
   var html = '<div class="pricing-grid">';
   items.forEach(function(item) {
-    html += '<div class="price-card' + (item.featured?' featured':'') + '">';
+    if (!item || typeof item !== 'object') return;
+    html += '<div class="price-card' + (item.featured ? ' featured' : '') + '">';
     if (item.featured) html += '<div class="feat-badge">POPULAR</div>';
-    html += '<div class="price-ico">' + item.ico + '</div>';
-    html += '<div class="price-name">' + item.name + '</div>';
-    html += '<div class="price-amt">' + convertPrice(item.price) + ' <span>base price</span></div>';
-    if (item.features) {
+    html += '<div class="price-ico">' + esc(String(item.ico || '')) + '</div>';
+    html += '<div class="price-name">' + esc(String(item.name || 'Package')) + '</div>';
+    html += '<div class="price-amt">' + esc(String(convertPrice(item.price))) + ' <span>base price</span></div>';
+    if (Array.isArray(item.features)) {
       html += '<ul class="price-features">';
-      item.features.forEach(function(f) { html += '<li>' + f + '</li>'; });
+      item.features.forEach(function(feature) { html += '<li>' + esc(String(feature == null ? '' : feature)) + '</li>'; });
       html += '</ul>';
     }
-    html += '<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="showPage(\'requestPage\')" type="button">Get Quote</button>';
+    html += '<button class="btn btn-primary" style="width:100%;margin-top:12px" data-pricing-request type="button">Get Quote</button>';
     html += '</div>';
   });
   html += '</div>';
   var el = document.getElementById('pricingContent');
-  if (el) el.innerHTML = html;
+  if (el) {
+    el.innerHTML = html;
+    el.onclick = function(event) {
+      var button = event.target && event.target.closest ? event.target.closest('[data-pricing-request]') : null;
+      if (button && el.contains(button)) showPage('requestPage');
+    };
+  }
 }
 
 // ============================================================
@@ -6452,26 +6695,54 @@ function renderAdminProducts() {
   var grid = document.getElementById('adminProductGrid');
   if (!grid) return;
   var products = getProductsDB();
-  grid.innerHTML = '';
+  grid.textContent = '';
+  var statusColors = {live:'#10b981',beta:'#f59e0b',soon:'#6366f1',dev:'#64748b'};
   products.forEach(function(p, idx) {
+    p = p && typeof p === 'object' ? p : {};
     var card = document.createElement('div');
     card.style.cssText = 'background:var(--glass);border:1px solid var(--gborder);border-radius:16px;overflow:hidden';
-    var statusBadge = {live:'#10b981',beta:'#f59e0b',soon:'#6366f1',dev:'#64748b'}[p.status]||'#64748b';
-    card.innerHTML =
-      '<div style="height:120px;background:var(--bg2);display:flex;align-items:center;justify-content:center;padding:16px;position:relative">' +
-        '<img src="' + p.logo + '" style="max-height:90px;max-width:90%;object-fit:contain" alt="' + p.name + '">' +
-        '<span style="position:absolute;top:8px;right:8px;background:' + statusBadge + ';color:#fff;padding:2px 8px;border-radius:10px;font-size:0.6rem;font-weight:700">' + p.status.toUpperCase() + '</span>' +
-      '</div>' +
-      '<div style="padding:14px">' +
-        '<div style="font-size:0.65rem;color:var(--blue);font-weight:700;margin-bottom:4px">' + p.tag + '</div>' +
-        '<h4 style="margin-bottom:6px;font-size:0.95rem">' + p.name + '</h4>' +
-        '<p style="font-size:0.75rem;color:var(--gray);margin-bottom:12px;line-height:1.5">' + p.desc.substring(0,80) + '...</p>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
-          '<button onclick="editAdminProduct(' + idx + ')" style="flex:1;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:6px;font-size:0.72rem;cursor:pointer;font-weight:600" type="button">Edit</button>' +
-          '<button onclick="uploadProductLogo(' + idx + ')" style="flex:1;background:var(--glass);border:1px solid var(--gborder);color:var(--fg);border-radius:8px;padding:6px;font-size:0.72rem;cursor:pointer" type="button">Logo</button>' +
-          '<button onclick="deleteAdminProduct(' + idx + ')" style="background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:0.72rem;cursor:pointer" type="button">Del</button>' +
-        '</div>' +
-      '</div>';
+    var imageWrap = document.createElement('div');
+    imageWrap.style.cssText = 'height:120px;background:var(--bg2);display:flex;align-items:center;justify-content:center;padding:16px;position:relative';
+    var logo = document.createElement('img');
+    var logoSrc = String(p.logo || '');
+    if (/^(https?:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(logoSrc)) logo.src = logoSrc;
+    logo.alt = String(p.name || 'Product logo');
+    logo.style.cssText = 'max-height:90px;max-width:90%;object-fit:contain';
+    logo.onerror = function() { this.style.display = 'none'; };
+    imageWrap.appendChild(logo);
+    var badge = document.createElement('span');
+    badge.style.cssText = 'position:absolute;top:8px;right:8px;background:' + (statusColors[p.status] || '#64748b') + ';color:#fff;padding:2px 8px;border-radius:10px;font-size:0.6rem;font-weight:700';
+    badge.textContent = String(p.status || 'unknown').toUpperCase();
+    imageWrap.appendChild(badge);
+    card.appendChild(imageWrap);
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:14px';
+    var tag = document.createElement('div');
+    tag.style.cssText = 'font-size:0.65rem;color:var(--blue);font-weight:700;margin-bottom:4px';
+    tag.textContent = String(p.tag || '');
+    body.appendChild(tag);
+    var title = document.createElement('h4');
+    title.style.cssText = 'margin-bottom:6px;font-size:0.95rem';
+    title.textContent = String(p.name || 'Untitled product');
+    body.appendChild(title);
+    var desc = document.createElement('p');
+    desc.style.cssText = 'font-size:0.75rem;color:var(--gray);margin-bottom:12px;line-height:1.5';
+    desc.textContent = String(p.desc || '').substring(0,80) + (String(p.desc || '').length > 80 ? '…' : '');
+    body.appendChild(desc);
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap';
+    [['Edit', 'editAdminProduct'], ['Logo', 'uploadProductLogo'], ['Del', 'deleteAdminProduct']].forEach(function(item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = item[0];
+      button.style.cssText = item[1] === 'deleteAdminProduct'
+        ? 'background:var(--red);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:0.72rem;cursor:pointer'
+        : 'flex:1;background:' + (item[1] === 'editAdminProduct' ? 'var(--blue);color:#fff;border:none' : 'var(--glass);border:1px solid var(--gborder);color:var(--fg)') + ';border-radius:8px;padding:6px;font-size:0.72rem;cursor:pointer';
+      button.addEventListener('click', function() { window[item[1]](idx); });
+      actions.appendChild(button);
+    });
+    body.appendChild(actions);
+    card.appendChild(body);
     grid.appendChild(card);
   });
 }
@@ -6768,23 +7039,18 @@ function renderTypeGrid(cid, types) {
 
 function renderPlatformGrid() {
   var grid = document.getElementById('platformGrid'); if (!grid) return;
-  grid.innerHTML = '';
+  grid.textContent = '';
   PLATFORM_OPTIONS.forEach(function(p) {
-    var card = document.createElement('div');
-    card.className = 'req-platform-card' + (rqSelectedPlatforms.indexOf(p.id)>-1?' selected':'');
-    var priceLabel = p.price > 0 ? '+' + convertPrice(p.price) : 'Included';
-    card.innerHTML = '<div class="plat-ico">' + p.ico + '</div><div class="plat-name">' + p.name + '</div><div class="plat-price">' + priceLabel + '</div>';
-    card.onclick = (function(plat) {
-      return function() {
-        if (plat.id === 'all') { rqSelectedPlatforms = ['all']; }
-        else {
-          rqSelectedPlatforms = rqSelectedPlatforms.filter(function(x){return x!=='all';});
-          var idx = rqSelectedPlatforms.indexOf(plat.id);
-          if (idx > -1) rqSelectedPlatforms.splice(idx,1); else rqSelectedPlatforms.push(plat.id);
-        }
-        renderPlatformGrid();
-      };
-    })(p);
+    var card = document.createElement('div'); card.className = 'req-platform-card' + (rqSelectedPlatforms.indexOf(p.id)>-1?' selected':'');
+    var icon = document.createElement('div'); icon.className='plat-ico'; icon.textContent=String(p.ico||'');
+    var name = document.createElement('div'); name.className='plat-name'; name.textContent=String(p.name||'');
+    var price = document.createElement('div'); price.className='plat-price'; price.textContent=p.price>0?'+'+convertPrice(p.price):'Included';
+    card.appendChild(icon);card.appendChild(name);card.appendChild(price);
+    card.addEventListener('click',function(){
+      if(p.id==='all')rqSelectedPlatforms=['all'];
+      else{rqSelectedPlatforms=rqSelectedPlatforms.filter(function(x){return x!=='all';});var idx=rqSelectedPlatforms.indexOf(p.id);if(idx>-1)rqSelectedPlatforms.splice(idx,1);else rqSelectedPlatforms.push(p.id);}
+      renderPlatformGrid();
+    });
     grid.appendChild(card);
   });
 }
@@ -6843,7 +7109,7 @@ function buildQuotation() {
   PLATFORM_OPTIONS.forEach(function(p) { if (rqSelectedPlatforms.indexOf(p.id)>-1 && p.price>0) platformExtra+=p.price; });
   total += platformExtra;
   var timeline = total<30000?'2-4 weeks':total<80000?'4-8 weeks':total<150000?'2-4 months':total<300000?'3-6 months':total<500000?'6-12 months':'12-18 months';
-  var quotNum = 'RFT-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000);
+  var quotNum = window._rqQuotNum || ('RFT-' + new Date().getFullYear() + '-' + Math.floor(Math.random()*90000+10000));
   window._rqQuotNum = quotNum; window._rqTotal = total; window._rqTimeline = timeline;
   window._rqTypeNames = typeNames; window._rqFeatureLines = featureLines;
 
@@ -6959,9 +7225,10 @@ function downloadReceipt() {
 
 function startNewRequest() {
   rqSelectedTypes=[]; rqSelectedPlatforms=[]; rqSelectedFeatures=[]; rqBasePrice=0;
-  ['rqName','rqEmail','rqPhone','rqProjectName','rqDesc'].forEach(function(id) {
-    var el=document.getElementById(id); if(el) el.value='';
-  });
+  window._rqQuotNum=null; window._rqRefNum=null; window._rqTotal=0;
+  ['rqName','rqEmail','rqPhone','rqProjectName','rqDesc','rqCompany'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var logoInput=document.getElementById('rqLogoFile'),logoPreview=document.getElementById('rqLogoPreview');
+  if(logoInput)logoInput.value=''; if(logoPreview)logoPreview.innerHTML='';
   goToReqStep(1);
 }
 
@@ -6970,7 +7237,16 @@ function handleRqLogoUpload(input) {
   Array.from(input.files||[]).forEach(function(file) {
     var pill=document.createElement('div');
     pill.style.cssText='padding:5px 12px;background:var(--bg2);border:1px solid var(--gborder);border-radius:20px;font-size:0.75rem;display:flex;align-items:center;gap:6px';
-    pill.innerHTML='\ud83d\udcce '+file.name+'<span style="cursor:pointer;color:var(--red)" onclick="this.parentNode.remove()">\u00d7</span>';
+    var fileLabel=document.createElement('span');
+    fileLabel.textContent='📎 '+file.name;
+    var removeButton=document.createElement('button');
+    removeButton.type='button';
+    removeButton.textContent='×';
+    removeButton.setAttribute('aria-label','Remove '+file.name);
+    removeButton.style.cssText='cursor:pointer;color:var(--red);border:0;background:transparent;font:inherit;padding:0';
+    removeButton.onclick=function(){pill.remove();};
+    pill.appendChild(fileLabel);
+    pill.appendChild(removeButton);
     preview.appendChild(pill);
     if (file.type.startsWith('image/') && typeof compressImage==='function') {
       compressImage(file, function(dataUrl) {
@@ -7247,94 +7523,59 @@ function getFeatNames(features) {
 function renderClientTable() {
   var tbody = document.getElementById('clientTableBody');
   if (!tbody) return;
-
-  // Build country filter options
   var countryFilter = document.getElementById('clientCountryFilter');
-  var apps = DB.get('applications') || [];
+  var raw;
+  try { raw = DB.get('applications'); } catch(e) { raw = []; }
+  var apps = (Array.isArray(raw)?raw:[]).filter(function(a){return a&&typeof a==='object';});
   if (countryFilter && countryFilter.options.length <= 1) {
-    var countries = [...new Set(apps.map(function(a){ return a.country||''; }).filter(Boolean))].sort();
-    countries.forEach(function(ct) {
-      var opt = document.createElement('option'); opt.value = ct; opt.textContent = ct;
-      countryFilter.appendChild(opt);
+    [...new Set(apps.map(function(a){return String(a.country||'');}).filter(Boolean))].sort().forEach(function(ct){
+      var opt=document.createElement('option');opt.value=ct;opt.textContent=ct;countryFilter.appendChild(opt);
     });
   }
-
-  // Update stats strip
   renderCRMStatsStrip(apps);
-
-  var searchQ = ((document.getElementById('clientSearch')||{}).value||'').toLowerCase();
-  var statusQ = (document.getElementById('clientStatusFilter')||{}).value||'';
-  var countryQ = (document.getElementById('clientCountryFilter')||{}).value||'';
-
-  var filtered = apps.slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-  if (searchQ) {
-    filtered = filtered.filter(function(a) {
-      return (a.name||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.email||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.phone||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.projectName||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.company||'').toLowerCase().indexOf(searchQ) > -1 ||
-             (a.quotNum||'').toLowerCase().indexOf(searchQ) > -1;
-    });
-  }
-  if (statusQ) filtered = filtered.filter(function(a){ return a.status === statusQ; });
-  if (countryQ) filtered = filtered.filter(function(a){ return a.country === countryQ; });
-
-  if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">' +
-      (apps.length ? 'No clients match your filter.' : 'No clients yet — submissions will appear here.') + '</td></tr>';
-    return;
-  }
-
-  tbody.innerHTML = filtered.map(function(a, i) {
-    var st = getCRMStatusObj(a.status);
-    var rec = getCRMRecord(a.id);
-    var star = rec.starred ? '<span style="color:#f59e0b" title="Starred">★</span> ' : '';
-    var amt = a.estimatedTotal ? convertPrice(a.estimatedTotal) : (a.budget||'—');
-    var typeNames = getTypeNames(a.types);
-    var projLabel = a.projectName || (typeNames[0]||'—');
-    return '<tr style="cursor:pointer" onclick="openCRMProfile(' + a.id + ')">' +
-      '<td style="font-size:0.78rem;color:var(--gray)">' + (i+1) + '</td>' +
-      '<td>' +
-        '<div style="display:flex;align-items:center;gap:8px">' +
-          '<div class="crm-avatar" style="width:34px;height:34px;font-size:0.75rem">' + esc(initials(a.name)) + '</div>' +
-          '<div><div style="font-weight:600;font-size:0.88rem">' + star + esc(a.name||'—') + '</div>' +
-          (a.company ? '<div style="font-size:0.72rem;color:var(--gray)">' + esc(a.company) + '</div>' : '') +
-          '</div></div></td>' +
-      '<td style="font-size:0.8rem"><div>' + esc(a.email||'—') + '</div>' +
-         '<div style="color:var(--gray);font-size:0.75rem">' + esc(a.phone||'') + '</div></td>' +
-      '<td style="font-size:0.82rem"><div style="font-weight:600">' + esc(projLabel) + '</div>' +
-         (typeNames.length ? '<div style="font-size:0.7rem;color:var(--blue)">' + esc(typeNames.slice(0,2).join(', ')) + '</div>' : '') + '</td>' +
-      '<td style="font-size:0.83rem;font-weight:700;color:var(--blue)">' + esc(amt) + '</td>' +
-      '<td>' + statusBadgeHtml(a.status) + '</td>' +
-      '<td style="font-size:0.75rem;color:var(--gray)">' + formatDateShort(a.date) + '</td>' +
-      '<td onclick="event.stopPropagation()">' +
-        '<button class="btn btn-outline btn-sm" onclick="openCRMProfile(' + a.id + ')" type="button">View</button>' +
-      '</td></tr>';
+  var searchQ=String((document.getElementById('clientSearch')||{}).value||'').toLowerCase();
+  var statusQ=String((document.getElementById('clientStatusFilter')||{}).value||'');
+  var countryQ=String((document.getElementById('clientCountryFilter')||{}).value||'');
+  var filtered=apps.slice().sort(function(a,b){var da=new Date(a.date).getTime(),db=new Date(b.date).getTime();return (isFinite(db)?db:0)-(isFinite(da)?da:0);});
+  if(searchQ)filtered=filtered.filter(function(a){return [a.name,a.email,a.phone,a.projectName,a.company,a.quotNum].some(function(v){return String(v||'').toLowerCase().indexOf(searchQ)>-1;});});
+  if(statusQ)filtered=filtered.filter(function(a){return a.status===statusQ;});
+  if(countryQ)filtered=filtered.filter(function(a){return String(a.country||'')===countryQ;});
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">'+(apps.length?'No clients match your filter.':'No clients yet — submissions will appear here.')+'</td></tr>';return;}
+  tbody.innerHTML=filtered.map(function(a,i){
+    var id=Number(a.id), safeId=Number.isFinite(id)&&id>0?id:0;
+    var rec=getCRMRecord(a.id), star=rec.starred?'<span style="color:#f59e0b" title="Starred">★</span> ':'';
+    var amt=a.estimatedTotal?convertPrice(a.estimatedTotal):(a.budget||'—');
+    var typeNames=getTypeNames(Array.isArray(a.types)?a.types:[]), projLabel=a.projectName||(typeNames[0]||'—');
+    return '<tr style="cursor:pointer" data-crm-app-id="'+safeId+'">'
+      +'<td style="font-size:0.78rem;color:var(--gray)">'+(i+1)+'</td>'
+      +'<td><div style="display:flex;align-items:center;gap:8px"><div class="crm-avatar" style="width:34px;height:34px;font-size:0.75rem">'+esc(initials(String(a.name||'')))+'</div><div><div style="font-weight:600;font-size:0.88rem">'+star+esc(String(a.name||'—'))+'</div>'
+      +(a.company?'<div style="font-size:0.72rem;color:var(--gray)">'+esc(String(a.company))+'</div>':'')
+      +'</div></div></td><td style="font-size:0.8rem"><div>'+esc(String(a.email||'—'))+'</div><div style="color:var(--gray);font-size:0.75rem">'+esc(String(a.phone||''))+'</div></td>'
+      +'<td style="font-size:0.82rem"><div style="font-weight:600">'+esc(String(projLabel))+'</div>'+(typeNames.length?'<div style="font-size:0.7rem;color:var(--blue)">'+esc(typeNames.slice(0,2).join(', '))+'</div>':'')+'</td>'
+      +'<td style="font-size:0.83rem;font-weight:700;color:var(--blue)">'+esc(String(amt))+'</td><td>'+statusBadgeHtml(a.status)+'</td>'
+      +'<td style="font-size:0.75rem;color:var(--gray)">'+esc(String(formatDateShort(a.date)||'—'))+'</td>'
+      +'<td><button class="btn btn-outline btn-sm" data-crm-view-id="'+safeId+'" type="button">View</button></td></tr>';
   }).join('');
+  tbody.onclick=function(event){
+    var button=event.target&&event.target.closest?event.target.closest('[data-crm-view-id]'):null;
+    var row=event.target&&event.target.closest?event.target.closest('[data-crm-app-id]'):null;
+    if(button&&tbody.contains(button)){event.preventDefault();event.stopPropagation();openCRMProfile(Number(button.getAttribute('data-crm-view-id'))||0);return;}
+    if(row&&tbody.contains(row))openCRMProfile(Number(row.getAttribute('data-crm-app-id'))||0);
+  };
 }
 
 function filterClients() { renderClientTable(); }
 
 function renderCRMStatsStrip(apps) {
-  var strip = document.getElementById('crmStatsStrip');
-  if (!strip) return;
-  var total = apps.length;
-  var pending = apps.filter(function(a){ return a.status==='pending'; }).length;
-  var active = apps.filter(function(a){ return ['approved','paid','in_development','testing'].indexOf(a.status)>-1; }).length;
-  var completed = apps.filter(function(a){ return a.status==='completed'; }).length;
-  var totalRev = apps.reduce(function(sum,a){ return sum + (a.estimatedTotal||0); }, 0);
-
-  var stats = [
-    { ico:'👥', val:total, lbl:'Total Clients' },
-    { ico:'⏳', val:pending, lbl:'Pending' },
-    { ico:'🚀', val:active, lbl:'Active Projects' },
-    { ico:'✅', val:completed, lbl:'Completed' },
-    { ico:'💰', val:convertPrice(totalRev), lbl:'Pipeline Value' },
-  ];
-  strip.innerHTML = stats.map(function(s) {
-    return '<div class="crm-stat-card"><div class="csv">' + s.ico + '</div><div class="cval">' + s.val + '</div><div class="clbl">' + s.lbl + '</div></div>';
-  }).join('');
+  var strip=document.getElementById('crmStatsStrip');if(!strip)return;
+  apps=Array.isArray(apps)?apps.filter(function(a){return a&&typeof a==='object';}):[];
+  var total=apps.length,pending=apps.filter(function(a){return a.status==='pending';}).length;
+  var active=apps.filter(function(a){return ['approved','paid','in_development','testing'].indexOf(a.status)>-1;}).length;
+  var completed=apps.filter(function(a){return a.status==='completed';}).length;
+  var totalRev=apps.reduce(function(sum,a){var amount=Number(a.estimatedTotal);return sum+(Number.isFinite(amount)?amount:0);},0);
+  var stats=[{ico:'👥',val:total,lbl:'Total Clients'},{ico:'⏳',val:pending,lbl:'Pending'},{ico:'🚀',val:active,lbl:'Active Projects'},{ico:'✅',val:completed,lbl:'Completed'},{ico:'💰',val:convertPrice(totalRev),lbl:'Pipeline Value'}];
+  strip.textContent='';
+  stats.forEach(function(stat){var card=document.createElement('div');card.className='crm-stat-card';var ico=document.createElement('div');ico.className='csv';ico.textContent=stat.ico;var val=document.createElement('div');val.className='cval';val.textContent=String(stat.val);var label=document.createElement('div');label.className='clbl';label.textContent=stat.lbl;card.appendChild(ico);card.appendChild(val);card.appendChild(label);strip.appendChild(card);});
 }
 
 // ── CRM PROFILE ───────────────────────────────────────────────
@@ -7344,8 +7585,12 @@ function openCRMProfile(appId) {
 }
 
 function renderCRMFullProfile(appId) {
-  var apps = DB.get('applications') || [];
-  var app = apps.find(function(a){ return a.id === appId; });
+  var apps;
+  try { apps = DB.get('applications'); } catch (e) { apps = []; }
+  if (!Array.isArray(apps)) apps = [];
+  var app = apps.find(function(a) {
+    return a && typeof a === 'object' && a.id != null && String(a.id) === String(appId);
+  });
   if (!app) return;
   var rec = getCRMRecord(appId);
   var typeNames = getTypeNames(app.types);
@@ -7533,7 +7778,7 @@ function buildProjectTab(app, typeNames, featNames) {
     '<div class="app-field-section"><h5>📱 Project Information</h5>' +
     '<div class="app-field-grid">' +
       fld('Project Name', app.projectName||'—') +
-      fld('Platforms', (app.platforms||[]).join(', ')||'Web') +
+      fld('Platforms', (Array.isArray(app.platforms) ? app.platforms : (typeof app.platforms === 'string' ? [app.platforms] : [])).join(', ')||'Web') +
       fld('Quotation #', app.quotNum||'—') +
       fld('Reference #', app.refNum||'—') +
       fld('Budget Range', app.budget||'—') +
@@ -7615,20 +7860,18 @@ function buildNotesTab(app, rec, appId) {
 }
 
 function renderNotesSection(tc, rec, appId) {
-  var sec = tc.querySelector('#crmNotesSection_' + appId);
-  if (!sec) return;
-  var notes = (rec.notes||[]).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-  if (!notes.length) {
-    sec.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">No notes yet. Add your first note above.</div>';
-    return;
-  }
-  sec.innerHTML = notes.map(function(n) {
-    return '<div class="crm-note-card">' +
-      '<div class="crm-note-time">📌 ' + new Date(n.date).toLocaleString() + '</div>' +
-      '<div class="crm-note-text">' + esc(n.text) + '</div>' +
-      '<button onclick="deleteCRMNote(' + appId + ',' + n.id + ',this)" style="background:none;border:none;color:var(--gray);font-size:0.72rem;cursor:pointer;margin-top:6px" type="button">🗑️ Delete</button>' +
-      '</div>';
-  }).join('');
+  var sec = tc.querySelector('#crmNotesSection_' + appId); if (!sec) return;
+  var notes = (Array.isArray(rec.notes)?rec.notes:[]).filter(function(n){return n&&typeof n==='object';}).slice().sort(function(a,b){return new Date(b.date).getTime()-new Date(a.date).getTime();});
+  if (!notes.length) { sec.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">No notes yet. Add your first note above.</div>'; return; }
+  sec.textContent = '';
+  notes.forEach(function(n) {
+    var card=document.createElement('div');card.className='crm-note-card';
+    var time=document.createElement('div');time.className='crm-note-time';var date=n.date?new Date(n.date):null;time.textContent='📌 '+(date&&isFinite(date.getTime())?date.toLocaleString():'—');
+    var noteText=document.createElement('div');noteText.className='crm-note-text';noteText.textContent=String(n.text||'');
+    var button=document.createElement('button');button.type='button';button.className='crm-note-delete';button.style.cssText='background:none;border:none;color:var(--gray);font-size:0.72rem;cursor:pointer;margin-top:6px';button.textContent='🗑️ Delete';
+    button.addEventListener('click',function(){deleteCRMNote(appId,n.id,button);});
+    card.appendChild(time);card.appendChild(noteText);card.appendChild(button);sec.appendChild(card);
+  });
 }
 
 function deleteCRMNote(appId, noteId, btn) {
@@ -7645,60 +7888,64 @@ function deleteCRMNote(appId, noteId, btn) {
 function buildStatusTab(app, appId) {
   var tc = document.createElement('div');
   tc.className = 'crm-tab-content'; tc.id = 'crm-tab-status';
-
-  var currentSt = getCRMStatusObj(app.status);
-  var html = '<div style="margin-bottom:18px"><div style="font-size:0.8rem;color:var(--gray);margin-bottom:8px">Current Status</div>' +
-    statusBadgeHtml(app.status) + '</div>' +
-    '<div style="font-size:0.8rem;color:var(--gray);margin-bottom:10px;font-weight:600">Update Status To:</div>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:20px">';
-
-  CRM_STATUSES.forEach(function(s) {
-    var isActive = s.id === app.status;
-    html += '<button onclick="updateClientStatus(' + appId + ',\'' + s.id + '\')" ' +
-      'style="padding:10px 14px;border-radius:10px;border:1.5px solid var(--gborder);background:' +
-      (isActive ? 'rgba(37,99,235,0.1)' : 'var(--glass)') +
-      ';color:var(--white);cursor:pointer;font-size:0.82rem;font-weight:600;text-align:left;transition:all 0.2s" type="button">' +
-      '<span class="crm-status ' + s.class + '">' + s.label + '</span>' +
-      (isActive ? ' ✓' : '') + '</button>';
+  var safeId = Number(appId);
+  safeId = Number.isFinite(safeId) && safeId > 0 ? safeId : 0;
+  var current = document.createElement('div'); current.style.marginBottom = '18px';
+  var label = document.createElement('div'); label.style.cssText = 'font-size:0.8rem;color:var(--gray);margin-bottom:8px'; label.textContent = 'Current Status';
+  current.appendChild(label);
+  var badgeWrap = document.createElement('div'); badgeWrap.innerHTML = statusBadgeHtml(app.status); current.appendChild(badgeWrap); tc.appendChild(current);
+  var heading = document.createElement('div'); heading.style.cssText = 'font-size:0.8rem;color:var(--gray);margin-bottom:10px;font-weight:600'; heading.textContent = 'Update Status To:'; tc.appendChild(heading);
+  var choices = document.createElement('div'); choices.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:20px';
+  CRM_STATUSES.forEach(function(status) {
+    var button = document.createElement('button'); button.type = 'button';
+    button.style.cssText = 'padding:10px 14px;border-radius:10px;border:1.5px solid var(--gborder);background:' + (status.id === app.status ? 'rgba(37,99,235,0.1)' : 'var(--glass)') + ';color:var(--white);cursor:pointer;font-size:0.82rem;font-weight:600;text-align:left;transition:all 0.2s';
+    var statusLabel = document.createElement('span'); statusLabel.className = 'crm-status ' + String(status.class || ''); statusLabel.textContent = String(status.label || status.id || 'Unknown');
+    button.appendChild(statusLabel);
+    if (status.id === app.status) button.appendChild(document.createTextNode(' ✓'));
+    button.addEventListener('click', function() { updateClientStatus(safeId, String(status.id)); });
+    choices.appendChild(button);
   });
-  html += '</div>';
-  html += '<div style="margin-top:16px"><div style="font-size:0.8rem;color:var(--gray);margin-bottom:8px;font-weight:600">Add Status Note (optional)</div>' +
-    '<textarea id="statusNote_' + appId + '" class="notes-textarea" style="width:100%;min-height:70px;padding:10px;border:1px solid var(--gborder);border-radius:10px;background:var(--bg2);color:var(--white);font-size:0.82rem;resize:vertical;box-sizing:border-box" placeholder="Reason for status change or internal comment..."></textarea>' +
-    '</div>';
-
-  tc.innerHTML = html;
+  tc.appendChild(choices);
+  var noteWrap = document.createElement('div'); noteWrap.style.marginTop = '16px';
+  var noteLabel = document.createElement('div'); noteLabel.style.cssText = 'font-size:0.8rem;color:var(--gray);margin-bottom:8px;font-weight:600'; noteLabel.textContent = 'Add Status Note (optional)';
+  var textarea = document.createElement('textarea'); textarea.id = 'statusNote_' + safeId; textarea.className = 'notes-textarea';
+  textarea.style.cssText = 'width:100%;min-height:70px;padding:10px;border:1px solid var(--gborder);border-radius:10px;background:var(--bg2);color:var(--white);font-size:0.82rem;resize:vertical;box-sizing:border-box';
+  textarea.placeholder = 'Reason for status change or internal comment...';
+  noteWrap.appendChild(noteLabel); noteWrap.appendChild(textarea); tc.appendChild(noteWrap);
   return tc;
 }
 
 function updateClientStatus(appId, newStatus) {
-  var apps = DB.get('applications') || [];
-  var oldStatus = '';
+  var id = Number(appId);
+  if (!Number.isFinite(id) || id <= 0) return;
+  var allowedStatuses = Array.isArray(CRM_STATUSES) ? CRM_STATUSES.map(function(s) { return String(s.id); }) : [];
+  newStatus = String(newStatus || '');
+  if (allowedStatuses.indexOf(newStatus) < 0) { showToast('Invalid client status.', 'error'); return; }
+  var raw = DB.get('applications');
+  var apps = Array.isArray(raw) ? raw : [];
+  var oldStatus = '', found = false;
   apps = apps.map(function(a) {
-    if (a.id === appId) { oldStatus = a.status; a.status = newStatus; }
+    if (a && Number(a.id) === id) { oldStatus = String(a.status || 'pending'); a.status = newStatus; found = true; }
     return a;
   });
+  if (!found) { showToast('Client record could not be found.', 'error'); return; }
   DB.set('applications', apps);
-
   var note = '';
-  var noteEl = document.getElementById('statusNote_' + appId);
-  if (noteEl && noteEl.value.trim()) { note = noteEl.value.trim(); noteEl.value = ''; }
-
+  var noteEl = document.getElementById('statusNote_' + id);
+  if (noteEl && typeof noteEl.value === 'string' && noteEl.value.trim()) { note = noteEl.value.trim().slice(0,2000); noteEl.value = ''; }
   var oldLabel = getCRMStatusObj(oldStatus).label;
   var newLabel = getCRMStatusObj(newStatus).label;
-  addCRMTimeline(appId, '🔄 Status changed', oldLabel + ' → ' + newLabel + (note ? ': ' + note : ''));
+  addCRMTimeline(id, '🔄 Status changed', oldLabel + ' → ' + newLabel + (note ? ': ' + note : ''));
   if (note) {
-    var rec = getCRMRecord(appId);
-    rec.notes = rec.notes || [];
+    var rec = getCRMRecord(id);
+    rec.notes = Array.isArray(rec.notes) ? rec.notes : [];
     rec.notes.unshift({ id:Date.now(), text:'[Status Update] ' + oldLabel + ' → ' + newLabel + ': ' + note, date:new Date().toISOString() });
-    saveCRMRecord(appId, rec);
+    saveCRMRecord(id, rec);
   }
-
   showToast('Status updated to ' + newLabel, 'success');
-  try { addAuditLog('🔄','action','Status: '+oldLabel+' → '+newLabel+' for application #'+appId); } catch(e) {}
+  try { addAuditLog('🔄','action','Status: '+oldLabel+' → '+newLabel+' for application #'+id); } catch(e) {}
   try { updateOverviewWidgets(); } catch(e) {}
-
-  // Re-render profile with updated data
-  renderCRMFullProfile(appId);
+  renderCRMFullProfile(id);
 }
 
 // ── HELPER: field HTML ────────────────────────────────────────
@@ -7725,94 +7972,66 @@ function fld(label, value) {
 function renderCRMListView() {
   var view = document.getElementById('crmView');
   if (!view) return;
-  var apps = (DB.get('applications')||[]).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-
-  var html = '<div class="crm-header"><h2 style="margin:0;font-size:1.1rem">🗂️ CRM — All Clients</h2>' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-    '<input placeholder="🔍 Search..." id="crmListSearch" oninput="filterCRMList()" style="padding:7px 12px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none">' +
-    '<select id="crmListFilter" onchange="filterCRMList()" style="padding:7px 10px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none">' +
-    '<option value="">All</option>' +
-    CRM_STATUSES.map(function(s){ return '<option value="'+s.id+'">'+s.label+'</option>'; }).join('') +
-    '</select></div></div>';
-
-  if (!apps.length) {
-    html += '<div style="text-align:center;padding:40px;color:var(--muted)">No clients yet — app request submissions appear here automatically.</div>';
-    view.innerHTML = html;
-    return;
-  }
-
-  html += '<div id="crmCardGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:16px">';
-  apps.forEach(function(app) {
-    var rec = getCRMRecord(app.id);
-    var pct = completionPct(app.status);
-    var typeNames = getTypeNames(app.types);
-    var star = rec.starred ? '<span style="color:#f59e0b;margin-left:4px">★</span>' : '';
-    html += '<div class="crm-profile-card" style="cursor:pointer" onclick="openCRMProfile('+app.id+')">' +
-      '<div class="crm-profile-header">' +
-        '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
-          '<div class="crm-avatar">' + esc(initials(app.name)) + '</div>' +
-          '<div class="crm-profile-meta">' +
-            '<h4>' + esc(app.name||'—') + star + '</h4>' +
-            '<p>' + esc(app.company||app.email||'') + '</p>' +
-          '</div>' +
-        '</div>' +
-        '<div>' + statusBadgeHtml(app.status) + '</div>' +
-      '</div>' +
-      '<div style="padding:0 16px 14px">' +
-        '<div style="font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px">' + esc(app.projectName||(typeNames[0]||'Custom Project')) + '</div>' +
-        '<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:8px">' +
-          '<span>' + esc(app.country||'') + '</span>' +
-          '<span style="font-weight:700;color:var(--blue)">' + convertPrice(app.estimatedTotal||0) + '</span>' +
-        '</div>' +
-        '<div class="crm-progress-wrap"><div class="crm-progress-bar" style="width:'+pct+'%"></div></div>' +
-        '<div style="font-size:0.68rem;color:var(--gray);margin-top:3px">'+pct+'% complete &nbsp;·&nbsp; ' + formatDateShort(app.date) + '</div>' +
-      '</div></div>';
-  });
-  html += '</div>';
+  var raw = DB.get('applications');
+  var apps = (Array.isArray(raw) ? raw : []).filter(function(a) { return a && typeof a === 'object'; })
+    .slice().sort(function(a,b) { var da=new Date(a.date).getTime(), db=new Date(b.date).getTime(); return (isFinite(db)?db:0)-(isFinite(da)?da:0); });
+  var html = '<div class="crm-header"><h2 style="margin:0;font-size:1.1rem">🗂️ CRM — All Clients</h2>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<input placeholder="🔍 Search..." id="crmListSearch" style="padding:7px 12px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none">'
+    + '<select id="crmListFilter" style="padding:7px 10px;border:1px solid var(--gborder);border-radius:8px;background:var(--bg2);color:var(--white);font-size:0.82rem;outline:none">'
+    + '<option value="">All</option>'
+    + CRM_STATUSES.map(function(st) { return '<option value="' + esc(String(st.id)) + '">' + esc(String(st.label)) + '</option>'; }).join('')
+    + '</select></div></div><div id="crmCardGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:16px"></div>';
   view.innerHTML = html;
+  var search = document.getElementById('crmListSearch'), status = document.getElementById('crmListFilter');
+  if (search) search.addEventListener('input', filterCRMList);
+  if (status) status.addEventListener('change', filterCRMList);
+  filterCRMList();
 }
 
 function filterCRMList() {
-  var q = ((document.getElementById('crmListSearch')||{}).value||'').toLowerCase();
-  var statusQ = (document.getElementById('crmListFilter')||{}).value||'';
-  var apps = (DB.get('applications')||[]).slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
-  var filtered = apps.filter(function(app) {
-    var matchQ = !q || (app.name||'').toLowerCase().indexOf(q)>-1 || (app.email||'').toLowerCase().indexOf(q)>-1 || (app.projectName||'').toLowerCase().indexOf(q)>-1;
-    var matchS = !statusQ || app.status === statusQ;
-    return matchQ && matchS;
-  });
+  var q = String((document.getElementById('crmListSearch') || {}).value || '').toLowerCase();
+  var statusQ = String((document.getElementById('crmListFilter') || {}).value || '');
+  var raw = DB.get('applications');
+  var apps = (Array.isArray(raw) ? raw : []).filter(function(app) { return app && typeof app === 'object'; })
+    .filter(function(app) {
+      var matchQ = !q || [app.name,app.email,app.projectName,app.company].some(function(v) { return String(v == null ? '' : v).toLowerCase().indexOf(q) > -1; });
+      return matchQ && (!statusQ || app.status === statusQ);
+    }).slice().sort(function(a,b) { var da=new Date(a.date).getTime(), db=new Date(b.date).getTime(); return (isFinite(db)?db:0)-(isFinite(da)?da:0); });
   var grid = document.getElementById('crmCardGrid');
   if (!grid) return;
-  if (!filtered.length) { grid.innerHTML = '<div style="padding:24px;color:var(--muted);grid-column:1/-1">No results found.</div>'; return; }
-  grid.innerHTML = '';
-  filtered.forEach(function(app) {
-    var rec = getCRMRecord(app.id);
-    var pct = completionPct(app.status);
-    var typeNames = getTypeNames(app.types);
-    var star = rec.starred ? '<span style="color:#f59e0b;margin-left:4px">★</span>' : '';
-    var card = document.createElement('div');
-    card.className = 'crm-profile-card';
-    card.style.cursor = 'pointer';
-    card.onclick = function(){ openCRMProfile(app.id); };
-    card.innerHTML =
-      '<div class="crm-profile-header">' +
-        '<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">' +
-          '<div class="crm-avatar">' + esc(initials(app.name)) + '</div>' +
-          '<div class="crm-profile-meta"><h4>' + esc(app.name||'—') + star + '</h4><p>' + esc(app.company||app.email||'') + '</p></div>' +
-        '</div>' +
-        '<div>' + statusBadgeHtml(app.status) + '</div>' +
-      '</div>' +
-      '<div style="padding:0 16px 14px">' +
-        '<div style="font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px">' + esc(app.projectName||(typeNames[0]||'Custom')) + '</div>' +
-        '<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:8px">' +
-          '<span>' + esc(app.country||'') + '</span>' +
-          '<span style="font-weight:700;color:var(--blue)">' + convertPrice(app.estimatedTotal||0) + '</span>' +
-        '</div>' +
-        '<div class="crm-progress-wrap"><div class="crm-progress-bar" style="width:'+pct+'%"></div></div>' +
-        '<div style="font-size:0.68rem;color:var(--gray);margin-top:3px">'+pct+'% · ' + formatDateShort(app.date) + '</div>' +
-      '</div>';
-    grid.appendChild(card);
+  grid.textContent = '';
+  if (!apps.length) {
+    var empty = document.createElement('div'); empty.style.cssText = 'padding:24px;color:var(--muted);grid-column:1/-1'; empty.textContent = 'No clients match your search.'; grid.appendChild(empty); return;
+  }
+  apps.forEach(function(app) {
+    var id = Number(app.id), safeId = Number.isFinite(id) && id > 0 ? id : 0;
+    var rec = getCRMRecord(app.id), pct = Number(completionPct(app.status)) || 0;
+    var typeNames = getTypeNames(Array.isArray(app.types) ? app.types : []);
+    var card = document.createElement('div'); card.className = 'crm-profile-card'; card.style.cursor = 'pointer';
+    card.setAttribute('data-crm-card-id', String(safeId)); card.tabIndex = 0;
+    var header = document.createElement('div'); header.className = 'crm-profile-header';
+    var left = document.createElement('div'); left.style.cssText = 'display:flex;align-items:center;gap:10px;flex:1;min-width:0';
+    var avatar = document.createElement('div'); avatar.className = 'crm-avatar'; avatar.textContent = initials(String(app.name || '')); left.appendChild(avatar);
+    var meta = document.createElement('div'); meta.className = 'crm-profile-meta';
+    var title = document.createElement('h4'); title.textContent = String(app.name || '—') + (rec.starred ? ' ★' : '');
+    var subtitle = document.createElement('p'); subtitle.textContent = String(app.company || app.email || '');
+    meta.appendChild(title); meta.appendChild(subtitle); left.appendChild(meta);
+    var badge = document.createElement('div'); badge.innerHTML = statusBadgeHtml(app.status);
+    header.appendChild(left); header.appendChild(badge); card.appendChild(header);
+    var body = document.createElement('div'); body.style.cssText = 'padding:0 16px 14px';
+    var project = document.createElement('div'); project.style.cssText = 'font-size:0.78rem;color:var(--blue);font-weight:600;margin-bottom:4px'; project.textContent = String(app.projectName || typeNames[0] || 'Custom Project');
+    var metaLine = document.createElement('div'); metaLine.style.cssText = 'display:flex;justify-content:space-between;font-size:0.75rem;color:var(--gray);margin-bottom:8px';
+    var country = document.createElement('span'); country.textContent = String(app.country || '');
+    var price = document.createElement('span'); price.style.cssText = 'font-weight:700;color:var(--blue)'; price.textContent = String(convertPrice(app.estimatedTotal || 0));
+    metaLine.appendChild(country); metaLine.appendChild(price);
+    var progress = document.createElement('div'); progress.className = 'crm-progress-wrap';
+    var bar = document.createElement('div'); bar.className = 'crm-progress-bar'; bar.style.width = Math.max(0,Math.min(100,pct)) + '%'; progress.appendChild(bar);
+    var footer = document.createElement('div'); footer.style.cssText = 'font-size:0.68rem;color:var(--gray);margin-top:3px'; footer.textContent = pct + '% complete · ' + String(formatDateShort(app.date) || '');
+    body.appendChild(project); body.appendChild(metaLine); body.appendChild(progress); body.appendChild(footer); card.appendChild(body); grid.appendChild(card);
   });
+  grid.onclick = function(event) { var card = event.target && event.target.closest ? event.target.closest('[data-crm-card-id]') : null; if (card && grid.contains(card)) openCRMProfile(Number(card.getAttribute('data-crm-card-id')) || 0); };
+  grid.onkeydown = function(event) { if (event.key !== 'Enter' && event.key !== ' ') return; var card = event.target && event.target.closest ? event.target.closest('[data-crm-card-id]') : null; if (card && grid.contains(card)) { event.preventDefault(); openCRMProfile(Number(card.getAttribute('data-crm-card-id')) || 0); } };
 }
 
 // ── ALSO KEEP updateAppStatus WORKING ────────────────────────
@@ -7849,6 +8068,278 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+</script>
+
+<script id="rft-request-flow-qa">
+(function () {
+  function val(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+  function secureApiBase(config) {
+    var raw = config && typeof config.apiBaseUrl === 'string' ? config.apiBaseUrl.trim() : '';
+    if (!raw) return '';
+    try {
+      var parsed = new URL(raw);
+      var localHost = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname === '[::1]';
+      if (parsed.username || parsed.password || (parsed.protocol !== 'https:' && !(localHost && parsed.protocol === 'http:'))) return '';
+      return raw.replace(/\/+$/, '');
+    } catch (e) { return ''; }
+  }
+  function namesForTypes(ids) {
+    var out=[];
+    [APP_TYPES_BUSINESS,APP_TYPES_PERSONAL,APP_TYPES_PLATFORM].forEach(function(group){
+      (group||[]).forEach(function(item){if((ids||[]).indexOf(item.id)>-1)out.push(item.name);});
+    });
+    return out;
+  }
+  function namesForFeatures(ids) {
+    var out=[];
+    (FEATURES_LIST||[]).forEach(function(item){if((ids||[]).indexOf(item.id)>-1)out.push(item.name);});
+    return out;
+  }
+  function ensureDeliveryNotice() {
+    var step=document.getElementById('reqStep5');
+    if(!step)return null;
+    var heading=document.querySelector('#reqStep5 h2');
+    var paragraph=document.querySelector('#reqStep5 p');
+    if(heading)heading.id='reqSuccessTitle';
+    if(paragraph)paragraph.id='reqSuccessText';
+    var notice=document.getElementById('reqLocalOnlyNotice');
+    if(!notice&&paragraph){
+      notice=document.createElement('div');
+      notice.id='reqLocalOnlyNotice';
+      notice.style.cssText='display:none;max-width:560px;margin:0 auto 20px;padding:14px 16px;border:1px solid rgba(251,191,36,.35);border-radius:12px;background:rgba(251,191,36,.07);color:var(--light);font-size:.84rem;line-height:1.6;text-align:left';
+      notice.innerHTML='<strong style="color:var(--gold)">No shared submission server is configured.</strong><br>This request is saved only in this browser; it has not reached the admin team. Send it by WhatsApp or email to complete delivery.<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn btn-gold btn-sm" id="sendRequestWhatsApp" type="button">Send request on WhatsApp</button><a class="btn btn-ghost btn-sm" href="mailto:royalfintechcompany@gmail.com">Email Royal FinTech</a></div>';
+      paragraph.parentNode.insertBefore(notice,paragraph.nextSibling);
+    }
+    return notice;
+  }
+  window.loadServerApplications = async function () {
+    var config=window.RFT_CONFIG||{};
+    var base=secureApiBase(config);
+    if(!base) return false;
+    var token='';
+    try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
+    if(!token) return false;
+    var response=await fetch(base+(config.applicationsPath||'/api/applications'),{
+      method:'GET',headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}
+    });
+    if(response.status===401||response.status===403){clearSession();showPage('adminLogin');throw new Error('Admin session expired. Please sign in again.');}
+    if(!response.ok)throw new Error('Could not refresh applications (HTTP '+response.status+').');
+    var payload=await response.json();
+    var rows=Array.isArray(payload)?payload:(payload.applications||payload.data);
+    if(!Array.isArray(rows))throw new Error('Applications API must return an array or an applications/data array.');
+    var remoteRows=rows.filter(function(row){return row&&typeof row==='object'&&!Array.isArray(row);}).map(function(row,index){
+      var originalId=row.id;
+      var numericId=Number(originalId);
+      return Object.assign({},row,{
+        id:Number.isFinite(numericId)&&numericId>0?numericId:(Date.now()+index),
+        serverId:originalId==null?'':String(originalId),
+        name:String(row.name||''),email:String(row.email||''),phone:String(row.phone||''),
+        projectName:String(row.projectName||row.project||row.service||'Project Request'),
+        service:String(row.service||row.projectName||row.project||'Project Request'),
+        desc:String(row.desc||row.description||''),
+        description:String(row.description||row.desc||''),
+        types:Array.isArray(row.types)?row.types:[],
+        platforms:Array.isArray(row.platforms)?row.platforms:[],
+        features:Array.isArray(row.features)?row.features:[],
+        estimatedTotal:Number(row.estimatedTotal||row.quotedAmount||0),
+        currency:String(row.currency||row.quotedCurrency||'USD'),
+        status:String(row.status||'pending'),date:row.date||row.createdAt||new Date().toISOString(),
+        deliveryStatus:'server-confirmed'
+      });
+    });
+    var localDrafts=(DB.get('applications')||[]).filter(function(row){return row.deliveryStatus!=='server-confirmed';});
+    DB.set('applications',remoteRows.concat(localDrafts));
+    try{if(typeof renderApplications==='function')renderApplications();if(typeof renderClientTable==='function')renderClientTable();if(typeof updateAppStats==='function')updateAppStats();if(typeof updateOverviewWidgets==='function')updateOverviewWidgets();}catch(e){}
+    return true;
+  };
+
+  window.performLogin = async function () {
+    try{
+      if(typeof clearLoginMsgs==='function')clearLoginMsgs();
+      if(typeof canLogin==='function'&&!canLogin())return;
+      var emailEl=document.getElementById('adminEmail'),passEl=document.getElementById('adminPass'),button=document.getElementById('loginBtn');
+      var email=emailEl?emailEl.value.trim():'',password=passEl?passEl.value:'';
+      if(!email||!validEmail(email)){showFgErr('adminEmail','emailErr','Enter a valid email address.');return;}
+      if(!password){showFgErr('adminPass','passErr','Password is required.');return;}
+      var config=window.RFT_CONFIG||{},base=secureApiBase(config);
+      if(!base){showLoginErr('Admin sign-in is not configured. Add the secure API base URL and admin login endpoint before enabling admin access.');return;}
+      if(button){button.disabled=true;button.textContent='Verifying securely…';}
+      var response=await fetch(base+(config.adminAuthPath||'/api/admin/login'),{
+        method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({email:email,password:password})
+      });
+      var result=await response.json().catch(function(){return {};});
+      if(!result||typeof result!=='object'||Array.isArray(result))result={};
+      var token=typeof result.access_token==='string'?result.access_token:(typeof result.accessToken==='string'?result.accessToken:(typeof result.token==='string'?result.token:''));
+      if(!response.ok||result.authenticated===false||result.success===false||result.error||!token){
+        if(typeof badLogin==='function')badLogin();
+        if(passEl)passEl.value='';
+        throw new Error(result.message||'The server did not authorize this login or did not issue a session token.');
+      }
+      sessionStorage.setItem('rft_admin_access_token',token);
+      saveSession(email);if(typeof resetTries==='function')resetTries();
+      showLoginOk('Authenticated securely. Loading requests…');
+      showPage('adminDash');
+      try{await window.loadServerApplications();}catch(loadError){showToast('Signed in, but application refresh failed: '+loadError.message,'error');}
+      if(button){button.disabled=false;button.textContent='🔐 Sign In to Dashboard';}
+    }catch(error){
+      showLoginErr(error&&error.message?error.message:'Unable to sign in. Please try again.');
+      var button=document.getElementById('loginBtn');if(button){button.disabled=false;button.textContent='🔐 Sign In to Dashboard';}
+    }
+  };
+  window.handleLoginClick=function(event){if(event){event.preventDefault();event.stopPropagation();}window.performLogin();};
+
+  window.submitProjectRequest = async function () {
+    var buttons=document.querySelectorAll('#reqStep4 button');
+    buttons.forEach(function(button){button.disabled=true;});
+    function restore(){buttons.forEach(function(button){button.disabled=false;});}
+    try {
+    var name=val('rqName').trim(), email=val('rqEmail').trim();
+    var phone=(val('rqPhoneCode')||'')+val('rqPhone');
+    var project=val('rqProjectName').trim(), desc=val('rqDesc').trim();
+    var countrySelect=document.getElementById('rqCountry');
+    var country=countrySelect&&countrySelect.selectedIndex>=0?countrySelect.options[countrySelect.selectedIndex].text:'';
+    if(!name||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.replace(/\D/g,'').length<6||!project||!desc||!val('rqCountry')){
+      restore();showToast('Please check your name, valid email, phone number, country, project name and description.','error');goToReqStep(1);return;
+    }
+    var company=val('rqCompany');
+    var budgetSelect=document.getElementById('rqBudget'), timelineSelect=document.getElementById('rqTimeline');
+    var budget=budgetSelect?budgetSelect.options[budgetSelect.selectedIndex].text:'';
+    var timeline=timelineSelect?timelineSelect.options[timelineSelect.selectedIndex].text:'';
+    var files=Array.from((document.getElementById('rqLogoFile')||{}).files||[]);
+    var quotation=window._rqQuotNum||('RFT-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000));
+    var reference='REF-'+Date.now().toString(36).toUpperCase();
+    var total=window._rqTotal||0;
+    var types=namesForTypes(rqSelectedTypes), features=namesForFeatures(rqSelectedFeatures);
+    var app={
+      id:Date.now(),quotNum:quotation,refNum:reference,name:name,email:email,phone:phone,company:company,
+      projectName:project,desc:desc,country:country,language:val('rqLang')||'en',
+      types:rqSelectedTypes.slice(),platforms:rqSelectedPlatforms.slice(),features:rqSelectedFeatures.slice(),
+      budget:budget,timeline:timeline,estimatedTotal:total,baseCurrency:'GMD',currency:currentCurrency,
+      quotedAmount:Math.round(total*(CURRENCY_RATES[currentCurrency]||1)),quotedCurrency:currentCurrency,
+      attachmentNames:files.map(function(file){return file.name;}),
+      attachmentMetadata:files.map(function(file){return {name:file.name,type:file.type||'application/octet-stream',size:file.size};}),
+      status:'pending',date:new Date().toISOString(),notes:''
+    };
+    app.aiSummary=generateAISummary(app);
+    app.aiSummarySource='rule-based';
+    var config=window.RFT_CONFIG||{},base=secureApiBase(config);
+    var delivery='local-only';
+    if(base&&config.aiEnabled){
+      try{
+        var aiResponse=await fetch(base+(config.aiSummaryPath||'/api/ai/summarize'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({application:app})});
+        if(aiResponse.ok){
+          var aiData=await aiResponse.json(),summary=aiData.summary||aiData;
+          if(summary&&typeof summary==='object'&&summary.purpose){app.aiSummary=summary;app.aiSummarySource='server-ai';}
+        }
+      }catch(aiError){console.warn('[Royal FinTech] Server AI unavailable; automated summary retained.');}
+    }
+    if(base){
+      try{
+        var response=await fetch(base+(config.applicationsPath||'/api/applications'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(app)});
+        if(!response.ok)throw new Error('HTTP '+response.status);
+        var saved=await response.json().catch(function(){return {};});
+        if(saved&&typeof saved==='object'&&(saved.success===false||saved.accepted===false||saved.error))throw new Error('The request endpoint reported that the submission was not accepted.');
+        delivery='server-confirmed';if(saved&&typeof saved==='object'&&saved.id!=null)app.serverId=String(saved.id);
+      }catch(deliveryError){console.error('[Royal FinTech] Central request delivery failed:',deliveryError);}
+    }
+    app.deliveryStatus=delivery;
+    try { DB.push('applications',app); } catch(cacheError) { console.warn('[Royal FinTech] Could not cache the request in this browser.'); }
+    window._rqRefNum=reference;window._rqQuotNum=quotation;window._rqTotal=total;
+    var receipt=document.getElementById('receiptCard');
+    if(receipt){
+      var receiptRows=[
+        ['Request ID',reference],['Quotation #',quotation],['Customer',name],['Company',company||'—'],
+        ['Email',email],['Phone',phone],['Country',country],['Project',project],['Project type',types.join(', ')||'Custom'],
+        ['Platforms',rqSelectedPlatforms.join(', ')||'Web'],['Features',features.join(', ')||'None'],
+        ['Budget',budget],['Timeline',timeline],['Language',val('rqLang')||'en'],['Quoted currency',currentCurrency],
+        ['Selected files',files.map(function(file){return file.name;}).join(', ')||'None'],
+        ['Delivery status',delivery==='server-confirmed'?'Confirmed by server':'Local draft — send to team']
+      ];
+      receipt.innerHTML='<div class="receipt-logo-wrap"><div style="font-weight:800;font-size:1.1rem;color:var(--blue)">Royal FinTech Company</div><div style="font-size:.72rem;color:var(--gray)">OIC Road, Old Yundum, The Gambia</div></div><div style="border-top:2px dashed var(--gborder);margin:10px 0"></div>'+
+      receiptRows.map(function(row){return '<div class="receipt-row"><span>'+esc(row[0])+'</span><span style="text-align:right;max-width:65%">'+esc(String(row[1]||'—'))+'</span></div>';}).join('')+
+      '<div class="receipt-total"><span>Estimated Total</span><span>'+convertPrice(total)+'</span></div><div style="font-size:.75rem;color:var(--gray);margin-top:12px">royalfintechcompany@gmail.com | +220 4071510</div>';
+    }
+    try{pushAdminNotif('📱 New Request',project+' from '+name+' — '+convertPrice(total));}catch(e){}
+    try{addAuditLog('📱','action','New request '+quotation+' · '+delivery);}catch(e){}
+    try{updateOverviewWidgets();updateAppStats();if(typeof renderApplications==='function')renderApplications();if(typeof renderClientTable==='function')renderClientTable();}catch(e){}
+    var heading=document.getElementById('reqSuccessTitle'),copy=document.getElementById('reqSuccessText'),notice=ensureDeliveryNotice();
+    if(delivery==='server-confirmed'){
+      if(heading){heading.textContent='Project Request Received!';heading.style.color='var(--green)';}
+      if(copy)copy.textContent='Your request was saved by Royal FinTech. Our team will review it and follow up.';
+      if(notice)notice.style.display='none';
+    }else{
+      if(heading){heading.textContent='Quotation Prepared — Delivery Required';heading.style.color='var(--gold)';}
+      if(copy)copy.textContent='Your quotation is ready, but this site is not connected to a shared request server. Send your request to ensure our team receives it.';
+      if(notice)notice.style.display='block';
+      var wa=document.getElementById('sendRequestWhatsApp');
+      if(wa)wa.onclick=function(){
+        var message=[
+          'Royal FinTech Project Request','Reference: '+reference,'Quotation: '+quotation,'Name: '+name,
+          'Company: '+(company||'—'),'Email: '+email,'Phone: '+phone,'Country: '+country,
+          'Language: '+(val('rqLang')||'en'),'Currency: '+currentCurrency,'Project: '+project,'Description: '+desc,
+          'Types: '+(types.join(', ')||'Custom'),'Platforms: '+(rqSelectedPlatforms.join(', ')||'Web'),
+          'Features: '+(features.join(', ')||'None'),'Budget: '+budget,'Timeline: '+timeline,
+          'Estimated total: '+convertPrice(total),'Selected files (please attach separately): '+(files.map(function(file){return file.name;}).join(', ')||'None')
+        ].join('\n');
+        window.open('https://wa.me/2204071510?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
+      };
+    }
+    goToReqStep(5);
+    } catch(submitError) {
+      console.error('[Royal FinTech] Request submission flow failed:', submitError);
+      showToast('We could not finish preparing this request. Please try again or contact Royal FinTech directly.', 'error');
+    } finally {
+      restore();
+    }
+  };
+})();
+</script>
+
+<script id="rf-live-experience">
+(function(){
+  'use strict';
+  var canvas=document.getElementById('rfNetworkCanvas');
+  if(!canvas) return;
+  var ctx=canvas.getContext && canvas.getContext('2d');
+  if(!ctx) return;
+  var reduced=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var points=[],width=0,height=0,raf=0,last=0;
+  var status=document.getElementById('rfNetworkStatus');
+  var nodesEl=document.getElementById('rfLiveNodes'),routesEl=document.getElementById('rfLiveRoutes');
+  function size(){
+    var rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+    width=Math.max(1,rect.width);height=Math.max(1,rect.height);
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    points=[];
+    var count=Math.max(20,Math.min(42,Math.round(width/12)));
+    for(var i=0;i<count;i++) points.push({x:Math.random()*width,y:Math.random()*height,vx:(Math.random()-.5)*.24,vy:(Math.random()-.5)*.24,r:1.2+Math.random()*1.5});
+    if(nodesEl) nodesEl.textContent=String(120+count);
+    if(routesEl) routesEl.textContent=String(Math.round(count*.7));
+    draw(0);
+  }
+  function draw(time){
+    ctx.clearRect(0,0,width,height);
+    var limit=Math.min(135,width*.38);
+    for(var i=0;i<points.length;i++){
+      var p=points[i];
+      if(!reduced){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>width)p.vx*=-1;if(p.y<0||p.y>height)p.vy*=-1;}
+      for(var j=i+1;j<points.length;j++){
+        var q=points[j],dx=p.x-q.x,dy=p.y-q.y,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<limit){ctx.strokeStyle='rgba(96,165,250,'+(0.22*(1-dist/limit))+')';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}
+      }
+      ctx.fillStyle=i%5===0?'#f6c86a':'#60a5fa';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+    }
+    if(status) status.textContent='Simulation active · '+points.length+' nodes';
+    if(!reduced) raf=window.requestAnimationFrame(draw);
+  }
+  function stop(){if(raf)window.cancelAnimationFrame(raf);raf=0;}
+  function start(){stop();if(!reduced)raf=window.requestAnimationFrame(draw);else draw(0);}
+  if('ResizeObserver' in window){new ResizeObserver(size).observe(canvas.parentElement);}else window.addEventListener('resize',size,{passive:true});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start();});
+  size();if(reduced)draw(0);
+})();
 </script>
 
 </body>
