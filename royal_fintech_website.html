@@ -6078,21 +6078,37 @@ function setMediaFolder(folder) {
   renderMediaLibrary();
 }
 
+function isSafeMediaImageSource(value) {
+  var src = String(value || '').trim();
+  return /^(https:\/\/|data:image\/(?:png|jpe?g|gif|webp);base64,)/i.test(src) ? src : '';
+}
+
 function renderMediaLibrary() {
   var lib = document.getElementById('mediaLibrary');
   if (!lib) return;
-  var items = DB.get('mediaItems');
+  var raw;
+  try { raw = DB.get('mediaItems'); } catch (e) { raw = []; }
+  var items = Array.isArray(raw) ? raw.filter(function(item) { return item && typeof item === 'object'; }) : [];
   var filtered = activeMediaFolder === 'all' ? items : items.filter(function(i) { return i.folder === activeMediaFolder; });
-  lib.innerHTML = '';
+  lib.textContent = '';
   filtered.forEach(function(item) {
     var card = document.createElement('div');
     card.style.cssText = 'border:1px solid var(--gborder);border-radius:14px;overflow:hidden;position:relative;background:var(--glass)';
     var imgW = document.createElement('div');
     imgW.style.cssText = 'width:100%;aspect-ratio:1;overflow:hidden;cursor:pointer';
     var img = document.createElement('img');
-    img.src = item.data; img.alt = item.name;
+    var source = isSafeMediaImageSource(item.data);
+    if (source) img.src = source;
+    else {
+      imgW.style.display = 'flex';
+      imgW.style.alignItems = 'center';
+      imgW.style.justifyContent = 'center';
+      imgW.textContent = 'Image unavailable';
+    }
+    img.alt = String(item.name || 'Media image');
+    img.referrerPolicy = 'no-referrer';
     img.style.cssText = 'width:100%;height:100%;object-fit:cover;pointer-events:none';
-    imgW.appendChild(img);
+    if (source) imgW.appendChild(img);
     imgW.onclick = (function(id) { return function() { previewMedia(id); }; })(item.id);
     var row = document.createElement('div');
     row.style.cssText = 'position:absolute;top:4px;right:4px;display:flex;gap:3px';
@@ -6108,53 +6124,42 @@ function renderMediaLibrary() {
     row.appendChild(mkBtn('Del', 'var(--red)', deleteMedia, item.id));
     var lbl = document.createElement('div');
     lbl.style.cssText = 'padding:4px 6px;font-size:0.62rem;color:var(--gray);overflow:hidden;white-space:nowrap;text-overflow:ellipsis';
-    lbl.textContent = item.name + ' | ' + item.folder;
+    lbl.textContent = String(item.name || 'Untitled') + ' | ' + String(item.folder || 'Unsorted');
     card.appendChild(imgW); card.appendChild(row); card.appendChild(lbl);
     lib.appendChild(card);
   });
   var plus = document.createElement('div');
   plus.style.cssText = 'aspect-ratio:1;border:2px dashed var(--gborder);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:2rem;cursor:pointer';
   plus.textContent = '+';
-  plus.onclick = function() { document.getElementById('adminFiles').click(); };
+  plus.onclick = function() { var input = document.getElementById('adminFiles'); if (input) input.click(); };
   lib.appendChild(plus);
 }
 
 function previewMedia(id) {
-  var items = DB.get('mediaItems');
-  var item = items.find(function(i) { return String(i.id) === String(id); });
+  var raw;
+  try { raw = DB.get('mediaItems'); } catch (e) { raw = []; }
+  var items = Array.isArray(raw) ? raw : [];
+  var item = items.find(function(i) { return i && String(i.id) === String(id); });
   if (!item) return;
+  var source = isSafeMediaImageSource(item.data);
+  if (!source) { showToast('This media item has an unsupported image source.', 'error'); return; }
   var ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.9);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;cursor:pointer';
   ov.onclick = function() { ov.remove(); };
   var img = document.createElement('img');
-  img.src = item.data;
+  img.src = source;
+  img.alt = String(item.name || 'Media image');
+  img.referrerPolicy = 'no-referrer';
   img.style.cssText = 'max-width:90vw;max-height:75vh;border-radius:12px;object-fit:contain';
   var cap = document.createElement('div');
   cap.style.cssText = 'color:#fff;margin-top:12px;font-size:0.85rem;opacity:0.7';
-  cap.textContent = item.name + ' | ' + item.folder;
+  cap.textContent = String(item.name || 'Untitled') + ' | ' + String(item.folder || 'Unsorted');
   var btn = document.createElement('button');
-  btn.style.cssText = 'margin-top:12px;background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 20px;cursor:pointer;font-weight:700';
-  btn.textContent = 'Publish to Site';
-  btn.onclick = function(e) { e.stopPropagation(); publishMedia(id); ov.remove(); };
+  btn.textContent = 'Close';
+  btn.style.cssText = 'margin-top:12px;padding:8px 20px;border:1px solid #fff;border-radius:8px;background:transparent;color:#fff;cursor:pointer';
+  btn.onclick = function(e) { e.stopPropagation(); ov.remove(); };
   ov.appendChild(img); ov.appendChild(cap); ov.appendChild(btn);
   document.body.appendChild(ov);
-}
-
-function editMedia(id) {
-  var items = DB.get('mediaItems');
-  var item = items.find(function(i) { return String(i.id) === String(id); });
-  if (!item) return;
-  var f = prompt('Change folder (logos, banners, products, gallery):', item.folder);
-  if (f && f.trim()) {
-    items = items.map(function(i) { if (String(i.id) === String(id)) i.folder = f.trim(); return i; });
-    DB.set('mediaItems', items); renderMediaLibrary(); showToast('Media updated!', 'success');
-  }
-}
-
-function deleteMedia(id) {
-  if (!confirm('Delete this media item?')) return;
-  DB.set('mediaItems', DB.get('mediaItems').filter(function(i) { return String(i.id) !== String(id); }));
-  renderMediaLibrary(); showToast('Media deleted', 'success');
 }
 
 function publishMedia(id) {
