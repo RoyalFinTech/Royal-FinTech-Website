@@ -7780,28 +7780,30 @@ function deleteCRMNote(appId, noteId, btn) {
 function buildStatusTab(app, appId) {
   var tc = document.createElement('div');
   tc.className = 'crm-tab-content'; tc.id = 'crm-tab-status';
-
-  var currentSt = getCRMStatusObj(app.status);
-  var html = '<div style="margin-bottom:18px"><div style="font-size:0.8rem;color:var(--gray);margin-bottom:8px">Current Status</div>' +
-    statusBadgeHtml(app.status) + '</div>' +
-    '<div style="font-size:0.8rem;color:var(--gray);margin-bottom:10px;font-weight:600">Update Status To:</div>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:20px">';
-
-  CRM_STATUSES.forEach(function(s) {
-    var isActive = s.id === app.status;
-    html += '<button onclick="updateClientStatus(' + appId + ',\'' + s.id + '\')" ' +
-      'style="padding:10px 14px;border-radius:10px;border:1.5px solid var(--gborder);background:' +
-      (isActive ? 'rgba(37,99,235,0.1)' : 'var(--glass)') +
-      ';color:var(--white);cursor:pointer;font-size:0.82rem;font-weight:600;text-align:left;transition:all 0.2s" type="button">' +
-      '<span class="crm-status ' + s.class + '">' + s.label + '</span>' +
-      (isActive ? ' ✓' : '') + '</button>';
+  var safeId = Number(appId);
+  safeId = Number.isFinite(safeId) && safeId > 0 ? safeId : 0;
+  var current = document.createElement('div'); current.style.marginBottom = '18px';
+  var label = document.createElement('div'); label.style.cssText = 'font-size:0.8rem;color:var(--gray);margin-bottom:8px'; label.textContent = 'Current Status';
+  current.appendChild(label);
+  var badgeWrap = document.createElement('div'); badgeWrap.innerHTML = statusBadgeHtml(app.status); current.appendChild(badgeWrap); tc.appendChild(current);
+  var heading = document.createElement('div'); heading.style.cssText = 'font-size:0.8rem;color:var(--gray);margin-bottom:10px;font-weight:600'; heading.textContent = 'Update Status To:'; tc.appendChild(heading);
+  var choices = document.createElement('div'); choices.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:20px';
+  CRM_STATUSES.forEach(function(status) {
+    var button = document.createElement('button'); button.type = 'button';
+    button.style.cssText = 'padding:10px 14px;border-radius:10px;border:1.5px solid var(--gborder);background:' + (status.id === app.status ? 'rgba(37,99,235,0.1)' : 'var(--glass)') + ';color:var(--white);cursor:pointer;font-size:0.82rem;font-weight:600;text-align:left;transition:all 0.2s';
+    var statusLabel = document.createElement('span'); statusLabel.className = 'crm-status ' + String(status.class || ''); statusLabel.textContent = String(status.label || status.id || 'Unknown');
+    button.appendChild(statusLabel);
+    if (status.id === app.status) button.appendChild(document.createTextNode(' ✓'));
+    button.addEventListener('click', function() { updateClientStatus(safeId, String(status.id)); });
+    choices.appendChild(button);
   });
-  html += '</div>';
-  html += '<div style="margin-top:16px"><div style="font-size:0.8rem;color:var(--gray);margin-bottom:8px;font-weight:600">Add Status Note (optional)</div>' +
-    '<textarea id="statusNote_' + appId + '" class="notes-textarea" style="width:100%;min-height:70px;padding:10px;border:1px solid var(--gborder);border-radius:10px;background:var(--bg2);color:var(--white);font-size:0.82rem;resize:vertical;box-sizing:border-box" placeholder="Reason for status change or internal comment..."></textarea>' +
-    '</div>';
-
-  tc.innerHTML = html;
+  tc.appendChild(choices);
+  var noteWrap = document.createElement('div'); noteWrap.style.marginTop = '16px';
+  var noteLabel = document.createElement('div'); noteLabel.style.cssText = 'font-size:0.8rem;color:var(--gray);margin-bottom:8px;font-weight:600'; noteLabel.textContent = 'Add Status Note (optional)';
+  var textarea = document.createElement('textarea'); textarea.id = 'statusNote_' + safeId; textarea.className = 'notes-textarea';
+  textarea.style.cssText = 'width:100%;min-height:70px;padding:10px;border:1px solid var(--gborder);border-radius:10px;background:var(--bg2);color:var(--white);font-size:0.82rem;resize:vertical;box-sizing:border-box';
+  textarea.placeholder = 'Reason for status change or internal comment...';
+  noteWrap.appendChild(noteLabel); noteWrap.appendChild(textarea); tc.appendChild(noteWrap);
   return tc;
 }
 
