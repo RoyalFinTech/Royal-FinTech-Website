@@ -5601,13 +5601,15 @@ function viewApp(id) {
   var modal = document.getElementById('appDetailModal');
   if (!content || !modal) return;
   currentAppId = app.id;
+  var displayTypes = Array.isArray(app.types) && typeof getTypeNames === 'function' ? getTypeNames(app.types) : (app.types || '-');
+  var displayFeatures = Array.isArray(app.features) && typeof getFeatNames === 'function' ? getFeatNames(app.features) : (app.features || '-');
   var fields = [
     ['Full Name', app.name], ['Email', app.email], ['Phone', app.phone],
-    ['Country', app.country || '-'], ['Service Requested', app.service],
-    ['Platforms', app.platforms || '-'], ['Budget', app.budget || '-'],
+    ['Country', app.country || '-'], ['Service / Project', app.service || app.projectName || '-'],
+    ['Project Types', displayTypes], ['Platforms', app.platforms || '-'], ['Budget', app.budget || '-'],
     ['Timeline', app.timeline || '-'], ['Expected Users', app.users || '-'],
-    ['Features', app.features || '-'], ['Integrations', app.integrations || '-'],
-    ['Description', app.description || '-'], ['Status', app.status],
+    ['Features', displayFeatures], ['Integrations', app.integrations || '-'],
+    ['Description', app.description || app.desc || '-'], ['Status', app.status],
     ['Submitted', app.date && !isNaN(new Date(app.date).getTime()) ? new Date(app.date).toLocaleString() : '-']
   ];
   content.innerHTML = fields.map(function(f) {
