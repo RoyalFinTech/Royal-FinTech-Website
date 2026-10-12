@@ -2065,8 +2065,13 @@ window.viewApp = function(id) {
 function saveAppNotes(id) {
   var notesField = document.getElementById('appNotesField');
   if (!notesField) return;
-  var apps = DB.get('applications');
-  apps = apps.map(function(a) { if (a.id === id) a.notes = notesField.value; return a; });
+  var apps;
+  try { apps = DB.get('applications'); } catch (e) { apps = []; }
+  if (!Array.isArray(apps)) apps = [];
+  apps = apps.map(function(a) {
+    if (a && typeof a === 'object' && a.id != null && String(a.id) === String(id)) a.notes = notesField.value;
+    return a;
+  });
   DB.set('applications', apps);
   showToast('Notes saved!', 'success');
   try { addAuditLog('\ud83d\udcdd', 'action', 'Notes updated for application #' + id); } catch(e) {}
@@ -7483,8 +7488,12 @@ function openCRMProfile(appId) {
 }
 
 function renderCRMFullProfile(appId) {
-  var apps = DB.get('applications') || [];
-  var app = apps.find(function(a){ return a.id === appId; });
+  var apps;
+  try { apps = DB.get('applications'); } catch (e) { apps = []; }
+  if (!Array.isArray(apps)) apps = [];
+  var app = apps.find(function(a) {
+    return a && typeof a === 'object' && a.id != null && String(a.id) === String(appId);
+  });
   if (!app) return;
   var rec = getCRMRecord(appId);
   var typeNames = getTypeNames(app.types);
@@ -7672,7 +7681,7 @@ function buildProjectTab(app, typeNames, featNames) {
     '<div class="app-field-section"><h5>📱 Project Information</h5>' +
     '<div class="app-field-grid">' +
       fld('Project Name', app.projectName||'—') +
-      fld('Platforms', (app.platforms||[]).join(', ')||'Web') +
+      fld('Platforms', (Array.isArray(app.platforms) ? app.platforms : (typeof app.platforms === 'string' ? [app.platforms] : [])).join(', ')||'Web') +
       fld('Quotation #', app.quotNum||'—') +
       fld('Reference #', app.refNum||'—') +
       fld('Budget Range', app.budget||'—') +
