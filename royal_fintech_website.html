@@ -8021,7 +8021,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var payload=await response.json();
     var rows=Array.isArray(payload)?payload:(payload.applications||payload.data);
     if(!Array.isArray(rows))throw new Error('Applications API must return an array or an applications/data array.');
-    var remoteRows=rows.map(function(row,index){
+    var remoteRows=rows.filter(function(row){return row&&typeof row==='object'&&!Array.isArray(row);}).map(function(row,index){
       var originalId=row.id;
       var numericId=Number(originalId);
       return Object.assign({},row,{
@@ -8063,8 +8063,9 @@ document.addEventListener('DOMContentLoaded', function() {
         body:JSON.stringify({email:email,password:password})
       });
       var result=await response.json().catch(function(){return {};});
-      var token=result.access_token||result.accessToken||result.token||'';
-      if(!response.ok||result.authenticated===false||!token){
+      if(!result||typeof result!=='object'||Array.isArray(result))result={};
+      var token=typeof result.access_token==='string'?result.access_token:(typeof result.accessToken==='string'?result.accessToken:(typeof result.token==='string'?result.token:''));
+      if(!response.ok||result.authenticated===false||result.success===false||result.error||!token){
         if(typeof badLogin==='function')badLogin();
         if(passEl)passEl.value='';
         throw new Error(result.message||'The server did not authorize this login or did not issue a session token.');
@@ -8131,7 +8132,8 @@ document.addEventListener('DOMContentLoaded', function() {
         var response=await fetch(base+(config.applicationsPath||'/api/applications'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(app)});
         if(!response.ok)throw new Error('HTTP '+response.status);
         var saved=await response.json().catch(function(){return {};});
-        delivery='server-confirmed';if(saved&&saved.id)app.serverId=saved.id;
+        if(saved&&typeof saved==='object'&&(saved.success===false||saved.accepted===false||saved.error))throw new Error('The request endpoint reported that the submission was not accepted.');
+        delivery='server-confirmed';if(saved&&typeof saved==='object'&&saved.id!=null)app.serverId=String(saved.id);
       }catch(deliveryError){console.error('[Royal FinTech] Central request delivery failed:',deliveryError);}
     }
     app.deliveryStatus=delivery;
