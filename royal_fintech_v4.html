@@ -2005,12 +2005,10 @@ function performLogin() {
               showPage('adminDash');
               console.log('[RFT] Dashboard shown');
             } catch(navErr) {
-              console.error('[RFT] Navigation error:', navErr);
-              // Fallback: force display
-              var dash = document.getElementById('adminDash');
-              var login = document.getElementById('adminLogin');
-              if (login) login.style.display = 'none';
-              if (dash) { dash.style.display = 'flex'; }
+              console.error('[RFT] Dashboard navigation failed; keeping admin access closed:', navErr);
+              clearSession();
+              showPage('adminLogin');
+              showLoginErr('Unable to open the admin dashboard. Secure server authentication is required.');
             }
           }, 600);
         } else {
