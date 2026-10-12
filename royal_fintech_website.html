@@ -8087,6 +8087,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var buttons=document.querySelectorAll('#reqStep4 button');
     buttons.forEach(function(button){button.disabled=true;});
     function restore(){buttons.forEach(function(button){button.disabled=false;});}
+    try {
     var name=val('rqName').trim(), email=val('rqEmail').trim();
     var phone=(val('rqPhoneCode')||'')+val('rqPhone');
     var project=val('rqProjectName').trim(), desc=val('rqDesc').trim();
@@ -8137,7 +8138,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }catch(deliveryError){console.error('[Royal FinTech] Central request delivery failed:',deliveryError);}
     }
     app.deliveryStatus=delivery;
-    DB.push('applications',app);
+    try { DB.push('applications',app); } catch(cacheError) { console.warn('[Royal FinTech] Could not cache the request in this browser.'); }
     window._rqRefNum=reference;window._rqQuotNum=quotation;window._rqTotal=total;
     var receipt=document.getElementById('receiptCard');
     if(receipt){
@@ -8178,7 +8179,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.open('https://wa.me/2204071510?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
       };
     }
-    restore();goToReqStep(5);
+    goToReqStep(5);
+    } catch(submitError) {
+      console.error('[Royal FinTech] Request submission flow failed:', submitError);
+      showToast('We could not finish preparing this request. Please try again or contact Royal FinTech directly.', 'error');
+    } finally {
+      restore();
+    }
   };
 })();
 </script>
