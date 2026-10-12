@@ -4496,24 +4496,38 @@ function pushAdminNotif(title, msg) {
 
 function renderNotifs() {
   const body = document.getElementById('notifBody'); if (!body) return;
-  if (!Array.isArray(notifs) || !notifs.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
-  body.innerHTML = notifs.filter(function(n) { return n && typeof n === 'object'; }).map(function(n) {
-    var title = String(n.title || '🔔 Notification');
-    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" data-mark-notif-read="1" role="button" tabindex="0">'
+  const items = (Array.isArray(notifs) ? notifs : []).filter(function(n) { return n && typeof n === 'object'; });
+  if (!items.length) { body.innerHTML = '<div class="notif-empty">No new notifications</div>'; return; }
+  body.innerHTML = items.map(function(n, index) {
+    const title = String(n.title || 'Notification');
+    return '<div class="notif-item' + (n.unread ? ' unread' : '') + '" data-notif-index="' + index + '" role="button" tabindex="0">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
       + '<div class="notif-ico">' + esc(title.split(' ')[0] || '🔔') + '</div>'
       + '<div style="flex:1"><div class="notif-title">' + esc(title.replace(/^[^ ]+ /, '')) + '</div>'
       + '<div class="notif-msg">' + esc(String(n.msg || '')) + '</div>'
       + '<div class="notif-time">' + esc(String(n.time || '')) + '</div></div></div>';
   }).join('');
-  body.onclick = function(event) { var item = event.target && event.target.closest ? event.target.closest('[data-mark-notif-read]') : null; if (item && body.contains(item)) markRead(item); };
-  body.onkeydown = function(event) { if (event.key !== 'Enter' && event.key !== ' ') return; var item = event.target && event.target.closest ? event.target.closest('[data-mark-notif-read]') : null; if (item && body.contains(item)) { event.preventDefault(); markRead(item); } };
+  body.onclick = function(event) {
+    const item = event.target && event.target.closest ? event.target.closest('[data-notif-index]') : null;
+    if (!item || !body.contains(item)) return;
+    const n = items[Number(item.getAttribute('data-notif-index'))];
+    if (n) n.unread = false;
+    item.classList.remove('unread');
+    const dot = item.querySelector('.notif-unread-dot'); if (dot) dot.remove();
+  };
+  body.onkeydown = function(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const item = event.target && event.target.closest ? event.target.closest('[data-notif-index]') : null;
+    if (!item || !body.contains(item)) return;
+    event.preventDefault(); item.click();
+  };
 }
 
 function renderAdminNotifs() {
   const body = document.getElementById('admNotifBody'); if (!body) return;
-  if (!Array.isArray(adminNotifs) || !adminNotifs.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
-  body.innerHTML = adminNotifs.filter(function(n) { return n && typeof n === 'object'; }).map(function(n) {
+  const items = (Array.isArray(adminNotifs) ? adminNotifs : []).filter(function(n) { return n && typeof n === 'object'; });
+  if (!items.length) { body.innerHTML = '<div class="notif-empty">No admin notifications</div>'; return; }
+  body.innerHTML = items.map(function(n) {
     return '<div class="notif-item' + (n.unread ? ' unread' : '') + '">'
       + (n.unread ? '<div class="notif-unread-dot"></div>' : '')
       + '<div style="flex:1"><div class="notif-title">' + esc(String(n.title || 'Notification')) + '</div>'
@@ -6536,26 +6550,25 @@ function renderPricingTab(tab) {
     html += '<div class="price-card' + (item.featured ? ' featured' : '') + '">';
     if (item.featured) html += '<div class="feat-badge">POPULAR</div>';
     html += '<div class="price-ico">' + esc(String(item.ico || '')) + '</div>';
-    html += '<div class="price-name">' + esc(String(item.name || 'Service')) + '</div>';
-    html += '<div class="price-amt">' + esc(convertPrice(item.price)) + ' <span>base price</span></div>';
-    if (Array.isArray(item.features) && item.features.length) {
+    html += '<div class="price-name">' + esc(String(item.name || 'Package')) + '</div>';
+    html += '<div class="price-amt">' + esc(String(convertPrice(item.price))) + ' <span>base price</span></div>';
+    if (Array.isArray(item.features)) {
       html += '<ul class="price-features">';
-      item.features.forEach(function(feature) {
-        html += '<li>' + esc(String(feature == null ? '' : feature)) + '</li>';
-      });
+      item.features.forEach(function(feature) { html += '<li>' + esc(String(feature == null ? '' : feature)) + '</li>'; });
       html += '</ul>';
     }
-    html += '<button class="btn btn-primary" style="width:100%;margin-top:12px" data-request-quote type="button">Get Quote</button>';
+    html += '<button class="btn btn-primary" style="width:100%;margin-top:12px" data-pricing-request type="button">Get Quote</button>';
     html += '</div>';
   });
   html += '</div>';
   var el = document.getElementById('pricingContent');
-  if (!el) return;
-  el.innerHTML = html;
-  el.onclick = function(event) {
-    var button = event.target && event.target.closest ? event.target.closest('[data-request-quote]') : null;
-    if (button && el.contains(button)) showPage('requestPage');
-  };
+  if (el) {
+    el.innerHTML = html;
+    el.onclick = function(event) {
+      var button = event.target && event.target.closest ? event.target.closest('[data-pricing-request]') : null;
+      if (button && el.contains(button)) showPage('requestPage');
+    };
+  }
 }
 
 // ============================================================
