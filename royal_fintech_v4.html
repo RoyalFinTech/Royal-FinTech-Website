@@ -2933,10 +2933,17 @@ function closeAppModal() {
 }
 
 function updateAppStatus(newStatus) {
-  if (!currentAppId) return;
-  var apps = DB.get('applications');
+  var allowedStatuses = ['pending', 'reviewing', 'approved', 'rejected'];
+  if (allowedStatuses.indexOf(String(newStatus)) === -1) {
+    showToast('Invalid application status.', 'error');
+    return;
+  }
+  if (currentAppId == null) return;
+  var apps;
+  try { apps = DB.get('applications'); } catch (e) { apps = []; }
+  if (!Array.isArray(apps)) apps = [];
   apps = apps.map(function(a) {
-    if (a.id === currentAppId) a.status = newStatus;
+    if (a && typeof a === 'object' && a.id != null && String(a.id) === String(currentAppId)) a.status = newStatus;
     return a;
   });
   DB.set('applications', apps);
@@ -2944,7 +2951,7 @@ function updateAppStatus(newStatus) {
   renderApplications();
   updateAppStats();
   showToast('Application status updated to: ' + newStatus, 'success');
-  addAuditLog('✅', 'action', 'Application #' + currentAppId + ' marked as ' + newStatus);
+  try { addAuditLog('✅', 'action', 'Application #' + currentAppId + ' marked as ' + newStatus); } catch (e) {}
 }
 
 function updateAppStats() {
@@ -3322,13 +3329,21 @@ function addAuditLog(ico, type, msg) {
 function renderAuditLog() {
   var container = document.getElementById('auditLogList');
   if (!container) return;
-  var logs = DB.get('auditLog');
-  if (!logs.length) { container.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:16px">No audit logs yet.</div>'; return; }
+  var raw;
+  try { raw = DB.get('auditLog'); } catch (e) { raw = []; }
+  var logs = Array.isArray(raw) ? raw.filter(function(l) { return l && typeof l === 'object'; }) : [];
+  if (!logs.length) {
+    container.innerHTML = '<div style="color:var(--muted);font-size:0.85rem;padding:16px">No audit logs yet.</div>';
+    return;
+  }
+  var allowedTypes = ['action', 'success', 'warning', 'error', 'info'];
   container.innerHTML = logs.slice(0,30).map(function(l) {
+    var type = allowedTypes.indexOf(l.type) > -1 ? l.type : 'info';
+    var date = l.time ? new Date(l.time) : null;
     return '<div class="audit-item">'
-      + '<div class="audit-ico ' + (['action','success','warning','error','info'].indexOf(l.type)>-1 ? l.type : 'info') + '">' + esc(String(l.ico||'•')) + '</div>'
-      + '<div><div class="audit-msg">' + esc(String(l.msg||'')) + '</div>'
-      + '<div class="audit-time">' + (isFinite(new Date(l.time).getTime()) ? new Date(l.time).toLocaleString() : '-') + '</div></div>'
+      + '<div class="audit-ico ' + type + '">' + esc(String(l.ico || '•')) + '</div>'
+      + '<div><div class="audit-msg">' + esc(String(l.msg || '')) + '</div>'
+      + '<div class="audit-time">' + (date && isFinite(date.getTime()) ? date.toLocaleString() : '-') + '</div></div>'
       + '</div>';
   }).join('');
 }
