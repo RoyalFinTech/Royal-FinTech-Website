@@ -6789,7 +6789,10 @@ var TRANSLATIONS = {
   ig: { hero1:'Wuo Oge Dijital nke Africa', hero2:'Site na Software na AI', hero3:'na Ngwọta Azụmahịa', products:'Ngwaahịa Anyị', services:'Ọrụ', about:'Maka Anyị', contact:'Kpọtụrụ Anyị', requestApp:'Arịọ App', pricing:'Ọnụ Ahịa' },
   am: { hero1:'የአፍሪካ ዲጂታል ወደፊት', hero2:'ሶፍትዌር እና AI', hero3:'ዘመናዊ ፈቃደ', products:'ምርቶቻችን', services:'አገልግሎቶች', about:'ስለ እኛ', contact:'ያግኙን', requestApp:'ፕሮጀክት ጠይቅ', pricing:'ዋጋ' },
   zu: { hero1:'Sakha Ikusasa Ledijithali lase-Afrika', hero2:'Ngesoftware ne-AI', hero3:'Nezixazululo', products:'Imikhiqizo Yethu', services:'Izinsiza', about:'Mayelana Nathi', contact:'Xhumana Nathi', requestApp:'Cela Uhlelo', pricing:'Amanani' },
-  ff: { hero1:'Laral Wuro Digital Africa', hero2:'Software e AI', hero3:'e Solutions Kabaruuji', products:'Ngaluure', services:'Golle', about:'Fahin Minen', contact:'Nafoore', requestApp:'Daa App', pricing:'Doole' }
+  ff: { hero1:'Laral Wuro Digital Africa', hero2:'Software e AI', hero3:'e Solutions Kabaruuji', products:'Ngaluure', services:'Golle', about:'Fahin Minen', contact:'Nafoore', requestApp:'Daa App', pricing:'Doole' },
+  hi: { hero1:'अफ़्रीका का डिजिटल भविष्य बना रहे हैं', hero2:'सॉफ़्टवेयर और AI के माध्यम से', hero3:'और स्मार्ट व्यावसायिक समाधान', products:'हमारे उत्पाद', services:'सेवाएँ', about:'हमारे बारे में', contact:'संपर्क करें', requestApp:'ऐप का अनुरोध करें', pricing:'मूल्य' },
+  ha: { hero1:'Gina Makomar Dijital ta Afirka', hero2:'Ta Hanyar Software da AI', hero3:'da Mafita na Kasuwanci Masu Wayo', products:'Kayayyakinmu', services:'Ayyuka', about:'Game da Mu', contact:'Tuntuɓe Mu', requestApp:'Nemi Manhaja', pricing:'Farashi' },
+  yo: { hero1:'A ń Kọ́ Ọjọ́ Ọ̀la Díjítà Áfíríkà', hero2:'Nípasẹ̀ Sọ́fítíwẹ́ àti AI', hero3:'àti Àwọn Ìdáhùn Ìṣòwò Ọgbọ́n', products:'Àwọn Ọjà Wa', services:'Àwọn Iṣẹ́', about:'Nípa Wa', contact:'Kàn Sí Wa', requestApp:'Béèrè fún App', pricing:'Iye Owó' }
 };
 
 var currentLang = 'en';
@@ -6806,25 +6809,70 @@ var CURRENCY_SYMBOLS = {
   GMD:'D',USD:'$',EUR:'€',GBP:'£',NGN:'₦',GHS:'₵',KES:'KSh',ZAR:'R',XOF:'CFA',XAF:'CFA',CAD:'C$',AUD:'A$',AED:'AED',SAR:'SAR'
 };
 
+var RFT_NAV_LABELS = {
+  en:{home:'Home',solutions:'Solutions',location:'Location'},
+  fr:{home:'Accueil',solutions:'Solutions',location:'Localisation'},
+  es:{home:'Inicio',solutions:'Soluciones',location:'Ubicación'},
+  pt:{home:'Início',solutions:'Soluções',location:'Localização'},
+  ar:{home:'الرئيسية',solutions:'الحلول',location:'الموقع'},
+  zh:{home:'首页',solutions:'解决方案',location:'位置'},
+  de:{home:'Startseite',solutions:'Lösungen',location:'Standort'},
+  sw:{home:'Nyumbani',solutions:'Suluhisho',location:'Mahali'},
+  ja:{home:'ホーム',solutions:'ソリューション',location:'場所'},
+  ko:{home:'홈',solutions:'솔루션',location:'위치'},
+  it:{home:'Home',solutions:'Soluzioni',location:'Posizione'},
+  ru:{home:'Главная',solutions:'Решения',location:'Местоположение'},
+  tr:{home:'Ana Sayfa',solutions:'Çözümler',location:'Konum'},
+  bn:{home:'হোম',solutions:'সমাধান',location:'অবস্থান'},
+  ig:{home:'Ụlọ',solutions:'Ngwọta',location:'Ebe'},
+  am:{home:'መነሻ',solutions:'መፍትሄዎች',location:'አካባቢ'},
+  zu:{home:'Ikhaya',solutions:'Izixazululo',location:'Indawo'},
+  hi:{home:'मुखपृष्ठ',solutions:'समाधान',location:'स्थान'},
+  ha:{home:'Gida',solutions:'Mafita',location:'Wuri'},
+  yo:{home:'Ilé',solutions:'Àwọn Ìdáhùn',location:'Ibi'}
+};
+
 function setLanguage(lang) {
+  if (!Object.prototype.hasOwnProperty.call(TRANSLATIONS, lang)) lang = 'en';
   currentLang = lang;
   try { localStorage.setItem('rft_lang', lang); } catch(e) {}
-  // Sync both selectors
   ['langSelect','langSelectMob','langSelectDesk'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.value = lang;
   });
-  // Apply translations
   var t = TRANSLATIONS[lang] || TRANSLATIONS.en;
-  // Update hero
   var h = document.querySelector('.hero-title');
-  if (h) h.innerHTML = t.hero1 + '<br><span class="hi">' + t.hero2 + '</span><br><span class="go">' + t.hero3 + '</span>';
-  // Update nav links
+  if (h && t.hero1 && t.hero2 && t.hero3) {
+    h.innerHTML = t.hero1 + '<br><span class="hi">' + t.hero2 + '</span><br><span class="go">' + t.hero3 + '</span>';
+  }
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
     if (t[key]) el.textContent = t[key];
   });
-  // RTL for Arabic
+
+  // Apply the selected language to the actual desktop and drawer navigation.
+  var routeKeys = {hero:'home',about:'about',services:'services',why:'solutions',products:'products',pricing:'pricing',location:'location',contact:'contact'};
+  document.querySelectorAll('#mainNav .nav-links a, #drawer ul li a').forEach(function(link) {
+    var handler = link.getAttribute('onclick') || '';
+    var match = handler.match(/(?:gotoSection|drawerGo)\(['"]([^'"]+)['"]\)/);
+    if (!match) return;
+    var route = match[1];
+    if (route === 'home') route = 'hero';
+    var key = routeKeys[route];
+    if (!key) return;
+    var label = t[key] || (RFT_NAV_LABELS[lang] && RFT_NAV_LABELS[lang][key]) || RFT_NAV_LABELS.en[key] || key;
+    if (link.closest('#drawer')) {
+      var textNodes = Array.prototype.slice.call(link.childNodes).filter(function(node) {
+        return node.nodeType === 3 && node.nodeValue.trim();
+      });
+      if (textNodes.length) textNodes[textNodes.length - 1].nodeValue = ' ' + label;
+    } else {
+      link.textContent = label;
+    }
+  });
+  document.querySelectorAll('#mainNav .nav-cta, #drawer .drawer-cta .gold-btn').forEach(function(button) {
+    button.textContent = '📱 ' + (t.requestApp || TRANSLATIONS.en.requestApp);
+  });
   document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
 }
 
