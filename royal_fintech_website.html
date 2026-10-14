@@ -2291,8 +2291,8 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
 #mainSite.rft-route-focus > section.rf-live-strip.rft-page-visible{display:block!important}
 #mainSite.rft-route-focus > section#hero.rft-page-visible{display:flex!important}
 #mainSite.rft-route-focus > .stats-banner.rft-page-visible{display:grid!important}
-#mainSite.rft-route-focus > #tickerBar,#mainSite.rft-route-focus > #flashDealBar,#mainSite.rft-route-focus > #promoCarousel{display:none!important}
-#mainSite.rft-route-focus[data-rft-current="hero"] > #tickerBar,#mainSite.rft-route-focus[data-rft-current="hero"] > #flashDealBar,#mainSite.rft-route-focus[data-rft-current="hero"] > #promoCarousel{display:flex}
+#mainSite.rft-route-focus:not([data-rft-current="hero"]) > #tickerBar,#mainSite.rft-route-focus:not([data-rft-current="hero"]) > #flashDealBar,#mainSite.rft-route-focus:not([data-rft-current="hero"]) > #promoCarousel{display:none!important}
+/* On Home, let each announcement component's own .active state control whether it appears. */
 #mainSite.rft-route-focus > .rf-home-gallery.rft-page-visible{display:block!important}
 #mainSite.rft-route-focus > footer{display:block!important}
 .rf-home-gallery{padding:38px clamp(16px,4vw,56px) 46px;background:var(--bg2)}
