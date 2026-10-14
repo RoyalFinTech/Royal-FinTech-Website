@@ -2904,14 +2904,14 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
             <label>Attach Files (optional)</label>
             <div class="img-upload-zone" id="contactUploadZone">
               <input type="file" id="contactFiles" multiple accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(this,'contactPreviews','contactProgress')">
-              <div>📎 Click or drag files here<br><span style="color:var(--muted);font-size:0.75rem">Images, PDF, Word docs</span></div>
+              <div>📎 Click or drag files here<br><span style="color:var(--muted);font-size:0.75rem">Images, PDF, Word docs · attach manually after opening WhatsApp/email</span></div>
             </div>
             <div class="img-preview-wrap" id="contactPreviews"></div>
             <div class="img-progress" id="contactProgress"><div class="img-progress-fill" id="contactProgressFill"></div></div>
           </div>
           <button type="submit" class="btn btn-primary btn-full" id="contactSubmitBtn"><span id="contactBtnText">🚀 Send Message</span></button>
         </form>
-        <div class="form-ok" id="contactOk"><div class="fok-ico">✅</div><p>Message sent! We'll reply within 24 hours.</p><button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="resetContactForm()" type="button">Send Another</button></div>
+        <div class="form-ok" id="contactOk"><div class="fok-ico">✅</div><p>Your message has not been delivered until you send it from WhatsApp or your email app.</p><button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="resetContactForm()" type="button">Send Another</button></div>
       </div>
     </div>
   </div>
@@ -4366,7 +4366,7 @@ document.querySelectorAll('.img-upload-zone').forEach(function(zone) {
   });
 });
 
-// ---- CONTACT FORM ----
+// ---- CONTACT FORM — transparent WhatsApp/email handoff (no backend configured) ----
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', function(e) {
@@ -4379,41 +4379,68 @@ if (contactForm) {
     if (!name || !name.value.trim()) { showFgErr('cName','cNameErr','Name is required.'); ok = false; } else clearFgErr('cName','cNameErr');
     if (!email || !validEmail(email.value)) { showFgErr('cEmail','cEmailErr','Valid email required.'); ok = false; } else clearFgErr('cEmail','cEmailErr');
     if (!msg || !msg.value.trim()) { showFgErr('cMsg','cMsgErr','Message is required.'); ok = false; } else clearFgErr('cMsg','cMsgErr');
-    if (phone && phone.value.trim() && typeof validateContactPhone === 'function' && !validateContactPhone()) { ok = false; }
-    if (!ok) { showToast('Please fix the errors in the form', 'error'); return; }
+    if (phone && phone.value.trim() && typeof validateContactPhone === 'function' && !validateContactPhone()) ok = false;
+    if (!ok) { showToast('Please fix the errors in the form.', 'error'); return; }
+
     const btn = document.getElementById('contactSubmitBtn');
     const btnText = document.getElementById('contactBtnText');
-    if (btn) { btn.disabled = true; }
-    if (btnText) { btnText.innerHTML = '<span class="contact-loading-spinner"></span>Sending...'; }
-    var phoneCodeEl = document.getElementById('cPhoneCode');
-    var countryEl = document.getElementById('cCountry');
-    var companyEl = document.getElementById('cCompany');
-    var fullPhone = (phoneCodeEl ? phoneCodeEl.value : '') + ' ' + (phone ? phone.value.trim() : '');
-    var countryName = countryEl ? countryEl.options[countryEl.selectedIndex].text : '';
+    if (btn) btn.disabled = true;
+    if (btnText) btnText.textContent = 'Preparing message…';
 
-    setTimeout(function() {
-      // Save message to DB for admin
-      try {
-        var msgs = DB.get('contactMessages') || [];
-        msgs.push({
-          id: Date.now(), name: name.value, email: email.value,
-          phone: fullPhone.trim(), country: countryName,
-          company: companyEl ? companyEl.value : '', message: msg.value,
-          date: new Date().toISOString(), status: 'new'
-        });
-        DB.set('contactMessages', msgs);
-      } catch(err) {}
+    const phoneCodeEl = document.getElementById('cPhoneCode');
+    const countryEl = document.getElementById('cCountry');
+    const companyEl = document.getElementById('cCompany');
+    const filesEl = document.getElementById('contactFiles');
+    const fullPhone = ((phoneCodeEl ? phoneCodeEl.value : '') + ' ' + (phone ? phone.value.trim() : '')).trim();
+    const countryName = countryEl && countryEl.selectedIndex >= 0 ? countryEl.options[countryEl.selectedIndex].text : '';
+    const fileNames = Array.from((filesEl && filesEl.files) || []).map(function(file) { return file.name; });
+    const lines = [
+      'Royal FinTech Company — Website Inquiry',
+      'Name: ' + name.value.trim(),
+      'Email: ' + email.value.trim(),
+      'Phone: ' + (fullPhone || 'Not provided'),
+      'Country: ' + (countryName || 'Not provided'),
+      'Company: ' + (companyEl && companyEl.value.trim() ? companyEl.value.trim() : 'Not provided'),
+      '',
+      'Message:',
+      msg.value.trim()
+    ];
+    if (fileNames.length) lines.push('', 'Selected files: ' + fileNames.join(', '), 'Please attach these files manually. The website has not uploaded them to a server.');
+    const bodyText = lines.join('\\n');
+    const waAnchor = document.querySelector('#contact a[href*="wa.me/"]') || document.querySelector('a[href*="wa.me/"]');
+    const whatsappBase = waAnchor && waAnchor.href ? waAnchor.href.split('?')[0] : 'https://wa.me/2204071510';
+    const waUrl = whatsappBase + '?text=' + encodeURIComponent(bodyText);
+    const mailSubject = 'Royal FinTech website inquiry — ' + name.value.trim();
+    const mailUrl = 'mailto:royalfintechcompany@gmail.com?subject=' + encodeURIComponent(mailSubject) + '&body=' + encodeURIComponent(bodyText);
 
-      contactForm.style.display = 'none';
-      const ok2 = document.getElementById('contactOk');
-      if (ok2) ok2.style.display = 'block';
-      showToast('Message sent! \u2705', 'success');
-      try { pushNotif('\ud83d\udce9 New Contact Message', (name ? name.value : 'Someone') + ' sent a message'); } catch(e){}
-      try { pushAdminNotif('\ud83d\udce9 Contact Form', 'New message from ' + (name ? esc(name.value) : 'visitor') + (countryName ? ' (' + countryName + ')' : '')); } catch(e){}
-      try { addAuditLog('\ud83d\udce9', 'action', 'Contact message from ' + name.value); } catch(e){}
-      if (btn) { btn.disabled = false; }
-      if (btnText) { btnText.innerHTML = '\ud83d\ude80 Send Message'; }
-    }, 1400);
+    let opened = null;
+    try { opened = window.open(waUrl, '_blank'); } catch(openError) {}
+    let channel = 'WhatsApp';
+    if (opened) {
+      try { opened.opener = null; } catch(e) {}
+    } else {
+      channel = 'email';
+      let mailOpened = null;
+      try { mailOpened = window.open(mailUrl, '_blank'); } catch(mailError) {}
+      if (mailOpened) {
+        try { mailOpened.opener = null; } catch(e) {}
+      } else {
+        window.location.href = mailUrl;
+      }
+    }
+
+    const notice = document.getElementById('contactOk');
+    const noticeText = notice ? notice.querySelector('p') : null;
+    if (noticeText) {
+      noticeText.textContent = channel === 'WhatsApp'
+        ? 'WhatsApp has been opened with your message drafted. Review it and press Send to deliver it. Any selected files must be attached manually; this website is not connected to a shared message server yet.'
+        : 'Your email draft has been prepared. Send it from your email app to deliver the message. Any selected files must be attached manually; this website is not connected to a shared message server yet.';
+    }
+    contactForm.style.display = 'none';
+    if (notice) notice.style.display = 'block';
+    showToast(channel === 'WhatsApp' ? 'WhatsApp draft prepared — press Send there.' : 'Email draft prepared — press Send in your email app.', 'success');
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.textContent = 'Prepare Message';
   });
 }
 
@@ -4421,7 +4448,11 @@ function resetContactForm() {
   const f = document.getElementById('contactForm');
   const ok = document.getElementById('contactOk');
   if (f) { f.reset(); f.style.display = 'block'; }
-  if (ok) ok.style.display = 'none';
+  if (ok) {
+    ok.style.display = 'none';
+    const noticeText = ok.querySelector('p');
+    if (noticeText) noticeText.textContent = 'Your message has not been delivered until you send it from WhatsApp or your email app.';
+  }
   const btn = document.getElementById('contactSubmitBtn');
   const btnText = document.getElementById('contactBtnText');
   if (btn) btn.disabled = false;
