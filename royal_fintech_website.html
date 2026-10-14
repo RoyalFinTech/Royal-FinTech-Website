@@ -2254,6 +2254,132 @@ footer{border-top:1px solid var(--rf-line)}
 @media(max-width:760px){.rf-live-inner,.rf-request-hero{grid-template-columns:1fr}.rf-network-card{min-height:220px}.rf-request-hero{padding:18px}.rf-request-hero .rf-hero-visual{min-height:175px}.rf-signal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.rf-project-visuals{grid-template-columns:1fr}.rf-project-visual{min-height:180px}}
 @media(prefers-reduced-motion:reduce){.rf-orbit:before,.rf-orbit:after,.rf-network-live:before{animation:none!important}.rf-hero-visual img,.rf-project-visual img{transition:none!important}}
 
+
+/* ===== ROYAL FINTECH RESPONSIVE / ACCESSIBILITY PASS ===== */
+:root{scroll-behavior:smooth}
+html,body{max-width:100%;overflow-x:clip}
+img,svg,video,canvas{max-width:100%}
+img{height:auto}
+#mainSite section[id]{scroll-margin-top:84px}
+#mainSite *,#requestPage *,#adminLogin *,#adminDash *{min-width:0}
+h1,h2,h3,h4,p,label,a,button,summary{overflow-wrap:anywhere}
+button,a,select,input,textarea{touch-action:manipulation}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #60a5fa!important;outline-offset:3px!important}
+select{max-width:100%;min-height:38px}
+select option,select optgroup{font:inherit}
+body:not(.light) select,body:not(.light) .lc-select,body:not(.light) .fg select,body:not(.light) .form-box select,body:not(.light) .adm-panel select,body:not(.light) .adm-filter select,body:not(.light) .drawer-select{color:#f8fafc!important;background-color:#0b1730!important;border-color:rgba(148,163,184,.42)!important;color-scheme:dark}
+body:not(.light) select option,body:not(.light) select optgroup,body:not(.light) .fg select option,body:not(.light) .drawer-select option{color:#f8fafc!important;background:#0b1730!important}
+body:not(.light) select option:checked{background:#1d4ed8!important;color:#fff!important}
+body.light select,body.light .lc-select,body.light .fg select,body.light .form-box select,body.light .adm-panel select,body.light .adm-filter select,body.light .drawer-select{color:#0f172a!important;background-color:#fff!important;border-color:#cbd5e1!important;color-scheme:light}
+body.light select option,body.light select optgroup,body.light .fg select option,body.light .drawer-select option{color:#0f172a!important;background:#fff!important}
+body.light select option:checked{background:#dbeafe!important;color:#1e3a8a!important}
+body.light input::placeholder,body.light textarea::placeholder{color:#64748b!important;opacity:1}
+body:not(.light) input::placeholder,body:not(.light) textarea::placeholder{color:#94a3b8!important;opacity:1}
+body.light #mainNav .nav-links a{color:#334155}
+body.light #mainNav .nav-links a.active,body.light #mainNav .nav-links a:hover{color:#1d4ed8}
+body.light .drawer ul a,body.light .drawer ul button,body.light .drawer-prefs-label{color:#0f172a!important}
+#hero{background-image:linear-gradient(90deg,rgba(3,10,26,.94) 0%,rgba(3,10,26,.83) 48%,rgba(3,10,26,.64) 100%),url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=85');background-position:center;background-size:cover}
+#hero .hero-title,#hero .hero-sub,#hero .hero-strip .hstrip-item,#hero .hstat-l{color:#f8fafc!important}
+#hero .hero-badge{color:#f6c86a!important}
+body.light #hero{background-image:linear-gradient(90deg,rgba(3,10,26,.94) 0%,rgba(3,10,26,.83) 48%,rgba(3,10,26,.64) 100%),url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=85');background-position:center;background-size:cover;color:#fff}
+body.light #hero .hero-title,body.light #hero .hero-sub,body.light #hero .hero-strip .hstrip-item,body.light #hero .hstat-l{color:#f8fafc!important}
+body.light #hero .hero-badge{color:#f6c86a!important}
+body.light .rf-live-strip .rf-live-title,body.light .rf-live-strip h2,body.light .rf-live-strip h3,body.light .rf-live-strip p,body.light .rf-live-strip .rf-live-copy{color:#f8fafc!important}
+body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal strong{color:#f6c86a!important}
+#mainSite.rft-route-focus > section[id],#mainSite.rft-route-focus > section.rf-live-strip,#mainSite.rft-route-focus > .stats-banner{display:none!important}
+#mainSite.rft-route-focus > section.rft-page-visible{display:block!important}
+#mainSite.rft-route-focus > section#hero.rft-page-visible{display:flex!important}
+#mainSite.rft-route-focus > .stats-banner.rft-page-visible{display:grid!important}
+#mainSite.rft-route-focus > #tickerBar,#mainSite.rft-route-focus > #flashDealBar,#mainSite.rft-route-focus > #promoCarousel{display:none!important}
+#mainSite.rft-route-focus[data-rft-current="hero"] > #tickerBar,#mainSite.rft-route-focus[data-rft-current="hero"] > #flashDealBar,#mainSite.rft-route-focus[data-rft-current="hero"] > #promoCarousel{display:flex}
+#mainSite.rft-route-focus > .rf-home-gallery.rft-page-visible{display:block!important}
+#mainSite.rft-route-focus > footer{display:block!important}
+.rf-home-gallery{padding:38px clamp(16px,4vw,56px) 46px;background:var(--bg2)}
+.rf-gallery-heading{max-width:760px;margin:0 auto 22px;text-align:center}
+.rf-gallery-heading .section-title{margin-bottom:8px}
+.rf-gallery-heading .section-desc{margin-inline:auto}
+.rf-photo-grid,.rf-people-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1180px;margin:24px auto 0}
+.rf-photo-card{margin:0;min-width:0;background:var(--glass);border:1px solid var(--gborder);border-radius:18px;overflow:hidden;box-shadow:0 10px 28px rgba(2,8,23,.12);display:flex;flex-direction:column}
+.rf-photo-card img{width:100%;height:clamp(150px,18vw,245px);display:block;object-fit:cover;background:var(--bg3)}
+.rf-photo-card figcaption{padding:15px 16px 17px;display:flex;flex-direction:column;gap:4px}
+.rf-photo-card figcaption strong{font-size:.95rem;color:var(--white)}
+.rf-photo-card figcaption span{font-size:.82rem;line-height:1.5;color:var(--gray)}
+.rf-people-gallery{margin:24px 0 20px}
+.rf-services-photo-band{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:24px 0}
+.rf-service-photo{position:relative;margin:0;min-height:155px;border-radius:16px;overflow:hidden;border:1px solid var(--gborder);background:#07152c}
+.rf-service-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.rf-service-photo:hover img{transform:scale(1.04)}
+.rf-service-photo:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(2,8,22,.93))}
+.rf-service-photo span{position:absolute;z-index:1;left:14px;right:12px;bottom:12px;color:#fff;font-size:.88rem;font-weight:750}
+.rf-contact-banner{position:relative;min-height:230px;display:flex;align-items:center;overflow:hidden;border:1px solid var(--gborder);border-radius:20px;margin:0 0 32px;background:#07152c}
+.rf-contact-banner>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rf-contact-banner:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,10,26,.94),rgba(3,10,26,.74) 54%,rgba(3,10,26,.2))}
+.rf-contact-banner-copy{position:relative;z-index:1;padding:clamp(20px,4vw,42px);max-width:680px;color:#fff}
+.rf-contact-banner-copy h2{font-family:"Space Grotesk",sans-serif;font-size:clamp(1.45rem,3.6vw,2.2rem);line-height:1.15;margin:8px 0;color:#fff!important}
+.rf-contact-banner-copy p{color:#e2e8f0!important;max-width:520px;margin-bottom:16px}
+.rf-contact-banner-copy .rf-eyebrow{color:#f6c86a}
+.nav-links a.active{color:var(--gold)!important}
+#menuBtn{flex:0 0 auto;align-items:center;justify-content:center}
+#drawer{max-height:calc(100dvh - 66px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+#drawer .drawer-prefs-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#drawer .drawer-select{width:100%;min-width:0}
+#mainNav .nav-logo{min-width:0;flex-shrink:0}
+#mainNav .nav-logo-text{min-width:0}
+#mainNav .nav-right{min-width:0;flex-shrink:0}
+@media(max-width:1179px){#mainNav{padding-inline:16px;gap:10px}#mainNav .nav-links,#mainNav .nav-desktop-controls{display:none!important}#mainNav .hamburger{display:flex!important}}
+@media(min-width:1180px) and (max-width:1439px){#mainNav .nav-links{display:flex;gap:13px}#mainNav .nav-links a{font-size:.78rem}#mainNav .nav-logo{gap:7px}#mainNav .nav-logo-text{font-size:.8rem}#mainNav .nav-right{gap:5px}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:6px}#mainNav .nav-cta{padding-inline:11px;font-size:.78rem;white-space:nowrap}}
+@media(min-width:1440px){#mainNav .nav-links{display:flex}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:9px}#mainNav .hamburger{display:none!important}}
+@media(max-width:900px){.rf-photo-grid,.rf-people-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.rf-services-photo-band{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+  #mainNav{height:64px;padding-inline:12px}
+  #mainNav .nav-logo img{width:31px!important;height:31px!important}
+  #mainNav .nav-logo-text{font-size:.78rem;line-height:1.1}
+  #drawer{top:64px!important;left:0;right:0}
+  #hero{min-height:auto;padding:92px 17px 34px;gap:22px}
+  .hero-inner{width:100%;max-width:100%}
+  .hero-title{font-size:clamp(1.85rem,7.2vw,2.65rem);line-height:1.13;letter-spacing:-.035em}
+  .hero-sub{font-size:.93rem;line-height:1.65;margin-bottom:22px}
+  .hero-btns{display:grid;grid-template-columns:1fr;gap:10px}
+  .hero-btns .btn{width:100%;white-space:normal;min-height:46px}
+  .hero-strip{gap:10px;margin-top:20px}
+  .hstrip-item{font-size:.78rem;max-width:100%}
+  .hero-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .hstat-v{font-size:1.28rem}
+  .hstat-l{font-size:.68rem}
+  .stats-banner{grid-template-columns:1fr}
+  .stat-cell{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;padding:13px 18px}
+  .rf-home-gallery{padding:28px 15px 32px}
+  .rf-photo-grid,.rf-people-gallery{grid-template-columns:1fr;gap:13px}
+  .rf-photo-card img{height:215px}
+  .rf-services-photo-band{grid-template-columns:1fr;gap:12px}
+  .rf-service-photo{min-height:185px}
+  .rf-contact-banner{min-height:300px;margin-bottom:22px}
+  .rf-contact-banner:after{background:linear-gradient(90deg,rgba(3,10,26,.92),rgba(3,10,26,.68))}
+  .rf-contact-banner-copy{padding:22px 18px}
+  .rf-live-inner,.rf-request-hero{grid-template-columns:1fr}
+  .rf-signal-grid{grid-template-columns:1fr}
+  .val-grid{grid-template-columns:1fr}
+  .svc-grid{grid-template-columns:1fr}
+  .prod-grid-v2{grid-template-columns:1fr;padding-inline:0}
+  .contact-grid{grid-template-columns:1fr!important;gap:22px}
+  .loc-strip{grid-template-columns:1fr!important}
+  .pricing-grid{grid-template-columns:1fr}
+  .req-nav{height:auto!important;min-height:60px;flex-wrap:wrap;gap:8px;padding:10px 14px!important}
+  .req-nav>*{max-width:100%;min-width:0}
+  .req-progress,.progress-steps{max-width:100%;overflow-x:auto}
+  .form-box,.modal-box,.adm-panel-card{max-width:100%;overflow-wrap:anywhere}
+  .fr2{grid-template-columns:1fr!important}
+  .req-step .fg input,.req-step .fg select,.req-step .fg textarea{font-size:16px}
+  .adm-header{flex-wrap:wrap;gap:10px}
+  .adm-content,.adm-main,.dash-panel{min-width:0;max-width:100%}
+  .adm-table-wrap,.table-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .adm-table,.table-wrap table{min-width:620px}
+  .foot-grid{grid-template-columns:1fr!important;gap:20px}
+  .foot-col,.foot-clist,.foot-desc{overflow-wrap:anywhere}
+  #btt{right:14px;bottom:14px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
 </style>
 </head>
 <body>
@@ -2326,7 +2452,9 @@ footer{border-top:1px solid var(--rf-line)}
     <li><a onclick="gotoSection('hero')">Home</a></li>
     <li><a onclick="gotoSection('about')">About</a></li>
     <li><a onclick="gotoSection('services')">Services</a></li>
-    <li><a onclick="gotoSection('products')">Products</a></li>
+    <li><a onclick="gotoSection('why')">Solutions</a></li>
+    <li><a onclick="gotoSection('products')">Our Apps</a></li>
+    <li><a onclick="gotoSection('pricing')">Pricing</a></li>
     <li><a onclick="gotoSection('location')">Location</a></li>
     <li><a onclick="gotoSection('contact')">Contact</a></li>
   </ul>
@@ -2378,7 +2506,7 @@ footer{border-top:1px solid var(--rf-line)}
     <button class="icon-btn" id="themeBtn" title="Toggle theme" type="button">☀️</button>
     <button class="nav-cta btn-gold" onclick="showPage('requestPage')" type="button">📱 Request App</button>
     </div>
-    <button class="hamburger" id="menuBtn" type="button"><span></span><span></span><span></span></button>
+    <button class="hamburger" id="menuBtn" type="button" aria-controls="drawer" aria-expanded="false" aria-label="Open navigation menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
@@ -2387,10 +2515,11 @@ footer{border-top:1px solid var(--rf-line)}
     <li><a onclick="drawerGo('hero')"><span class="dico">🏠</span>Home</a></li>
     <li><a onclick="drawerGo('about')"><span class="dico">🏢</span>About</a></li>
     <li><a onclick="drawerGo('services')"><span class="dico">⚡</span>Services</a></li>
-    <li><a onclick="drawerGo('products')"><span class="dico">📦</span>Products</a></li>
-    <li><a onclick="drawerGo('location')"><span class="dico">📍</span>Location</a></li>
+    <li><a onclick="drawerGo('why')"><span class="dico">✨</span>Solutions</a></li>
+    <li><a onclick="drawerGo('products')"><span class="dico">📦</span>Our Apps</a></li>
     <li><a onclick="drawerGo('pricing')"><span class="dico">💰</span>Pricing</a></li>
-      <li><a onclick="drawerGo('contact')"><span class="dico">📩</span>Contact</a></li>
+    <li><a onclick="drawerGo('location')"><span class="dico">📍</span>Location</a></li>
+    <li><a onclick="drawerGo('contact')"><span class="dico">📩</span>Contact</a></li>
     <li><a href="tel:+2204071510"><span class="dico">📞</span>+220 4071510</a></li>
     <li><a href="https://wa.me/2204071510" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle;margin-right:4px"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp Us</a></li>
   </ul>
@@ -2541,11 +2670,30 @@ footer{border-top:1px solid var(--rf-line)}
 </div>
 
 <!-- ABOUT -->
+
+<section class="rf-home-gallery" id="rfHomeGallery" aria-labelledby="rfHomeGalleryTitle">
+  <div class="rf-gallery-heading">
+    <div class="rf-eyebrow">Technology that serves real people</div>
+    <h2 class="section-title" id="rfHomeGalleryTitle">Digital solutions for <span class="hi">everyday life</span></h2>
+    <p class="section-desc">From healthcare and business operations to personal productivity, we design tools around the people who use them.</p>
+  </div>
+  <div class="rf-photo-grid">
+    <figure class="rf-photo-card"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1000&q=85" alt="Healthcare professional reviewing digital health information on a tablet" loading="lazy" decoding="async"><figcaption><strong>Healthcare &amp; wellbeing</strong><span>Connected services and practical record-keeping</span></figcaption></figure>
+    <figure class="rf-photo-card"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1000&q=85" alt="A diverse professional team collaborating in a modern workplace" loading="lazy" decoding="async"><figcaption><strong>Business &amp; collaboration</strong><span>Websites, customer tools and business workflows</span></figcaption></figure>
+    <figure class="rf-photo-card"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=85" alt="Digital analytics charts displayed on a computer monitor" loading="lazy" decoding="async"><figcaption><strong>Analytics &amp; insight</strong><span>Useful information presented clearly</span></figcaption></figure>
+  </div>
+</section>
+
 <section id="about">
   <div class="about-logo-box rev"><img data-brand-logo="true" alt="Royal FinTech Logo" loading="eager" decoding="async" width="36" height="36" style="aspect-ratio:1/1;background:var(--bg2,#0A0F1C);object-fit:contain;" ></div>
   <div class="tag rev">Who We Are</div>
   <h2 class="section-title rev">About <span class="hi">Royal FinTech</span></h2>
   <p class="section-desc rev">Royal FinTech Company is a technology company focused on building innovative digital solutions, financial technology platforms, marketplaces, mobile applications, payment solutions, AI-powered systems, and business automation tools for Africa. Based at Royal Africa Holdings, OIC Rd, Old Yundum, The Gambia.</p>
+  <div class="rf-people-gallery" aria-label="Royal FinTech work and technology imagery">
+    <figure class="rf-photo-card"><img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=85" alt="Laptop and coding workstation in a modern development workspace" loading="lazy" decoding="async"><figcaption><strong>Engineering &amp; product design</strong><span>Practical tools with thoughtful details</span></figcaption></figure>
+    <figure class="rf-photo-card"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=85" alt="Technology and business colleagues discussing a project" loading="lazy" decoding="async"><figcaption><strong>Partnership &amp; teamwork</strong><span>Ideas shaped with the people who use them</span></figcaption></figure>
+    <figure class="rf-photo-card"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=900&q=85" alt="Woman working on a laptop in a bright professional workspace" loading="lazy" decoding="async"><figcaption><strong>People-first technology</strong><span>Clear, accessible digital experiences</span></figcaption></figure>
+  </div>
   <div class="val-grid">
     <div class="val-card rev"><span class="val-ico">🎯</span><h4>Mission</h4><p>Accelerate African business growth through innovative digital solutions.</p></div>
     <div class="val-card rev"><span class="val-ico">🔭</span><h4>Vision</h4><p>Africa's most trusted technology partner powering the continent's future.</p></div>
@@ -2560,6 +2708,12 @@ footer{border-top:1px solid var(--rf-line)}
     <div class="tag rev">What We Do</div>
     <h2 class="section-title rev">Our <span class="hi">Services</span></h2>
     <p class="section-desc rev">End-to-end technology solutions designed to accelerate your business.</p>
+  </div>
+  <div class="rf-services-photo-band" aria-label="Examples of people using digital technology">
+    <figure class="rf-service-photo"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=85" alt="Healthcare professional using a tablet" loading="lazy" decoding="async"><span>Healthcare systems</span></figure>
+    <figure class="rf-service-photo"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=900&q=85" alt="Business team working together around a table" loading="lazy" decoding="async"><span>Business applications</span></figure>
+    <figure class="rf-service-photo"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=85" alt="Professional working with digital devices and technology" loading="lazy" decoding="async"><span>Digital productivity</span></figure>
+    <figure class="rf-service-photo"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=85" alt="Business analytics dashboard on a display" loading="lazy" decoding="async"><span>Analytics &amp; reporting</span></figure>
   </div>
   <div class="svc-grid">
     <div class="svc-card rev"><div class="svc-ico">💳</div><div class="svc-body"><h3>FinTech Solutions</h3><p>Digital payment systems, mobile money integrations, and financial platforms built for scale.</p></div></div>
@@ -2705,6 +2859,10 @@ footer{border-top:1px solid var(--rf-line)}
 
 <!-- CONTACT -->
 <section id="contact">
+  <div class="rf-contact-banner">
+    <img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1600&q=85" alt="Colleagues collaborating on a digital project" loading="lazy" decoding="async">
+    <div class="rf-contact-banner-copy"><span class="rf-eyebrow">Let's build together</span><h2>Real people. Thoughtful technology.</h2><p>Tell us what you want to improve, and we'll help shape a practical digital solution.</p><button class="btn btn-primary" type="button" onclick="showPage('requestPage')">Start a project request →</button></div>
+  </div>
   <div class="contact-grid">
     <div class="rev-l">
       <div class="tag">Get In Touch</div>
@@ -3609,7 +3767,7 @@ function updateOverviewWidgets() {
           <div class="ctrl-card" onclick="showToast('Notifications','success')"><span class="ctrl-ico">🔔</span><h4>Notifications</h4><p>Alert settings</p></div>
           <div class="ctrl-card" onclick="showToast('User Management','success')"><span class="ctrl-ico">👤</span><h4>Users</h4><p>Admin accounts</p></div>
           <div class="ctrl-card" onclick="showPanel('analytics')"><span class="ctrl-ico">📈</span><h4>Analytics</h4><p>Traffic &amp; stats</p></div>
-          <div class="ctrl-card" onclick="document.body.classList.toggle('light');showToast('Theme toggled!','success')"><span class="ctrl-ico">🌙</span><h4>Dark Mode</h4><p>Toggle site theme</p></div>
+          <div class="ctrl-card" onclick="window.rftToggleTheme();showToast('Theme preference updated.','success')"><span class="ctrl-ico">🌙</span><h4>Dark Mode</h4><p>Toggle site theme</p></div>
         </div>
       </div>
 
@@ -3618,7 +3776,7 @@ function updateOverviewWidgets() {
         <div class="panel-title">⚙️ Settings</div>
         <div style="background:var(--glass);border:1px solid var(--gborder);border-radius:var(--r);padding:18px;margin-bottom:14px">
           <h3 style="font-weight:700;font-size:0.9rem;margin-bottom:14px">Preferences</h3>
-          <div class="setting-row"><div class="setting-info"><h4>Dark Mode</h4><p>Switch site theme</p></div><label class="toggle"><input type="checkbox" id="darkToggle" checked onchange="document.body.classList.toggle('light',!this.checked)"><span class="tslider"></span></label></div>
+          <div class="setting-row"><div class="setting-info"><h4>Dark Mode</h4><p>Switch site theme</p></div><label class="toggle"><input type="checkbox" id="darkToggle" checked onchange="window.rftSetTheme(!this.checked)"><span class="tslider"></span></label></div>
           <div class="setting-row"><div class="setting-info"><h4>Email Notifications</h4><p>New project request emails</p></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
           <div class="setting-row"><div class="setting-info"><h4>WhatsApp Alerts</h4><p>New lead WhatsApp messages</p></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
           <div class="setting-row"><div class="setting-info"><h4>AI Auto-Analysis</h4><p>Auto-analyze new submissions</p></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
@@ -3837,6 +3995,9 @@ function showPage(id) {
   // Aliases
   var pageAliases = { requestApp: 'requestPage', home: 'mainSite' };
   if (pageAliases[id]) id = pageAliases[id];
+  if (id === 'requestPage' && window.history && window.history.pushState && window.location.hash !== '#request') {
+    try { window.history.pushState({rftPage:'requestPage'}, '', '#request'); } catch(e) {}
+  }
 
   document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
   document.body.classList.remove('on-admin', 'on-req', 'on-login');
@@ -3878,6 +4039,10 @@ function showPage(id) {
     var _anp = document.getElementById('admNotifPanel');
     if (_np2) _np2.classList.remove('open');
     if (_anp) _anp.classList.remove('open');
+    // Explicitly returning to the website opens Home; route-driven transitions set a guard.
+    if (!window._rftSkipHomeReset && typeof RFT_ROUTE_VIEWS !== 'undefined' && typeof gotoSection === 'function') {
+      gotoSection('hero');
+    }
   }
 }
 
@@ -3900,37 +4065,126 @@ window.addEventListener('scroll', function() {
   if (nav) nav.classList.toggle('scrolled', s.scrollTop > 12);
 }, { passive: true });
 
-// ---- NAVIGATION ----
-function gotoSection(id) {
-  // Ensure products are rendered when section is visited
+// ---- PAGE-STYLE NAVIGATION ----
+var RFT_ROUTE_VIEWS = {
+  hero: ['hero', 'rf-live-strip', 'stats-banner', 'rfHomeGallery'],
+  about: ['about'],
+  services: ['services'],
+  products: ['products', 'dahaShowcase'],
+  why: ['why', 'tech'],
+  tech: ['tech'],
+  testimonials: ['testimonials'],
+  location: ['location'],
+  pricing: ['pricing'],
+  contact: ['contact']
+};
+function rftGetRoute(id) {
+  var aliases = { home:'hero', solutions:'why', apps:'products', requestApp:'requestPage' };
+  id = aliases[id] || id || 'hero';
+  return Object.prototype.hasOwnProperty.call(RFT_ROUTE_VIEWS, id) ? id : 'hero';
+}
+function gotoSection(id, options) {
+  options = options || {};
+  if (id === 'requestApp' || id === 'requestPage') {
+    showPage('requestPage');
+    closeDrawer();
+    return;
+  }
   if (id === 'products') { try { renderPublicProducts(); } catch(e) {} }
-  if (id === 'pricing') { try { showPriceTab('websites'); } catch(e) {} }
-  const ms = document.getElementById('mainSite');
-  if (!ms || ms.style.display === 'none') showPage('mainSite');
-  setTimeout(function() {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 60);
+  var route = rftGetRoute(id);
+  if (route === 'pricing') { try { showPriceTab('websites'); } catch(e) {} }
+  var ms = document.getElementById('mainSite');
+  if (!ms || ms.style.display === 'none') {
+    window._rftSkipHomeReset = true;
+    try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
+  }
+  ms = document.getElementById('mainSite');
+  if (!ms) return;
+
+  var visibleIds = RFT_ROUTE_VIEWS[route];
+  ms.classList.add('rft-route-focus');
+  ms.setAttribute('data-rft-current', route);
+  Array.prototype.slice.call(ms.children).forEach(function(node) {
+    var managed = (node.tagName === 'SECTION' && node.hasAttribute('id')) ||
+      node.classList.contains('rf-live-strip') || node.classList.contains('stats-banner');
+    if (!managed) return;
+    var nodeId = node.id || (node.classList.contains('rf-live-strip') ? 'rf-live-strip' : 'stats-banner');
+    node.classList.toggle('rft-page-visible', visibleIds.indexOf(nodeId) !== -1);
+    node.setAttribute('aria-hidden', visibleIds.indexOf(nodeId) === -1 ? 'true' : 'false');
+  });
+
+  window.scrollTo({top:0, left:0, behavior: options.fromHistory ? 'auto' : 'smooth'});
   closeDrawer();
+
+  document.querySelectorAll('#mainNav .nav-links a, #drawer a').forEach(function(link) {
+    var onclick = link.getAttribute('onclick') || '';
+    var match = onclick.match(/(?:gotoSection|drawerGo)\(['"]([^'"]+)['"]\)/);
+    var target = match ? rftGetRoute(match[1]) : '';
+    var active = target === route;
+    link.classList.toggle('active', active);
+    if (active) link.setAttribute('aria-current','page');
+    else link.removeAttribute('aria-current');
+  });
+  var hash = '#' + route;
+  if (window.history && window.history.pushState && !options.fromHistory) {
+    try {
+      if (window.location.hash !== hash) window.history.pushState({rftRoute:route}, '', hash);
+    } catch(e) {}
+  }
+  window.requestAnimationFrame(function() {
+    var view = visibleIds.map(function(viewId) {
+      if (viewId === 'rf-live-strip') return ms.querySelector(':scope > .rf-live-strip');
+      if (viewId === 'stats-banner') return ms.querySelector(':scope > .stats-banner');
+      return document.getElementById(viewId);
+    }).filter(Boolean);
+    view.forEach(function(root) {
+      root.querySelectorAll('.rev,.rev-l,.rev-r').forEach(function(el) { el.classList.add('in'); });
+    });
+  });
 }
 function drawerGo(id) { gotoSection(id); }
 
-// ---- HAMBURGER ----
-const menuBtn = document.getElementById('menuBtn');
+// ---- RESPONSIVE HAMBURGER / DRAWER ----
+var menuBtn = document.getElementById('menuBtn');
+function rftSetDrawer(open) {
+  var drawer = document.getElementById('drawer');
+  var menu = document.getElementById('menuBtn');
+  if (drawer) drawer.classList.toggle('open', !!open);
+  if (menu) {
+    menu.classList.toggle('open', !!open);
+    menu.setAttribute('aria-expanded', String(!!open));
+    menu.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+  }
+  document.body.style.overflow = open ? 'hidden' : '';
+}
 if (menuBtn) {
+  menuBtn.setAttribute('aria-expanded','false');
+  menuBtn.setAttribute('aria-label','Open navigation menu');
+  menuBtn.setAttribute('aria-controls','drawer');
   menuBtn.addEventListener('click', function() {
-    const open = document.getElementById('drawer').classList.toggle('open');
-    this.classList.toggle('open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
+    var drawer = document.getElementById('drawer');
+    rftSetDrawer(!(drawer && drawer.classList.contains('open')));
   });
 }
-function closeDrawer() {
-  const d = document.getElementById('drawer');
-  const m = document.getElementById('menuBtn');
-  if (d) d.classList.remove('open');
-  if (m) m.classList.remove('open');
-  document.body.style.overflow = '';
-}
+function closeDrawer() { rftSetDrawer(false); }
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') closeDrawer();
+});
+document.addEventListener('click', function(event) {
+  var drawer = document.getElementById('drawer');
+  if (!drawer || !drawer.classList.contains('open')) return;
+  if (event.target.closest('#drawer a')) closeDrawer();
+});
+window.addEventListener('popstate', function() {
+  var route = decodeURIComponent((window.location.hash || '#hero').slice(1));
+  if (route === 'request') { showPage('requestPage'); return; }
+  gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
+});
+(function initRftPageView() {
+  var route = decodeURIComponent((window.location.hash || '#hero').slice(1));
+  if (route === 'request') showPage('requestPage');
+  else gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
+})();
 
 // ---- THEME ----
 // (Broken/duplicate legacy handlers removed. The single correct,
@@ -4410,13 +4664,15 @@ function adminLogout() {
 
 }
 
-// Session expiry watcher
+// Admin session expiry watcher — keep the user in the admin sign-in flow.
 setInterval(function() {
   const d = document.getElementById('adminDash');
-  if (d && d.style.display !== 'none' && !isAuth()) {
-    adminLogout();
-    showToast('Session expired. Please sign in again.', 'error');
-  }
+  if (!d || d.style.display === 'none' || isAuth() || window._rftExpiryRedirecting) return;
+  window._rftExpiryRedirecting = true;
+  clearSession();
+  showPage('adminLogin');
+  showToast('Admin session expired. Sign in again to continue.', 'error');
+  window.setTimeout(function() { window._rftExpiryRedirecting = false; }, 1200);
 }, 60000);
 
 // ---- ADMIN CLOCK ----
@@ -6845,30 +7101,40 @@ window.showPanel = function(id) {
 })();
 
 // ============================================================
-// THEME PERSISTENCE (dark/light save & restore)
+// THEME PERSISTENCE — shared, accessible dark/light state
 // ============================================================
 (function() {
-  function applyTheme(isLight) {
-    document.body.classList.toggle('light', isLight);
+  function applyTheme(isLight, persist) {
+    document.body.classList.toggle('light', !!isLight);
     var btn = document.getElementById('themeBtn');
-    if (btn) btn.textContent = isLight ? '\ud83c\udf19' : '\u2600\ufe0f';
-  }
-  // Restore saved theme
-  try {
-    var saved = localStorage.getItem('rft_theme');
-    if (saved === 'light') applyTheme(true);
-  } catch(e) {}
-  // Wire theme button
-  document.addEventListener('DOMContentLoaded', function() {
-    var btn = document.getElementById('themeBtn');
+    var drawerIcon = document.getElementById('drawerThemeIcon');
+    var adminToggle = document.getElementById('darkToggle');
     if (btn) {
-      btn.addEventListener('click', function() {
-        var isLight = !document.body.classList.contains('light');
-        applyTheme(isLight);
-        try { localStorage.setItem('rft_theme', isLight ? 'light' : 'dark'); } catch(e) {}
-      });
+      btn.textContent = isLight ? '🌙' : '☀️';
+      btn.setAttribute('aria-pressed', String(!!isLight));
+      btn.setAttribute('aria-label', isLight ? 'Switch to dark theme' : 'Switch to light theme');
+      btn.title = isLight ? 'Switch to dark theme' : 'Switch to light theme';
     }
-  });
+    if (drawerIcon) drawerIcon.textContent = isLight ? '🌙' : '☀️';
+    if (adminToggle) adminToggle.checked = !isLight;
+    if (persist) {
+      try { localStorage.setItem('rft_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+    }
+  }
+  window.rftSetTheme = function(isLight) { applyTheme(!!isLight, true); };
+  window.rftToggleTheme = function() { applyTheme(!document.body.classList.contains('light'), true); };
+  var saved = 'dark';
+  try { saved = localStorage.getItem('rft_theme') || 'dark'; } catch(e) {}
+  applyTheme(saved === 'light', false);
+  function wireThemeButton() {
+    var btn = document.getElementById('themeBtn');
+    if (btn && !btn.dataset.rftThemeWired) {
+      btn.dataset.rftThemeWired = 'true';
+      btn.addEventListener('click', window.rftToggleTheme);
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wireThemeButton, {once:true});
+  else wireThemeButton();
 })();
 
 // ============================================================
