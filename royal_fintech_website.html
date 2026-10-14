@@ -2278,20 +2278,21 @@ body:not(.light) input::placeholder,body:not(.light) textarea::placeholder{color
 body.light #mainNav .nav-links a{color:#334155}
 body.light #mainNav .nav-links a.active,body.light #mainNav .nav-links a:hover{color:#1d4ed8}
 body.light .drawer ul a,body.light .drawer ul button,body.light .drawer-prefs-label{color:#0f172a!important}
-#hero{background-image:linear-gradient(90deg,rgba(3,10,26,.94) 0%,rgba(3,10,26,.83) 48%,rgba(3,10,26,.64) 100%),url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=85');background-position:center;background-size:cover}
+#hero{background-image:linear-gradient(90deg,rgba(3,10,26,.94) 0%,rgba(3,10,26,.83) 48%,rgba(3,10,26,.64) 100%),url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=2000&q=85');background-position:center;background-size:cover}
 #hero .hero-title,#hero .hero-sub,#hero .hero-strip .hstrip-item,#hero .hstat-l{color:#f8fafc!important}
 #hero .hero-badge{color:#f6c86a!important}
-body.light #hero{background-image:linear-gradient(90deg,rgba(3,10,26,.94) 0%,rgba(3,10,26,.83) 48%,rgba(3,10,26,.64) 100%),url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=2000&q=85');background-position:center;background-size:cover;color:#fff}
+body.light #hero{background-image:linear-gradient(90deg,rgba(3,10,26,.94) 0%,rgba(3,10,26,.83) 48%,rgba(3,10,26,.64) 100%),url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=2000&q=85');background-position:center;background-size:cover;color:#fff}
 body.light #hero .hero-title,body.light #hero .hero-sub,body.light #hero .hero-strip .hstrip-item,body.light #hero .hstat-l{color:#f8fafc!important}
 body.light #hero .hero-badge{color:#f6c86a!important}
 body.light .rf-live-strip .rf-live-title,body.light .rf-live-strip h2,body.light .rf-live-strip h3,body.light .rf-live-strip p,body.light .rf-live-strip .rf-live-copy{color:#f8fafc!important}
 body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal strong{color:#f6c86a!important}
 #mainSite.rft-route-focus > section[id],#mainSite.rft-route-focus > section.rf-live-strip,#mainSite.rft-route-focus > .stats-banner{display:none!important}
 #mainSite.rft-route-focus > section.rft-page-visible{display:block!important}
+#mainSite.rft-route-focus > section.rf-live-strip.rft-page-visible{display:block!important}
 #mainSite.rft-route-focus > section#hero.rft-page-visible{display:flex!important}
 #mainSite.rft-route-focus > .stats-banner.rft-page-visible{display:grid!important}
-#mainSite.rft-route-focus > #tickerBar,#mainSite.rft-route-focus > #flashDealBar,#mainSite.rft-route-focus > #promoCarousel{display:none!important}
-#mainSite.rft-route-focus[data-rft-current="hero"] > #tickerBar,#mainSite.rft-route-focus[data-rft-current="hero"] > #flashDealBar,#mainSite.rft-route-focus[data-rft-current="hero"] > #promoCarousel{display:flex}
+#mainSite.rft-route-focus:not([data-rft-current="hero"]) > #tickerBar,#mainSite.rft-route-focus:not([data-rft-current="hero"]) > #flashDealBar,#mainSite.rft-route-focus:not([data-rft-current="hero"]) > #promoCarousel{display:none!important}
+/* On Home, let each announcement component's own .active state control whether it appears. */
 #mainSite.rft-route-focus > .rf-home-gallery.rft-page-visible{display:block!important}
 #mainSite.rft-route-focus > footer{display:block!important}
 .rf-home-gallery{padding:38px clamp(16px,4vw,56px) 46px;background:var(--bg2)}
@@ -2326,8 +2327,7 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
 #mainNav .nav-logo{min-width:0;flex-shrink:0}
 #mainNav .nav-logo-text{min-width:0}
 #mainNav .nav-right{min-width:0;flex-shrink:0}
-@media(max-width:1179px){#mainNav{padding-inline:16px;gap:10px}#mainNav .nav-links,#mainNav .nav-desktop-controls{display:none!important}#mainNav .hamburger{display:flex!important}}
-@media(min-width:1180px) and (max-width:1439px){#mainNav .nav-links{display:flex;gap:13px}#mainNav .nav-links a{font-size:.78rem}#mainNav .nav-logo{gap:7px}#mainNav .nav-logo-text{font-size:.8rem}#mainNav .nav-right{gap:5px}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:6px}#mainNav .nav-cta{padding-inline:11px;font-size:.78rem;white-space:nowrap}}
+@media(max-width:1439px){#mainNav{padding-inline:16px;gap:10px}#mainNav .nav-links,#mainNav .nav-desktop-controls{display:none!important}#mainNav .hamburger{display:flex!important}}
 @media(min-width:1440px){#mainNav .nav-links{display:flex}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:9px}#mainNav .hamburger{display:none!important}}
 @media(max-width:900px){.rf-photo-grid,.rf-people-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.rf-services-photo-band{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){
@@ -2455,6 +2455,7 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
     <li><a onclick="gotoSection('why')">Solutions</a></li>
     <li><a onclick="gotoSection('products')">Our Apps</a></li>
     <li><a onclick="gotoSection('pricing')">Pricing</a></li>
+    <li><a onclick="gotoSection('testimonials')">Testimonials</a></li>
     <li><a onclick="gotoSection('location')">Location</a></li>
     <li><a onclick="gotoSection('contact')">Contact</a></li>
   </ul>
@@ -2518,6 +2519,7 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
     <li><a onclick="drawerGo('why')"><span class="dico">✨</span>Solutions</a></li>
     <li><a onclick="drawerGo('products')"><span class="dico">📦</span>Our Apps</a></li>
     <li><a onclick="drawerGo('pricing')"><span class="dico">💰</span>Pricing</a></li>
+    <li><a onclick="drawerGo('testimonials')"><span class="dico">⭐</span>Testimonials</a></li>
     <li><a onclick="drawerGo('location')"><span class="dico">📍</span>Location</a></li>
     <li><a onclick="drawerGo('contact')"><span class="dico">📩</span>Contact</a></li>
     <li><a href="tel:+2204071510"><span class="dico">📞</span>+220 4071510</a></li>
@@ -2904,14 +2906,14 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
             <label>Attach Files (optional)</label>
             <div class="img-upload-zone" id="contactUploadZone">
               <input type="file" id="contactFiles" multiple accept="image/*,.pdf,.doc,.docx" onchange="handleFileSelect(this,'contactPreviews','contactProgress')">
-              <div>📎 Click or drag files here<br><span style="color:var(--muted);font-size:0.75rem">Images, PDF, Word docs</span></div>
+              <div>📎 Click or drag files here<br><span style="color:var(--muted);font-size:0.75rem">Images, PDF, Word docs · attach manually after opening WhatsApp/email</span></div>
             </div>
             <div class="img-preview-wrap" id="contactPreviews"></div>
             <div class="img-progress" id="contactProgress"><div class="img-progress-fill" id="contactProgressFill"></div></div>
           </div>
           <button type="submit" class="btn btn-primary btn-full" id="contactSubmitBtn"><span id="contactBtnText">🚀 Send Message</span></button>
         </form>
-        <div class="form-ok" id="contactOk"><div class="fok-ico">✅</div><p>Message sent! We'll reply within 24 hours.</p><button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="resetContactForm()" type="button">Send Another</button></div>
+        <div class="form-ok" id="contactOk"><div class="fok-ico">✅</div><p>Your message has not been delivered until you send it from WhatsApp or your email app.</p><button class="btn btn-ghost btn-sm" style="margin-top:14px" onclick="resetContactForm()" type="button">Send Another</button></div>
       </div>
     </div>
   </div>
@@ -2944,6 +2946,9 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
         <li><a onclick="gotoSection('about')">About</a></li>
         <li><a onclick="gotoSection('services')">Services</a></li>
         <li><a onclick="gotoSection('products')">Products</a></li>
+        <li><a onclick="gotoSection('why')">Solutions</a></li>
+        <li><a onclick="gotoSection('pricing')">Pricing</a></li>
+        <li><a onclick="gotoSection('testimonials')">Testimonials</a></li>
         <li><a onclick="gotoSection('location')">Location</a></li>
         <li><a onclick="gotoSection('contact')">Contact</a></li>
         <li><button onclick="showPage('requestPage')" type="button">📱 Request App</button></li>
@@ -2952,9 +2957,9 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
     <div class="foot-col">
       <h4>Products</h4>
       <ul>
-        <li><a onclick="gotoSection('contact')">MarketLink Gambia</a></li>
-        <li><a onclick="gotoSection('contact')">FixNow</a></li>
-        <li><a onclick="gotoSection('contact')">TAMA</a></li>
+        <li><a onclick="gotoSection('products');setTimeout(function(){openProductModal('marketlink')},140)">MarketLink Gambia</a></li>
+        <li><a onclick="gotoSection('products');setTimeout(function(){openProductModal('fixnow')},140)">FixNow</a></li>
+        <li><a onclick="gotoSection('products');setTimeout(function(){openProductModal('tama')},140)">TAMA</a></li>
       </ul>
       <h4 style="margin-top:16px">Contact</h4>
       <ul>
@@ -4366,7 +4371,7 @@ document.querySelectorAll('.img-upload-zone').forEach(function(zone) {
   });
 });
 
-// ---- CONTACT FORM ----
+// ---- CONTACT FORM — transparent WhatsApp/email handoff (no backend configured) ----
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', function(e) {
@@ -4379,41 +4384,72 @@ if (contactForm) {
     if (!name || !name.value.trim()) { showFgErr('cName','cNameErr','Name is required.'); ok = false; } else clearFgErr('cName','cNameErr');
     if (!email || !validEmail(email.value)) { showFgErr('cEmail','cEmailErr','Valid email required.'); ok = false; } else clearFgErr('cEmail','cEmailErr');
     if (!msg || !msg.value.trim()) { showFgErr('cMsg','cMsgErr','Message is required.'); ok = false; } else clearFgErr('cMsg','cMsgErr');
-    if (phone && phone.value.trim() && typeof validateContactPhone === 'function' && !validateContactPhone()) { ok = false; }
-    if (!ok) { showToast('Please fix the errors in the form', 'error'); return; }
+    if (phone && phone.value.trim() && typeof validateContactPhone === 'function' && !validateContactPhone()) ok = false;
+    if (!ok) { showToast('Please fix the errors in the form.', 'error'); return; }
+
     const btn = document.getElementById('contactSubmitBtn');
     const btnText = document.getElementById('contactBtnText');
-    if (btn) { btn.disabled = true; }
-    if (btnText) { btnText.innerHTML = '<span class="contact-loading-spinner"></span>Sending...'; }
-    var phoneCodeEl = document.getElementById('cPhoneCode');
-    var countryEl = document.getElementById('cCountry');
-    var companyEl = document.getElementById('cCompany');
-    var fullPhone = (phoneCodeEl ? phoneCodeEl.value : '') + ' ' + (phone ? phone.value.trim() : '');
-    var countryName = countryEl ? countryEl.options[countryEl.selectedIndex].text : '';
+    if (btn) btn.disabled = true;
+    if (btnText) btnText.textContent = 'Preparing message…';
 
-    setTimeout(function() {
-      // Save message to DB for admin
-      try {
-        var msgs = DB.get('contactMessages') || [];
-        msgs.push({
-          id: Date.now(), name: name.value, email: email.value,
-          phone: fullPhone.trim(), country: countryName,
-          company: companyEl ? companyEl.value : '', message: msg.value,
-          date: new Date().toISOString(), status: 'new'
-        });
-        DB.set('contactMessages', msgs);
-      } catch(err) {}
+    const phoneCodeEl = document.getElementById('cPhoneCode');
+    const countryEl = document.getElementById('cCountry');
+    const companyEl = document.getElementById('cCompany');
+    const filesEl = document.getElementById('contactFiles');
+    const fullPhone = ((phoneCodeEl ? phoneCodeEl.value : '') + ' ' + (phone ? phone.value.trim() : '')).trim();
+    const countryName = countryEl && countryEl.selectedIndex >= 0 ? countryEl.options[countryEl.selectedIndex].text : '';
+    const fileNames = Array.from((filesEl && filesEl.files) || []).map(function(file) { return file.name; });
+    const lines = [
+      'Royal FinTech Company — Website Inquiry',
+      'Name: ' + name.value.trim(),
+      'Email: ' + email.value.trim(),
+      'Phone: ' + (fullPhone || 'Not provided'),
+      'Country: ' + (countryName || 'Not provided'),
+      'Company: ' + (companyEl && companyEl.value.trim() ? companyEl.value.trim() : 'Not provided'),
+      '',
+      'Message:',
+      msg.value.trim()
+    ];
+    if (fileNames.length) lines.push('', 'Selected files: ' + fileNames.join(', '), 'Please attach these files manually. The website has not uploaded them to a server.');
+    const bodyText = lines.join('\\n');
+    const waAnchor = document.querySelector('#contact a[href*="wa.me/"]') || document.querySelector('a[href*="wa.me/"]');
+    const whatsappBase = waAnchor && waAnchor.href ? waAnchor.href.split('?')[0] : 'https://wa.me/2204071510';
+    const waUrl = whatsappBase + '?text=' + encodeURIComponent(bodyText);
+    const emailAnchor = document.querySelector('#contact a[href^="mailto:"]') || document.querySelector('a[href^="mailto:"]');
+    const emailAddress = emailAnchor && emailAnchor.href
+      ? emailAnchor.href.replace(/^mailto:/i, '').split('?')[0]
+      : 'royalfintechcompany@gmail.com';
+    const mailSubject = 'Royal FinTech website inquiry — ' + name.value.trim();
+    const mailUrl = 'mailto:' + emailAddress + '?subject=' + encodeURIComponent(mailSubject) + '&body=' + encodeURIComponent(bodyText);
 
-      contactForm.style.display = 'none';
-      const ok2 = document.getElementById('contactOk');
-      if (ok2) ok2.style.display = 'block';
-      showToast('Message sent! \u2705', 'success');
-      try { pushNotif('\ud83d\udce9 New Contact Message', (name ? name.value : 'Someone') + ' sent a message'); } catch(e){}
-      try { pushAdminNotif('\ud83d\udce9 Contact Form', 'New message from ' + (name ? esc(name.value) : 'visitor') + (countryName ? ' (' + countryName + ')' : '')); } catch(e){}
-      try { addAuditLog('\ud83d\udce9', 'action', 'Contact message from ' + name.value); } catch(e){}
-      if (btn) { btn.disabled = false; }
-      if (btnText) { btnText.innerHTML = '\ud83d\ude80 Send Message'; }
-    }, 1400);
+    let opened = null;
+    try { opened = window.open(waUrl, '_blank'); } catch(openError) {}
+    let channel = 'WhatsApp';
+    if (opened) {
+      try { opened.opener = null; } catch(e) {}
+    } else {
+      channel = 'email';
+      let mailOpened = null;
+      try { mailOpened = window.open(mailUrl, '_blank'); } catch(mailError) {}
+      if (mailOpened) {
+        try { mailOpened.opener = null; } catch(e) {}
+      } else {
+        window.location.href = mailUrl;
+      }
+    }
+
+    const notice = document.getElementById('contactOk');
+    const noticeText = notice ? notice.querySelector('p') : null;
+    if (noticeText) {
+      noticeText.textContent = channel === 'WhatsApp'
+        ? 'WhatsApp has been opened with your message drafted. Review it and press Send to deliver it. Any selected files must be attached manually; this website is not connected to a shared message server yet.'
+        : 'Your email draft has been prepared. Send it from your email app to deliver the message. Any selected files must be attached manually; this website is not connected to a shared message server yet.';
+    }
+    contactForm.style.display = 'none';
+    if (notice) notice.style.display = 'block';
+    showToast(channel === 'WhatsApp' ? 'WhatsApp draft prepared — press Send there.' : 'Email draft prepared — press Send in your email app.', 'success');
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.textContent = 'Prepare Message';
   });
 }
 
@@ -4421,7 +4457,11 @@ function resetContactForm() {
   const f = document.getElementById('contactForm');
   const ok = document.getElementById('contactOk');
   if (f) { f.reset(); f.style.display = 'block'; }
-  if (ok) ok.style.display = 'none';
+  if (ok) {
+    ok.style.display = 'none';
+    const noticeText = ok.querySelector('p');
+    if (noticeText) noticeText.textContent = 'Your message has not been delivered until you send it from WhatsApp or your email app.';
+  }
   const btn = document.getElementById('contactSubmitBtn');
   const btnText = document.getElementById('contactBtnText');
   if (btn) btn.disabled = false;
@@ -6758,7 +6798,10 @@ var TRANSLATIONS = {
   ig: { hero1:'Wuo Oge Dijital nke Africa', hero2:'Site na Software na AI', hero3:'na Ngwọta Azụmahịa', products:'Ngwaahịa Anyị', services:'Ọrụ', about:'Maka Anyị', contact:'Kpọtụrụ Anyị', requestApp:'Arịọ App', pricing:'Ọnụ Ahịa' },
   am: { hero1:'የአፍሪካ ዲጂታል ወደፊት', hero2:'ሶፍትዌር እና AI', hero3:'ዘመናዊ ፈቃደ', products:'ምርቶቻችን', services:'አገልግሎቶች', about:'ስለ እኛ', contact:'ያግኙን', requestApp:'ፕሮጀክት ጠይቅ', pricing:'ዋጋ' },
   zu: { hero1:'Sakha Ikusasa Ledijithali lase-Afrika', hero2:'Ngesoftware ne-AI', hero3:'Nezixazululo', products:'Imikhiqizo Yethu', services:'Izinsiza', about:'Mayelana Nathi', contact:'Xhumana Nathi', requestApp:'Cela Uhlelo', pricing:'Amanani' },
-  ff: { hero1:'Laral Wuro Digital Africa', hero2:'Software e AI', hero3:'e Solutions Kabaruuji', products:'Ngaluure', services:'Golle', about:'Fahin Minen', contact:'Nafoore', requestApp:'Daa App', pricing:'Doole' }
+  ff: { hero1:'Laral Wuro Digital Africa', hero2:'Software e AI', hero3:'e Solutions Kabaruuji', products:'Ngaluure', services:'Golle', about:'Fahin Minen', contact:'Nafoore', requestApp:'Daa App', pricing:'Doole' },
+  hi: { hero1:'अफ़्रीका का डिजिटल भविष्य बना रहे हैं', hero2:'सॉफ़्टवेयर और AI के माध्यम से', hero3:'और स्मार्ट व्यावसायिक समाधान', products:'हमारे उत्पाद', services:'सेवाएँ', about:'हमारे बारे में', contact:'संपर्क करें', requestApp:'ऐप का अनुरोध करें', pricing:'मूल्य' },
+  ha: { hero1:'Gina Makomar Dijital ta Afirka', hero2:'Ta Hanyar Software da AI', hero3:'da Mafita na Kasuwanci Masu Wayo', products:'Kayayyakinmu', services:'Ayyuka', about:'Game da Mu', contact:'Tuntuɓe Mu', requestApp:'Nemi Manhaja', pricing:'Farashi' },
+  yo: { hero1:'A ń Kọ́ Ọjọ́ Ọ̀la Díjítà Áfíríkà', hero2:'Nípasẹ̀ Sọ́fítíwẹ́ àti AI', hero3:'àti Àwọn Ìdáhùn Ìṣòwò Ọgbọ́n', products:'Àwọn Ọjà Wa', services:'Àwọn Iṣẹ́', about:'Nípa Wa', contact:'Kàn Sí Wa', requestApp:'Béèrè fún App', pricing:'Iye Owó' }
 };
 
 var currentLang = 'en';
@@ -6775,25 +6818,70 @@ var CURRENCY_SYMBOLS = {
   GMD:'D',USD:'$',EUR:'€',GBP:'£',NGN:'₦',GHS:'₵',KES:'KSh',ZAR:'R',XOF:'CFA',XAF:'CFA',CAD:'C$',AUD:'A$',AED:'AED',SAR:'SAR'
 };
 
+var RFT_NAV_LABELS = {
+  en:{home:'Home',solutions:'Solutions',location:'Location'},
+  fr:{home:'Accueil',solutions:'Solutions',location:'Localisation'},
+  es:{home:'Inicio',solutions:'Soluciones',location:'Ubicación'},
+  pt:{home:'Início',solutions:'Soluções',location:'Localização'},
+  ar:{home:'الرئيسية',solutions:'الحلول',location:'الموقع'},
+  zh:{home:'首页',solutions:'解决方案',location:'位置'},
+  de:{home:'Startseite',solutions:'Lösungen',location:'Standort'},
+  sw:{home:'Nyumbani',solutions:'Suluhisho',location:'Mahali'},
+  ja:{home:'ホーム',solutions:'ソリューション',location:'場所'},
+  ko:{home:'홈',solutions:'솔루션',location:'위치'},
+  it:{home:'Home',solutions:'Soluzioni',location:'Posizione'},
+  ru:{home:'Главная',solutions:'Решения',location:'Местоположение'},
+  tr:{home:'Ana Sayfa',solutions:'Çözümler',location:'Konum'},
+  bn:{home:'হোম',solutions:'সমাধান',location:'অবস্থান'},
+  ig:{home:'Ụlọ',solutions:'Ngwọta',location:'Ebe'},
+  am:{home:'መነሻ',solutions:'መፍትሄዎች',location:'አካባቢ'},
+  zu:{home:'Ikhaya',solutions:'Izixazululo',location:'Indawo'},
+  hi:{home:'मुखपृष्ठ',solutions:'समाधान',location:'स्थान'},
+  ha:{home:'Gida',solutions:'Mafita',location:'Wuri'},
+  yo:{home:'Ilé',solutions:'Àwọn Ìdáhùn',location:'Ibi'}
+};
+
 function setLanguage(lang) {
+  if (!Object.prototype.hasOwnProperty.call(TRANSLATIONS, lang)) lang = 'en';
   currentLang = lang;
   try { localStorage.setItem('rft_lang', lang); } catch(e) {}
-  // Sync both selectors
   ['langSelect','langSelectMob','langSelectDesk'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.value = lang;
   });
-  // Apply translations
   var t = TRANSLATIONS[lang] || TRANSLATIONS.en;
-  // Update hero
   var h = document.querySelector('.hero-title');
-  if (h) h.innerHTML = t.hero1 + '<br><span class="hi">' + t.hero2 + '</span><br><span class="go">' + t.hero3 + '</span>';
-  // Update nav links
+  if (h && t.hero1 && t.hero2 && t.hero3) {
+    h.innerHTML = t.hero1 + '<br><span class="hi">' + t.hero2 + '</span><br><span class="go">' + t.hero3 + '</span>';
+  }
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
     if (t[key]) el.textContent = t[key];
   });
-  // RTL for Arabic
+
+  // Apply the selected language to the actual desktop and drawer navigation.
+  var routeKeys = {hero:'home',about:'about',services:'services',why:'solutions',products:'products',pricing:'pricing',location:'location',contact:'contact'};
+  document.querySelectorAll('#mainNav .nav-links a, #drawer ul li a').forEach(function(link) {
+    var handler = link.getAttribute('onclick') || '';
+    var match = handler.match(/(?:gotoSection|drawerGo)\(['"]([^'"]+)['"]\)/);
+    if (!match) return;
+    var route = match[1];
+    if (route === 'home') route = 'hero';
+    var key = routeKeys[route];
+    if (!key) return;
+    var label = t[key] || (RFT_NAV_LABELS[lang] && RFT_NAV_LABELS[lang][key]) || RFT_NAV_LABELS.en[key] || key;
+    if (link.closest('#drawer')) {
+      var textNodes = Array.prototype.slice.call(link.childNodes).filter(function(node) {
+        return node.nodeType === 3 && node.nodeValue.trim();
+      });
+      if (textNodes.length) textNodes[textNodes.length - 1].nodeValue = ' ' + label;
+    } else {
+      link.textContent = label;
+    }
+  });
+  document.querySelectorAll('#mainNav .nav-cta, #drawer .drawer-cta .gold-btn').forEach(function(button) {
+    button.textContent = '📱 ' + (t.requestApp || TRANSLATIONS.en.requestApp);
+  });
   document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
 }
 
