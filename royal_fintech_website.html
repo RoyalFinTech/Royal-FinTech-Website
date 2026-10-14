@@ -2459,6 +2459,10 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
 .toast.error{background:#3b1018!important;border-color:rgba(248,113,113,.6)!important;border-left-color:#f87171!important;color:#fff1f2!important}
 .toast.info{background:#0b2450!important;border-color:rgba(96,165,250,.55)!important;border-left-color:#60a5fa!important;color:#eff6ff!important}
 
+
+/* Admin sign-in is intentionally marked as awaiting a server-side auth endpoint. */
+#adminLogin .session-badge{background:rgba(245,158,11,.12)!important;border-color:rgba(245,158,11,.38)!important;color:#fbbf24!important}
+#adminLogin .session-dot{background:#fbbf24!important;box-shadow:0 0 0 3px rgba(245,158,11,.12)}
 </style>
 </head>
 <body>
@@ -3518,7 +3522,7 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
     <img data-brand-logo="true" alt="Royal FinTech Logo" loading="eager" decoding="async" width="36" height="36" style="aspect-ratio:1/1;background:var(--bg2,#0A0F1C);object-fit:contain;" >
     <h2>🛡️ Admin Portal</h2>
     <p>Royal FinTech Company — Secure Admin Access</p>
-    <div class="session-badge" id="loginSecBadge"><span class="session-dot"></span>Secure Connection</div>
+    <div class="session-badge" id="loginSecBadge"><span class="session-dot"></span>Server authentication required</div>
     <form id="loginForm" novalidate autocomplete="off">
       <div class="fg">
         <label for="adminEmail">Email Address</label>
@@ -4283,10 +4287,22 @@ window.addEventListener('popstate', function() {
   gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
 });
 (function initRftPageView() {
+  // Manual restoration prevents the browser restoring a previous footer scroll
+  // after the requested route has already been initialized.
+  try { if (window.history && 'scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'; } catch(e) {}
   var route = decodeURIComponent((window.location.hash || '#hero').slice(1));
   if (route === 'request') showPage('requestPage');
   else gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
 })();
+function rftRestoreRouteFromLocation() {
+  var route = decodeURIComponent((window.location.hash || '#hero').slice(1));
+  if (route === 'request') { showPage('requestPage'); return; }
+  gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
+}
+window.addEventListener('hashchange', rftRestoreRouteFromLocation);
+window.addEventListener('pageshow', function(event) {
+  if (event && event.persisted) rftRestoreRouteFromLocation();
+});
 
 // ---- THEME ----
 // (Broken/duplicate legacy handlers removed. The single correct,
