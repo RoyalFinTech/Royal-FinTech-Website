@@ -4410,8 +4410,12 @@ if (contactForm) {
     const waAnchor = document.querySelector('#contact a[href*="wa.me/"]') || document.querySelector('a[href*="wa.me/"]');
     const whatsappBase = waAnchor && waAnchor.href ? waAnchor.href.split('?')[0] : 'https://wa.me/2204071510';
     const waUrl = whatsappBase + '?text=' + encodeURIComponent(bodyText);
+    const emailAnchor = document.querySelector('#contact a[href^="mailto:"]') || document.querySelector('a[href^="mailto:"]');
+    const emailAddress = emailAnchor && emailAnchor.href
+      ? emailAnchor.href.replace(/^mailto:/i, '').split('?')[0]
+      : 'royalfintechcompany@gmail.com';
     const mailSubject = 'Royal FinTech website inquiry — ' + name.value.trim();
-    const mailUrl = 'mailto:royalfintechcompany@gmail.com?subject=' + encodeURIComponent(mailSubject) + '&body=' + encodeURIComponent(bodyText);
+    const mailUrl = 'mailto:' + emailAddress + '?subject=' + encodeURIComponent(mailSubject) + '&body=' + encodeURIComponent(bodyText);
 
     let opened = null;
     try { opened = window.open(waUrl, '_blank'); } catch(openError) {}
