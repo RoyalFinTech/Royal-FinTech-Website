@@ -2380,6 +2380,85 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
+
+/* ===== FOOTER CONTRAST + BRANDING FIX (theme-independent) ===== */
+footer{background:#061126!important;color:#e2e8f0!important;border-top:1px solid rgba(96,165,250,.22)}
+footer .foot-logo img[data-brand-logo="true"]{display:block;width:50px!important;height:50px!important;min-width:50px;object-fit:contain!important;background:transparent!important;border-radius:10px;flex:0 0 auto}
+footer .foot-logo .nav-logo-text{color:#f8fafc!important;font-family:"Space Grotesk",sans-serif;font-size:.96rem!important;font-weight:800;line-height:1.15;letter-spacing:.01em}
+footer .foot-logo .nav-logo-text span{color:#f6c86a!important}
+footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,footer .foot-copy,footer .foot-admin,footer .foot-powered-text{color:#cbd5e1!important}
+footer .foot-col h4{color:#f8fafc!important}
+footer .foot-clist a:hover,footer .foot-col ul a:hover,footer .foot-col ul button:hover,footer .foot-admin:hover{color:#fff!important}
+footer .foot-bottom{border-top-color:rgba(148,163,184,.25)!important}
+footer .socials .soc{background:rgba(255,255,255,.07)!important;border-color:rgba(148,163,184,.3)!important;color:#f8fafc!important;min-width:38px;min-height:38px}
+footer .socials .soc:hover{background:#2563eb!important;border-color:#60a5fa!important;color:#fff!important}
+footer .foot-powered{color:#cbd5e1!important}
+footer .foot-logo,footer .foot-clist,footer .foot-col{min-width:0}
+footer a,footer button{overflow-wrap:anywhere}
+body.light footer .foot-logo .nav-logo-text{color:#f8fafc!important}
+body.light footer .foot-logo .nav-logo-text span{color:#f6c86a!important}
+body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .foot-col h4,body.light footer .foot-col ul a,body.light footer .foot-col ul button,body.light footer .foot-copy,body.light footer .foot-admin,body.light footer .foot-powered-text{color:#cbd5e1!important}
+
+
+/* ===== ADMIN LOGIN: BRANDED SPLIT SCREEN ===== */
+#adminLogin{background:#061126!important;min-height:100svh}
+#adminLogin.active{display:block!important;align-items:stretch!important;justify-content:stretch!important;padding:0!important}
+.rft-admin-login-shell{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(420px,.98fr);min-height:100svh;background:#061126}
+.rft-admin-login-visual{position:relative;isolation:isolate;min-height:100svh;overflow:hidden;background:#07152c}
+.rft-admin-login-photo{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:43% center;background:#07152c}
+.rft-admin-login-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(115deg,rgba(2,8,23,.82),rgba(4,16,42,.40) 48%,rgba(3,10,28,.78));pointer-events:none}
+.rft-admin-login-visual-copy{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;min-height:calc(100svh - 70px);padding:clamp(26px,5vw,68px);color:#f8fafc;max-width:760px}
+.rft-admin-brand-lockup{display:flex;align-items:center;gap:13px;margin-bottom:auto;padding-bottom:50px}
+.rft-admin-brand-lockup img{width:58px!important;height:58px!important;object-fit:contain!important;background:transparent!important}
+.rft-admin-brand-word{font-family:"Space Grotesk",sans-serif;font-size:clamp(1.2rem,2.1vw,1.8rem);line-height:1.1;font-weight:850;color:#fff;letter-spacing:.01em}
+.rft-admin-brand-word span{color:#f6c86a}
+.rft-admin-brand-word small{display:block;margin-top:6px;font:700 .62rem/1.2 "Inter",sans-serif;letter-spacing:.27em;color:#cbd5e1}
+.rft-admin-visual-kicker{font-size:.72rem;letter-spacing:.18em;font-weight:800;color:#f6c86a;margin-bottom:16px}
+.rft-admin-login-visual-copy h1{font-family:"Space Grotesk",sans-serif;font-size:clamp(2rem,4.3vw,4rem);font-weight:850;line-height:1.08;letter-spacing:-.04em;overflow-wrap:normal;margin-bottom:16px;color:#fff!important}
+.rft-admin-login-visual-copy h1 span{color:#f6c86a}
+.rft-admin-login-visual-copy p{max-width:510px;font-size:1rem;line-height:1.75;color:#e2e8f0!important;margin-bottom:24px}
+.rft-admin-visual-points{display:flex;flex-wrap:wrap;gap:9px}
+.rft-admin-visual-points span{padding:9px 12px;border:1px solid rgba(226,232,240,.24);border-radius:999px;background:rgba(3,10,28,.52);backdrop-filter:blur(8px);font-size:.76rem;color:#f8fafc;white-space:normal}
+.rft-admin-visual-foot{position:absolute;z-index:2;bottom:22px;left:clamp(26px,5vw,68px);right:24px;color:#cbd5e1;font-size:.74rem;letter-spacing:.04em}
+.rft-admin-login-content{display:flex;align-items:center;justify-content:center;min-width:0;padding:clamp(20px,4vw,60px);background:var(--bg)}
+#adminLogin .login-box{width:100%;max-width:460px;text-align:left;padding:clamp(24px,3vw,40px);border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.18)}
+#adminLogin .login-box>img[data-brand-logo="true"]{display:block;width:70px!important;height:70px!important;object-fit:contain!important;background:transparent!important;margin:0 auto 15px}
+#adminLogin .login-box h2{text-align:center;font-size:1.55rem}
+#adminLogin .login-box>p{text-align:center}
+#adminLogin .session-badge{display:flex;width:max-content;max-width:100%;margin-inline:auto}
+#adminLogin #loginForm .fg{text-align:left}
+#adminLogin #loginForm label{color:var(--gray)}
+#adminLogin #loginForm input{min-height:46px;font-size:16px}
+#adminLogin #loginBtn{min-height:48px}
+#adminLogin .login-box .btn-ghost{justify-content:center}
+@media(max-width:900px){
+  .rft-admin-login-shell{grid-template-columns:1fr;min-height:100svh}
+  .rft-admin-login-visual{min-height:340px}
+  .rft-admin-login-photo{object-position:43% 38%}
+  .rft-admin-login-visual-copy{min-height:340px;padding:24px 22px 32px}
+  .rft-admin-brand-lockup{padding-bottom:28px}
+  .rft-admin-login-visual-copy h1{font-size:clamp(1.9rem,7vw,2.8rem)}
+  .rft-admin-login-visual-copy p{font-size:.92rem;max-width:600px}
+  .rft-admin-visual-foot{display:none}
+  .rft-admin-login-content{padding:24px 16px 34px}
+}
+@media(max-width:480px){
+  .rft-admin-login-visual{min-height:300px}
+  .rft-admin-login-visual-copy{min-height:300px;padding:20px 17px 25px}
+  .rft-admin-brand-lockup{padding-bottom:20px;gap:9px}
+  .rft-admin-brand-lockup img{width:44px!important;height:44px!important}
+  .rft-admin-brand-word{font-size:1.08rem}
+  .rft-admin-visual-points span{font-size:.68rem;padding:7px 9px}
+  #adminLogin .login-box{padding:24px 18px}
+}
+
+
+/* ===== BRANDED STATUS TOASTS ===== */
+.toast{color:#f8fafc!important;background:#0b1730!important;border:1px solid rgba(96,165,250,.42)!important;box-shadow:0 16px 40px rgba(2,8,23,.35)!important;border-left:4px solid #60a5fa!important}
+.toast.success{background:#052e2b!important;border-color:rgba(74,222,128,.55)!important;border-left-color:#4ade80!important;color:#f0fdf4!important}
+.toast.error{background:#3b1018!important;border-color:rgba(248,113,113,.6)!important;border-left-color:#f87171!important;color:#fff1f2!important}
+.toast.info{background:#0b2450!important;border-color:rgba(96,165,250,.55)!important;border-left-color:#60a5fa!important;color:#eff6ff!important}
+
 </style>
 </head>
 <body>
@@ -2971,9 +3050,7 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
       <div class="foot-social-row" role="group" aria-label="Follow Royal FinTech on social media">
         <a href="#" data-social="facebook" target="_blank" rel="noopener noreferrer" class="foot-social-ico" aria-label="Royal FinTech on Facebook" title="Facebook" style="display:none">📘</a>
         <a href="#" data-social="instagram" target="_blank" rel="noopener noreferrer" class="foot-social-ico" aria-label="Royal FinTech on Instagram" title="Instagram" style="display:none">📸</a>
-        <a href="https://www.tiktok.com/@royal_fintech?_r=1&_t=ZS-98G3x9NXuVh" data-social="tiktok" target="_blank" rel="noopener noreferrer" class="foot-social-ico" aria-label="Royal FinTech on TikTok (opens in a new tab)" title="Royal FinTech on TikTok">
-          <span data-tiktok-icon="16" data-tiktok-color="currentColor"></span>
-        </a>
+        
         <a href="#" data-social="youtube" target="_blank" rel="noopener noreferrer" class="foot-social-ico" aria-label="Royal FinTech on YouTube" title="YouTube" style="display:none">▶️</a>
         <a href="#" data-social="linkedin" target="_blank" rel="noopener noreferrer" class="foot-social-ico" aria-label="Royal FinTech on LinkedIn" title="LinkedIn" style="display:none">💼</a>
       </div>
@@ -2983,9 +3060,7 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
     <p class="foot-copy">© 2026 Royal FinTech Company. All Rights Reserved. | Old Yundum, The Gambia</p>
     <div class="foot-powered" role="group" aria-label="Royal FinTech social presence">
       <span class="foot-powered-text">🛡️ Powered by Royal FinTech</span>
-      <a href="https://www.tiktok.com/@royal_fintech?_r=1&_t=ZS-98G3x9NXuVh" target="_blank" rel="noopener noreferrer" class="foot-tiktok-link" aria-label="Royal FinTech on TikTok (opens in a new tab)" title="Royal FinTech on TikTok" data-social="tiktok">
-        <span data-tiktok-icon="16" data-tiktok-color="currentColor"></span>
-      </a>
+      
     </div>
     <button class="foot-admin" onclick="showPage('adminLogin')" type="button">🛡️ Admin Portal</button>
   </div>
@@ -3422,8 +3497,24 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
 </div>
 
 <div id="adminLogin" class="page">
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:70px 22px;background:var(--bg)">
-  <div class="login-box">
+  <div class="rft-admin-login-shell">
+    <aside class="rft-admin-login-visual" aria-label="Royal FinTech technology workspace">
+      <img class="rft-admin-login-photo" src="assets/royal-fintech-admin-workspace.jpg" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&amp;fit=crop&amp;w=1400&amp;q=85'" alt="Software professional working at a laptop with code on a monitor" loading="eager" decoding="async">
+      <div class="rft-admin-login-shade"></div>
+      <div class="rft-admin-login-visual-copy">
+        <div class="rft-admin-brand-lockup">
+          <img data-brand-logo="true" alt="Royal FinTech official logo" loading="eager" decoding="async" width="52" height="52" style="aspect-ratio:1/1;object-fit:contain;background:transparent">
+          <div class="rft-admin-brand-word">Royal <span>FinTech</span><small>COMPANY</small></div>
+        </div>
+        <div class="rft-admin-visual-kicker">ROYAL FINTECH · ADMINISTRATION</div>
+        <h1>Clear oversight.<br><span>Confident delivery.</span></h1>
+        <p>A dedicated space for authorised team members to review project requests and manage operations.</p>
+        <div class="rft-admin-visual-points"><span>🔒 Protected access</span><span>📊 Operational visibility</span><span>🤝 Built for service</span></div>
+      </div>
+      <div class="rft-admin-visual-foot">Innovative Solutions. A Smarter Tomorrow.</div>
+    </aside>
+    <div class="rft-admin-login-content">
+      <div class="login-box">
     <img data-brand-logo="true" alt="Royal FinTech Logo" loading="eager" decoding="async" width="36" height="36" style="aspect-ratio:1/1;background:var(--bg2,#0A0F1C);object-fit:contain;" >
     <h2>🛡️ Admin Portal</h2>
     <p>Royal FinTech Company — Secure Admin Access</p>
@@ -3450,8 +3541,9 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
     <br>
     <button class="btn btn-ghost btn-sm" onclick="showPage('mainSite')" style="width:100%;margin-top:6px" type="button">← Back to Website</button>
     <p style="color:var(--muted);font-size:0.71rem;margin-top:14px;line-height:1.6">Secure admin authentication must be connected to a server before managing real customer requests. Browser-only credentials are not production security.</p>
+      </div>
+    </div>
   </div>
-</div>
 </div>
 
 <!-- ================================================ ADMIN DASHBOARD ================================================ -->
@@ -4029,7 +4121,12 @@ function showPage(id) {
   if (_np) _np.classList.remove('open');
 
   if (id === 'adminDash') {
-    if (!isAuth()) { showPage('adminLogin'); showToast('Session expired. Please sign in.', 'error'); return; }
+    if (!isAuth()) {
+      window._rftSkipHomeReset = true;
+      try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
+      showToast('Admin access is required for the dashboard. Open Admin Portal to sign in.', 'error');
+      return;
+    }
     updateDashSession();
     startClock();
     setTimeout(function() { initRevChart(); animBars(); }, 200);
@@ -4704,14 +4801,19 @@ function adminLogout() {
 
 }
 
-// Admin session expiry watcher — keep the user in the admin sign-in flow.
+// Admin session expiry guard. Use computed visibility so a CSS-hidden dashboard
+// cannot be mistaken for an open admin dashboard just because inline display is empty.
 setInterval(function() {
   const d = document.getElementById('adminDash');
-  if (!d || d.style.display === 'none' || isAuth() || window._rftExpiryRedirecting) return;
+  if (!d || !document.body.classList.contains('on-admin') || window._rftExpiryRedirecting) return;
+  const display = window.getComputedStyle ? window.getComputedStyle(d).display : d.style.display;
+  if (display === 'none' || isAuth()) return;
   window._rftExpiryRedirecting = true;
   clearSession();
-  showPage('adminLogin');
-  showToast('Admin session expired. Sign in again to continue.', 'error');
+  window._rftSkipHomeReset = true;
+  try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
+  if (typeof gotoSection === 'function') gotoSection('hero');
+  showToast('Admin session ended. The public website is still available; open Admin Portal when you need to sign in again.', 'error');
   window.setTimeout(function() { window._rftExpiryRedirecting = false; }, 1200);
 }, 60000);
 
@@ -8476,7 +8578,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var response=await fetch(base+(config.applicationsPath||'/api/applications'),{
       method:'GET',headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}
     });
-    if(response.status===401||response.status===403){clearSession();showPage('adminLogin');throw new Error('Admin session expired. Please sign in again.');}
+    if(response.status===401||response.status===403){clearSession();window._rftSkipHomeReset=true;try{showPage('mainSite');}finally{window._rftSkipHomeReset=false;}if(typeof gotoSection==='function')gotoSection('hero');throw new Error('Your admin session has ended. The public site is still available; open Admin Portal to sign in again.');}
     if(!response.ok)throw new Error('Could not refresh applications (HTTP '+response.status+').');
     var payload=await response.json();
     var rows=Array.isArray(payload)?payload:(payload.applications||payload.data);
