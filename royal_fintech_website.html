@@ -4411,7 +4411,7 @@ if (contactForm) {
       msg.value.trim()
     ];
     if (fileNames.length) lines.push('', 'Selected files: ' + fileNames.join(', '), 'Please attach these files manually. The website has not uploaded them to a server.');
-    const bodyText = lines.join('\\n');
+    const bodyText = lines.join('\n');
     const waAnchor = document.querySelector('#contact a[href*="wa.me/"]') || document.querySelector('a[href*="wa.me/"]');
     const whatsappBase = waAnchor && waAnchor.href ? waAnchor.href.split('?')[0] : 'https://wa.me/2204071510';
     const waUrl = whatsappBase + '?text=' + encodeURIComponent(bodyText);
