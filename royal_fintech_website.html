@@ -2327,7 +2327,8 @@ body.light .rf-live-strip .rf-eyebrow,body.light .rf-live-strip .rf-signal stron
 #mainNav .nav-logo-text{min-width:0}
 #mainNav .nav-right{min-width:0;flex-shrink:0}
 @media(max-width:1179px){#mainNav{padding-inline:16px;gap:10px}#mainNav .nav-links,#mainNav .nav-desktop-controls{display:none!important}#mainNav .hamburger{display:flex!important}}
-@media(min-width:1180px){#mainNav .nav-links{display:flex}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:9px}#mainNav .hamburger{display:none!important}}
+@media(min-width:1180px) and (max-width:1439px){#mainNav .nav-links{display:flex;gap:13px}#mainNav .nav-links a{font-size:.78rem}#mainNav .nav-logo{gap:7px}#mainNav .nav-logo-text{font-size:.8rem}#mainNav .nav-right{gap:5px}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:6px}#mainNav .nav-cta{padding-inline:11px;font-size:.78rem;white-space:nowrap}}
+@media(min-width:1440px){#mainNav .nav-links{display:flex}#mainNav .nav-desktop-controls{display:flex;align-items:center;gap:9px}#mainNav .hamburger{display:none!important}}
 @media(max-width:900px){.rf-photo-grid,.rf-people-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.rf-services-photo-band{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){
   #mainNav{height:64px;padding-inline:12px}
@@ -3994,6 +3995,9 @@ function showPage(id) {
   // Aliases
   var pageAliases = { requestApp: 'requestPage', home: 'mainSite' };
   if (pageAliases[id]) id = pageAliases[id];
+  if (id === 'requestPage' && window.history && window.history.pushState && window.location.hash !== '#request') {
+    try { window.history.pushState({rftPage:'requestPage'}, '', '#request'); } catch(e) {}
+  }
 
   document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
   document.body.classList.remove('on-admin', 'on-req', 'on-login');
@@ -4166,11 +4170,13 @@ document.addEventListener('click', function(event) {
 });
 window.addEventListener('popstate', function() {
   var route = decodeURIComponent((window.location.hash || '#hero').slice(1));
+  if (route === 'request') { showPage('requestPage'); return; }
   gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
 });
 (function initRftPageView() {
   var route = decodeURIComponent((window.location.hash || '#hero').slice(1));
-  gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
+  if (route === 'request') showPage('requestPage');
+  else gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
 })();
 
 // ---- THEME ----
