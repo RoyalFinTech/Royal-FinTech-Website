@@ -4039,6 +4039,10 @@ function showPage(id) {
     var _anp = document.getElementById('admNotifPanel');
     if (_np2) _np2.classList.remove('open');
     if (_anp) _anp.classList.remove('open');
+    // Explicitly returning to the website opens Home; route-driven transitions set a guard.
+    if (!window._rftSkipHomeReset && typeof RFT_ROUTE_VIEWS !== 'undefined' && typeof gotoSection === 'function') {
+      gotoSection('hero');
+    }
   }
 }
 
@@ -4090,7 +4094,10 @@ function gotoSection(id, options) {
   var route = rftGetRoute(id);
   if (route === 'pricing') { try { showPriceTab('websites'); } catch(e) {} }
   var ms = document.getElementById('mainSite');
-  if (!ms || ms.style.display === 'none') showPage('mainSite');
+  if (!ms || ms.style.display === 'none') {
+    window._rftSkipHomeReset = true;
+    try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
+  }
   ms = document.getElementById('mainSite');
   if (!ms) return;
 
@@ -4179,7 +4186,6 @@ window.addEventListener('popstate', function() {
   else gotoSection(RFT_ROUTE_VIEWS[route] ? route : 'hero', {fromHistory:true});
 })();
 
-// ---- THEME ----
 // ---- THEME ----
 // (Broken/duplicate legacy handlers removed. The single correct,
 // self-contained implementation lives further below and is now
@@ -7104,12 +7110,12 @@ window.showPanel = function(id) {
     var drawerIcon = document.getElementById('drawerThemeIcon');
     var adminToggle = document.getElementById('darkToggle');
     if (btn) {
-      btn.textContent = isLight ? '\\ud83c\\udf19' : '\\u2600\\ufe0f';
+      btn.textContent = isLight ? '🌙' : '☀️';
       btn.setAttribute('aria-pressed', String(!!isLight));
       btn.setAttribute('aria-label', isLight ? 'Switch to dark theme' : 'Switch to light theme');
       btn.title = isLight ? 'Switch to dark theme' : 'Switch to light theme';
     }
-    if (drawerIcon) drawerIcon.textContent = isLight ? '\\ud83c\\udf19' : '\\u2600\\ufe0f';
+    if (drawerIcon) drawerIcon.textContent = isLight ? '🌙' : '☀️';
     if (adminToggle) adminToggle.checked = !isLight;
     if (persist) {
       try { localStorage.setItem('rft_theme', isLight ? 'light' : 'dark'); } catch(e) {}
