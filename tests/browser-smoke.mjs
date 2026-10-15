@@ -102,7 +102,32 @@ try {
       themeText: document.getElementById('themeBtn')?.textContent, color: c.color, background: c.backgroundColor,
       inlineStyle: el.getAttribute('style'), storage: (() => { try { return localStorage.getItem('rft_theme'); } catch(e) { return 'unavailable'; } })() };
   });
-  console.log('THEME_SNAPSHOT_AFTER_FIRST_CLICK', JSON.stringify({ initialTheme, lightSnapshot }));
+  const matchedThemeRules = await page.locator('#currSelect').evaluate((el) => {
+    const out = [];
+    function walk(rules, parentActive) {
+      for (const rule of Array.from(rules || [])) {
+        if (rule.cssRules) {
+          let active = parentActive;
+          try {
+            if (rule.conditionText && rule.media) active = parentActive && matchMedia(rule.conditionText).matches;
+          } catch(e) {}
+          if (active) walk(rule.cssRules, active);
+          continue;
+        }
+        if (!rule.selectorText || !rule.style) continue;
+        try {
+          if (el.matches(rule.selectorText)) out.push({selector:rule.selectorText,color:rule.style.getPropertyValue('color'),
+            colorPriority:rule.style.getPropertyPriority('color'),background:rule.style.getPropertyValue('background-color'),
+            backgroundPriority:rule.style.getPropertyPriority('background-color'),cssText:rule.style.cssText});
+        } catch(e) {}
+      }
+    }
+    for (const sheet of Array.from(document.styleSheets)) {
+      try { walk(sheet.cssRules, true); } catch(e) { out.push({sheetError:String(e)}); }
+    }
+    return out;
+  });
+  console.log('THEME_SNAPSHOT_AFTER_FIRST_CLICK', JSON.stringify({ initialTheme, lightSnapshot, matchedThemeRules }));
   check('theme toggle changes theme class', lightSnapshot.light !== initialTheme.light, JSON.stringify({initialTheme, lightSnapshot}));
   const lightSelect = { color: lightSnapshot.color, background: lightSnapshot.background };
   check('light theme currency dropdown has dark readable text', !lightSnapshot.light || lightSelect.color === 'rgb(15, 23, 42)', JSON.stringify({initialTheme, lightSnapshot}));
