@@ -8314,7 +8314,7 @@ function applySocialLinks(links) {
   if (!links) return;
   if (links.whatsapp) { var waNum=links.whatsapp.replace(/\D/g,''); document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){a.href='https://wa.me/'+waNum;}); }
   ['facebook','instagram','linkedin','tiktok','youtube','twitter','telegram','github'].forEach(function(k) {
-    var socialSelector = k === 'tiktok' ? '#rft-footer-tiktok-link' : 'a[data-social="'+k+'"]';
+    var socialSelector = k === 'tiktok' ? 'footer a[data-rft-tiktok="true"]#rft-footer-tiktok-link' : 'a[data-social="'+k+'"]';
     document.querySelectorAll(socialSelector).forEach(function(a) {
       if (links[k]) {
         // Validate before applying — only accept http(s) URLs to prevent
