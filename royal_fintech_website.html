@@ -4674,6 +4674,7 @@ function updateOverviewWidgets() {
     <div class="panel-title" style="margin-bottom:0">📋 Application Management</div>
     <div style="display:flex;gap:7px;flex-wrap:wrap">
       <button class="btn btn-primary btn-sm" onclick="refreshSupabaseRequests()" type="button">↻ Refresh Supabase</button>
+      <button class="btn btn-outline btn-sm" onclick="enableAdminPush()" type="button">🔔 Enable Admin Push</button>
       <button class="btn btn-green btn-sm" onclick="exportAppCSV()" type="button">📊 Export CSV</button>
       <button class="btn btn-outline btn-sm" onclick="showToast('PDF export ready','success')" type="button">📄 Export PDF</button>
     </div>
@@ -9679,6 +9680,19 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('[Royal FinTech] Central admin request load failed:',error);
       if(panel)panel.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center">Could not load central requests. Confirm your Supabase administrator session and try again.</td></tr>';
       if(typeof showToast==='function')showToast(error.message||'Could not load central requests.','error');
+    }
+  };
+  window.enableAdminPush=async function(){
+    var token='';
+    try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
+    if(!token){if(typeof showToast==='function')showToast('Sign in with an authorized Supabase administrator account first.','error');return;}
+    if(!window.RFAppRequests||typeof window.RFAppRequests.enablePush!=='function'){if(typeof showToast==='function')showToast('Push notification support is not loaded. Refresh and try again.','error');return;}
+    try{
+      var result=await window.RFAppRequests.enablePush(token);
+      if(typeof showToast==='function')showToast(result.message||'This browser is subscribed to admin push notifications.','success');
+    }catch(error){
+      console.error('[Royal FinTech] Admin push subscription failed:',error);
+      if(typeof showToast==='function')showToast(error.message||'Could not enable push notifications.','error');
     }
   };
   document.addEventListener('click',function(event){
