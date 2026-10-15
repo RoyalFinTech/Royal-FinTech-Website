@@ -2777,6 +2777,88 @@ footer .foot-social-row{display:none!important}
   footer .foot-bottom{align-items:flex-start!important;gap:10px!important}
 }
 
+
+/* ===== FINAL SMOKE-TEST FIXES: HEADER VISIBILITY, FOOTER WORDMARK, TIKTOK, THEME ===== */
+#mainSite #mainNav{
+  display:flex!important;visibility:visible!important;opacity:1!important;
+  position:sticky!important;top:0!important;z-index:1000!important;
+  width:100%!important;min-height:64px!important;box-sizing:border-box!important;
+  isolation:isolate!important;
+}
+#mainSite #mainNav .nav-logo{display:flex!important;align-items:center!important;min-width:0!important;flex-shrink:0!important}
+#mainSite #mainNav .nav-logo-text{display:block!important;visibility:visible!important;opacity:1!important;color:var(--white,#f8fafc)!important;-webkit-text-fill-color:var(--white,#f8fafc)!important}
+body.light #mainSite #mainNav .nav-logo-text{color:#0f172a!important;-webkit-text-fill-color:#0f172a!important}
+#mainSite #mainNav .nav-logo-text span{color:var(--gold,#f6c86a)!important;-webkit-text-fill-color:var(--gold,#f6c86a)!important}
+#mainSite #mainNav .hamburger{display:flex!important;visibility:visible!important;opacity:1!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;align-items:center!important;justify-content:center!important;z-index:1010!important}
+#mainSite #mainNav .hamburger span{background:#f8fafc!important}
+body.light #mainSite #mainNav .hamburger span{background:#0f172a!important}
+@media(max-width:1279px){
+  #mainSite #mainNav .nav-links,#mainSite #mainNav .nav-desktop-controls{display:none!important}
+  #mainSite #mainNav .hamburger{display:flex!important}
+}
+@media(min-width:1280px) and (max-width:1439px){
+  #mainSite #mainNav .nav-links{display:flex!important;gap:8px!important;min-width:0!important}
+  #mainSite #mainNav .nav-links a{font-size:.7rem!important;white-space:nowrap!important}
+  #mainSite #mainNav .nav-desktop-controls{display:flex!important;gap:5px!important}
+  #mainSite #mainNav .hamburger{display:none!important}
+}
+@media(min-width:1440px){
+  #mainSite #mainNav .nav-links,#mainSite #mainNav .nav-desktop-controls{display:flex!important}
+  #mainSite #mainNav .hamburger{display:none!important}
+}
+/* Footer stays dark in both global themes so the official wordmark remains legible. */
+footer,body.light footer,body:not(.light) footer{background:#061126!important;color:#eaf2ff!important;color-scheme:dark}
+footer .foot-logo{display:flex!important;align-items:center!important;gap:12px!important;max-width:100%!important}
+footer .foot-logo img[data-brand-logo="true"]{
+  display:block!important;flex:0 0 50px!important;width:50px!important;height:50px!important;
+  min-width:50px!important;max-width:50px!important;object-fit:contain!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  opacity:1!important;visibility:visible!important;mix-blend-mode:normal!important;
+}
+footer .foot-wordmark{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;flex:1 1 auto!important;min-width:0!important;max-width:100%!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
+footer .foot-wordmark-main{
+  display:block!important;white-space:normal!important;overflow:visible!important;
+  font-size:clamp(.82rem,1.1vw,1.05rem)!important;font-weight:850!important;line-height:1.25!important;
+  color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important;visibility:visible!important;
+  letter-spacing:.005em!important;text-shadow:none!important;overflow-wrap:normal!important;
+}
+footer .foot-wordmark-main strong{display:inline!important;color:#fbbf24!important;-webkit-text-fill-color:#fbbf24!important;opacity:1!important;visibility:visible!important}
+footer .foot-wordmark-sub{display:block!important;margin-top:4px!important;color:#cbd5e1!important;-webkit-text-fill-color:#cbd5e1!important;font-size:.67rem!important;font-weight:800!important;letter-spacing:.2em!important;line-height:1.25!important;opacity:1!important;visibility:visible!important}
+footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,footer .foot-copy,footer .foot-powered-text,footer .foot-admin{
+  color:#e2e8f0!important;-webkit-text-fill-color:#e2e8f0!important;opacity:1!important;visibility:visible!important;
+  text-shadow:none!important;line-height:1.6!important;
+}
+footer .foot-col h4{color:#fbbf24!important;-webkit-text-fill-color:#fbbf24!important;opacity:1!important;visibility:visible!important;font-weight:800!important}
+footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button{font-size:.88rem!important}
+footer .foot-tiktok-item{display:block!important;visibility:visible!important;opacity:1!important;margin-top:8px!important}
+footer .foot-col .foot-tiktok-item a.foot-tiktok-link{
+  display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;
+  width:auto!important;max-width:100%!important;min-height:42px!important;padding:9px 13px!important;box-sizing:border-box!important;
+  border-radius:12px!important;border:1px solid rgba(96,165,250,.45)!important;
+  background:linear-gradient(125deg,rgba(37,99,235,.2),rgba(246,200,106,.1))!important;
+  color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;text-decoration:none!important;font-weight:700!important;
+}
+footer .foot-col .foot-tiktok-item a.foot-tiktok-link svg{display:block!important;flex:0 0 20px!important;width:20px!important;height:20px!important;fill:currentColor!important}
+footer .foot-col .foot-tiktok-item a.foot-tiktok-link:hover{border-color:#fbbf24!important;background:rgba(37,99,235,.28)!important;transform:translateY(-1px)}
+footer .socials .foot-tiktok-link{display:none!important}
+footer .foot-social-row{display:none!important}
+footer .foot-wordmark,footer .foot-wordmark *{filter:none!important;mix-blend-mode:normal!important;text-shadow:none!important}
+body.light select,body.light select option,body.light #mainSite select,body.light #mainSite select option{
+  color-scheme:light!important;background-color:#fff!important;color:#0f172a!important;-webkit-text-fill-color:#0f172a!important;opacity:1!important
+}
+body:not(.light) select,body:not(.light) select option,body:not(.light) #mainSite select,body:not(.light) #mainSite select option{
+  color-scheme:dark!important;background-color:#0b1730!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important
+}
+select:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:2px solid #60a5fa!important;outline-offset:3px!important
+}
+@media(max-width:600px){
+  footer .foot-logo img[data-brand-logo="true"]{width:44px!important;height:44px!important;min-width:44px!important;flex-basis:44px!important}
+  footer .foot-wordmark-main{font-size:.82rem!important}
+  footer .foot-wordmark-sub{font-size:.62rem!important}
+  footer .foot-col .foot-tiktok-item a.foot-tiktok-link{width:100%!important}
+}
+
 </style>
 </head>
 <body>
@@ -3337,7 +3419,7 @@ footer .foot-social-row{display:none!important}
         <a href="#" class="soc" data-social="facebook" aria-hidden="true" style="display:none">f</a><a href="#" class="soc" data-social="instagram" aria-hidden="true" style="display:none">ig</a>
         <a href="https://wa.me/2204071510" class="soc" target="_blank">wa</a>
         <a href="mailto:royalfintechcompany@gmail.com" class="soc" aria-label="Email Royal FinTech" title="Email">✉</a>
-        <a href="https://www.tiktok.com/@royal_fintech" class="soc foot-tiktok-link" data-rft-tiktok="true" target="_blank" rel="noopener noreferrer" aria-label="Follow Royal FinTech on TikTok" title="TikTok"><span data-tiktok-icon="20" data-tiktok-color="currentColor"></span></a>
+
       </div>
     </div>
     <div class="foot-col">
@@ -3367,7 +3449,8 @@ footer .foot-social-row{display:none!important}
         <li><a href="tel:+2204071510">📞 +220 4071510</a></li>
         <li><a href="https://wa.me/2204071510" target="_blank" rel="noopener noreferrer"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" style="vertical-align:middle;margin-right:4px"><path fill="#25D366" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a></li>
         <li><a href="mailto:royalfintechcompany@gmail.com">📧 Email Us</a></li>
-        <li><a href="https://maps.google.com/?q=Old+Yundum+Gambia" target="_blank">📍 Get Directions</a></li>
+        <li><a href="https://maps.google.com/?q=Old+Yundum+Gambia" target="_blank" rel="noopener noreferrer">📍 Get Directions</a></li>
+        <li class="foot-tiktok-item"><a href="https://www.tiktok.com/@royal_fintech" class="foot-tiktok-link" data-rft-tiktok="true" target="_blank" rel="noopener noreferrer" aria-label="Follow Royal FinTech on TikTok" title="Follow Royal FinTech on TikTok"><span data-tiktok-icon="20" data-tiktok-color="currentColor"></span><span>Follow us on TikTok</span></a></li>
       </ul>
       <div class="foot-social-row" role="group" aria-label="Follow Royal FinTech on social media">
         <a href="#" data-social="facebook" target="_blank" rel="noopener noreferrer" class="foot-social-ico" aria-label="Royal FinTech on Facebook" title="Facebook" style="display:none">📘</a>
