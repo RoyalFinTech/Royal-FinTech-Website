@@ -2486,43 +2486,98 @@ body:not(.light) select,body:not(.light) .lc-select,body:not(.light) .drawer-sel
 body:not(.light) select option,body:not(.light) select optgroup{color:#f8fafc!important;background:#0b1730!important}
 body.light select,body.light .lc-select,body.light .drawer-select{color:#0f172a!important;background-color:#fff!important;color-scheme:light}
 body.light select option,body.light select optgroup{color:#0f172a!important;background:#fff!important}
-.rft-admin-session-lock{width:min(900px,calc(100% - 32px));min-height:64svh;margin:24px auto;box-sizing:border-box;display:grid;grid-template-columns:100px minmax(0,1fr);align-content:center;align-items:center;gap:26px;padding:clamp(24px,5vw,56px);border:1px solid rgba(96,165,250,.32);border-radius:26px;background:radial-gradient(circle at 0 0,rgba(37,99,235,.24),transparent 55%),linear-gradient(135deg,#07152c,#0b1730);color:#f8fafc;box-shadow:0 28px 90px rgba(0,0,0,.3)}
-.rft-admin-lock-brand{display:flex;flex-direction:column;align-items:center;gap:12px}
-.rft-admin-lock-brand img{width:84px!important;height:84px!important;object-fit:contain!important;background:#f8fafc!important;border-radius:14px;padding:4px;box-sizing:border-box;border:1px solid rgba(226,232,240,.5)}
-.rft-admin-lock-shield{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(246,200,106,.12);border:1px solid rgba(246,200,106,.45);font-size:1.35rem}
-.rft-admin-lock-copy{min-width:0}
-.rft-admin-lock-kicker{color:#f6c86a;font-size:.72rem;font-weight:800;letter-spacing:.18em}
-.rft-admin-lock-copy h1{margin:9px 0 12px;color:#fff!important;font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.12}
-.rft-admin-lock-copy p{margin:0 0 20px;max-width:620px;color:#dbeafe!important;line-height:1.75}
-.rft-admin-lock-copy .btn{min-height:46px}
-@media(max-width:620px){.rft-admin-session-lock{grid-template-columns:1fr;gap:18px;text-align:center;margin:16px auto;min-height:60svh;padding:26px 20px}.rft-admin-lock-brand img{width:70px!important;height:70px!important}.rft-admin-lock-copy p{margin-inline:auto}.rft-admin-lock-copy .btn{width:100%}}
-
-
-/* ===== FINAL FOOTER BRAND WORDMARK / HIGH-CONTRAST PASS ===== */
-footer,body.light footer,body:not(.light) footer{background:#061126!important;color:#e2e8f0!important;color-scheme:dark;border-top:1px solid rgba(96,165,250,.28)!important;opacity:1!important;filter:none!important}
-footer .foot-grid,footer .foot-bottom,footer .foot-logo,footer .foot-col,footer .foot-clist{opacity:1!important;filter:none!important;min-width:0}
-footer .foot-logo{display:flex!important;align-items:center!important;gap:13px!important;cursor:pointer}
-footer .foot-logo img[data-brand-logo="true"]{display:block!important;width:52px!important;height:52px!important;min-width:52px!important;min-height:52px!important;max-width:52px!important;object-fit:contain!important;object-position:center!important;box-sizing:border-box!important;background:#f8fafc!important;border:1px solid rgba(226,232,240,.78)!important;border-radius:10px!important;padding:3px!important;opacity:1!important;box-shadow:0 6px 20px rgba(0,0,0,.22)!important;flex:0 0 52px!important}
-footer .foot-wordmark{display:flex!important;flex-direction:column;gap:4px;min-width:0;line-height:1.08;opacity:1!important;color:#f8fafc!important}
-footer .foot-wordmark-main{display:block;font-family:"Space Grotesk",sans-serif;font-size:clamp(.9rem,1.2vw,1.12rem)!important;font-weight:850!important;letter-spacing:.025em!important;line-height:1.1!important;white-space:normal;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important;text-shadow:none!important}
-footer .foot-wordmark-main strong{font-weight:900!important;color:#f6c86a!important;-webkit-text-fill-color:#f6c86a!important}
-footer .foot-wordmark-sub{display:block;margin-top:3px;font-family:"Inter",sans-serif;font-size:.62rem!important;line-height:1.2;font-weight:800!important;letter-spacing:.28em!important;color:#dbeafe!important;-webkit-text-fill-color:#dbeafe!important;opacity:1!important}
-footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,footer .foot-copy,footer .foot-admin,footer .foot-powered-text,footer .foot-powered,body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .foot-col ul a,body.light footer .foot-col ul button,body.light footer .foot-copy,body.light footer .foot-admin,body.light footer .foot-powered-text,body.light footer .foot-powered{color:#dbe5f2!important;-webkit-text-fill-color:#dbe5f2!important;opacity:1!important;filter:none!important;text-shadow:none!important}
-footer .foot-col h4,body.light footer .foot-col h4{color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;font-size:.8rem!important;font-weight:850!important;letter-spacing:.11em!important;opacity:1!important;text-shadow:none!important}
-footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button{font-size:.88rem!important;line-height:1.6!important}
+/* ===== FINAL FOOTER WORDMARK / READABILITY OVERRIDES ===== */
+footer,body.light footer,body:not(.light) footer{
+  background:#061126!important;color:#eaf2ff!important;color-scheme:dark;
+  border-top:1px solid rgba(96,165,250,.28)!important;opacity:1!important;filter:none!important
+}
+footer .foot-grid,footer .foot-bottom,footer .foot-logo,footer .foot-col,footer .foot-clist,
+footer .socials,footer .foot-social-row,footer .foot-powered{
+  opacity:1!important;filter:none!important;mix-blend-mode:normal!important;min-width:0
+}
+footer .foot-logo{display:flex!important;align-items:center!important;gap:13px!important}
+footer .foot-logo img[data-brand-logo="true"]{
+  display:block!important;width:50px!important;height:50px!important;min-width:50px!important;
+  min-height:50px!important;max-width:50px!important;object-fit:contain!important;
+  box-sizing:border-box!important;padding:4px!important;background:#f8fafc!important;
+  border:1px solid rgba(226,232,240,.85)!important;border-radius:12px!important;
+  box-shadow:0 6px 20px rgba(0,0,0,.25)!important;flex:0 0 50px!important;opacity:1!important
+}
+footer .foot-wordmark,footer .foot-wordmark-main,footer .foot-wordmark-sub{
+  display:block!important;opacity:1!important;visibility:visible!important;filter:none!important;
+  mix-blend-mode:normal!important;text-shadow:none!important
+}
+footer .foot-wordmark-main{
+  font-family:"Space Grotesk",sans-serif!important;font-size:1rem!important;font-weight:850!important;
+  line-height:1.18!important;letter-spacing:.035em!important;color:#f8fafc!important;
+  -webkit-text-fill-color:#f8fafc!important;white-space:nowrap!important
+}
+footer .foot-wordmark-main strong{
+  color:#f6c86a!important;-webkit-text-fill-color:#f6c86a!important;font-weight:900!important
+}
+footer .foot-wordmark-sub{
+  margin-top:4px!important;font-family:"Inter",sans-serif!important;font-size:.62rem!important;
+  font-weight:800!important;letter-spacing:.28em!important;line-height:1.2!important;
+  color:#dbeafe!important;-webkit-text-fill-color:#dbeafe!important
+}
+footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,
+footer .foot-copy,footer .foot-admin,footer .foot-powered-text,footer .foot-powered{
+  color:#dbe5f2!important;-webkit-text-fill-color:#dbe5f2!important;opacity:1!important;
+  visibility:visible!important;filter:none!important;text-shadow:none!important
+}
+footer .foot-col h4{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;font-size:.8rem!important;
+  font-weight:850!important;letter-spacing:.11em!important;opacity:1!important;visibility:visible!important
+}
+footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button{
+  font-size:.88rem!important;line-height:1.65!important;text-decoration:none!important
+}
 footer .foot-desc{font-size:.9rem!important;line-height:1.75!important}
-footer .foot-copy,footer .foot-admin,footer .foot-powered-text{font-size:.82rem!important;line-height:1.5!important}
-footer .foot-clist a:hover,footer .foot-col ul a:hover,footer .foot-col ul button:hover,footer .foot-admin:hover{color:#fff!important;-webkit-text-fill-color:#fff!important}
-footer .foot-bottom{border-top:1px solid rgba(203,213,225,.28)!important;gap:14px!important}
-footer .foot-bottom>p{margin:0;color:#dbe5f2!important}
-footer .socials{display:flex;gap:10px;flex-wrap:wrap}
-footer .socials .soc{width:auto!important;min-width:40px!important;height:40px!important;min-height:40px!important;padding:0 10px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#10213a!important;border:1px solid rgba(203,213,225,.35)!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important}
-footer .socials .soc:hover{background:#1d4ed8!important;border-color:#60a5fa!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
-footer .foot-powered{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+footer .foot-clist a:hover,footer .foot-col ul a:hover,footer .foot-col ul button:hover,
+footer .foot-admin:hover{color:#fff!important;-webkit-text-fill-color:#fff!important}
+footer .foot-col ul li{margin-bottom:10px!important}
+footer .foot-bottom{
+  border-top:1px solid rgba(203,213,225,.28)!important;gap:14px!important;padding-top:20px!important
+}
+footer .foot-copy{margin:0!important;font-size:.82rem!important;line-height:1.5!important}
+footer .foot-admin,footer .foot-powered-text{font-size:.82rem!important;line-height:1.5!important}
+footer .socials{display:flex!important;gap:10px!important;flex-wrap:wrap!important}
+footer .socials .soc{
+  width:auto!important;min-width:40px!important;height:40px!important;min-height:40px!important;
+  padding:0 10px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:#10213a!important;border:1px solid rgba(203,213,225,.35)!important;
+  color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important
+}
+footer .socials .soc:hover{background:#1d4ed8!important;border-color:#60a5fa!important;color:#fff!important}
 footer a[href*="tiktok.com"],footer a[data-social="tiktok"],footer .foot-tiktok-link{display:none!important}
-body.light footer .foot-wordmark-main{color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important}
-body.light footer .foot-wordmark-main strong{color:#f6c86a!important;-webkit-text-fill-color:#f6c86a!important}
-body.light footer .foot-wordmark-sub{color:#dbeafe!important;-webkit-text-fill-color:#dbeafe!important}
+#contact a[data-social="tiktok"]{display:flex!important;align-items:center!important;gap:12px!important}
+#contact a[data-social="tiktok"] .clink-ico{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;
+  border-radius:12px!important;background:#0b1224!important;border:1px solid rgba(148,163,184,.35)!important;color:#fff!important
+}
+#contact a[data-social="tiktok"] svg{display:block!important;width:22px!important;height:22px!important}
+#contact a[data-social="tiktok"] .clink-lbl{color:var(--gray)}
+#contact a[data-social="tiktok"] .clink-val{color:var(--white);overflow-wrap:anywhere}
+#adminLogin .rft-admin-brand-lockup img[data-brand-logo="true"],
+#adminLogin .login-box>img[data-brand-logo="true"]{
+  object-fit:contain!important;box-sizing:border-box!important;padding:4px!important;background:#f8fafc!important;
+  border:1px solid #dbeafe!important;border-radius:13px!important;box-shadow:0 8px 22px rgba(2,8,23,.18)!important;opacity:1!important
+}
+#adminLogin .rft-admin-brand-lockup img[data-brand-logo="true"]{width:58px!important;height:58px!important}
+#adminLogin .login-box>img[data-brand-logo="true"]{width:72px!important;height:72px!important;padding:5px!important}
+#adminLogin .login-box h2{color:var(--white)!important}
+#adminLogin .login-box>p{color:var(--gray)!important;line-height:1.65!important}
+#adminLogin #loginForm label{color:var(--white)!important;font-weight:700!important}
+#adminLogin #loginForm input{color:var(--white)!important}
+body:not(.light) #adminLogin .login-box{background:#0b1730!important;border:1px solid rgba(148,163,184,.22)!important}
+body:not(.light) #adminLogin .login-box h2{color:#f8fafc!important}
+body:not(.light) #adminLogin .login-box>p,body:not(.light) #adminLogin #loginForm label{color:#e2e8f0!important}
+body:not(.light) #adminLogin #loginForm input{background:#081226!important;border-color:#475569!important;color:#f8fafc!important}
+body.light #adminLogin .login-box{background:#fff!important;border:1px solid #dbeafe!important}
+body.light #adminLogin .login-box h2{color:#0f172a!important}
+body.light #adminLogin .login-box>p,body.light #adminLogin #loginForm label{color:#334155!important}
+body.light #adminLogin #loginForm input{background:#fff!important;border-color:#cbd5e1!important;color:#0f172a!important}
 @media(max-width:640px){
   footer{padding:34px 17px 24px!important}
   footer .foot-grid{grid-template-columns:1fr!important;gap:26px!important}
@@ -2530,14 +2585,11 @@ body.light footer .foot-wordmark-sub{color:#dbeafe!important;-webkit-text-fill-c
   footer .foot-powered{order:0!important}
   footer .foot-admin{align-self:flex-start}
   footer .foot-logo img[data-brand-logo="true"]{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;max-width:48px!important;flex-basis:48px!important}
-  footer .foot-wordmark-main{font-size:1rem!important}
+  footer .foot-wordmark-main{font-size:.95rem!important}
+  #adminLogin .rft-admin-login-visual{min-height:290px}
+  #adminLogin .rft-admin-login-content{padding:22px 14px 32px}
+  #adminLogin .login-box{max-width:100%!important}
 }
-/* Exactly one public TikTok action: in Contact only. */
-#mainSite footer a[href*="tiktok.com"],#mainSite footer a[data-social="tiktok"],#mainSite footer .foot-tiktok-link{display:none!important}
-#contact a[data-social="tiktok"]{display:flex!important;align-items:center}
-#contact a[data-social="tiktok"] .clink-ico{display:flex!important;align-items:center;justify-content:center;width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:#0b1224!important;border:1px solid rgba(148,163,184,.35);color:#fff!important}
-#contact a[data-social="tiktok"] .clink-lbl{color:var(--gray)}
-#contact a[data-social="tiktok"] .clink-val{color:var(--white);overflow-wrap:anywhere}
 
 </style>
 </head>
@@ -4209,8 +4261,6 @@ function showPage(id) {
       return;
     }
     window._rftAdminSessionLocked = false;
-    var _sessionLock = document.getElementById('rftAdminSessionLock');
-    if (_sessionLock) _sessionLock.remove();
     var _dash = document.getElementById('adminDash');
     var _dashNav = _dash && _dash.querySelector('.adm-nav');
     var _dashBody = _dash && _dash.querySelector('.adm-body');
@@ -4903,31 +4953,26 @@ function adminLogout() {
 
 }
 
-// Admin session guard: lock protected dashboard panels in place instead of redirecting.
-// It runs only while the dashboard page is visible, so public visitors are unaffected.
+// Admin session guard — clear invalid access and return to public Home, never to Admin Login.
 window.rftLockAdminSession = function() {
   if (window._rftAdminSessionLocked) return;
   window._rftAdminSessionLocked = true;
   try { clearSession(); } catch(e) {}
   var dash = document.getElementById('adminDash');
-  if (!dash) return;
-  var nav = dash.querySelector('.adm-nav');
-  var body = dash.querySelector('.adm-body');
-  if (nav) nav.style.display = 'none';
-  if (body) body.style.display = 'none';
-  dash.querySelectorAll('.notif-panel').forEach(function(panel) { panel.style.display = 'none'; });
-  var notice = document.getElementById('rftAdminSessionLock');
-  if (!notice) {
-    notice = document.createElement('section');
-    notice.id = 'rftAdminSessionLock';
-    notice.className = 'rft-admin-session-lock';
-    notice.setAttribute('role', 'status');
-    notice.innerHTML = '<div class="rft-admin-lock-brand"><img data-brand-logo="true" alt="Royal FinTech official logo" width="72" height="72"><span class="rft-admin-lock-shield">🛡️</span></div><div class="rft-admin-lock-copy"><div class="rft-admin-lock-kicker">SECURE WORKSPACE</div><h1>Admin access is paused</h1><p>The dashboard controls have been hidden because the current session is no longer valid. The public website and project request pages remain available.</p><button class="btn btn-primary" type="button" onclick="showPage(\'mainSite\')">Return to website</button></div>';
-    dash.appendChild(notice);
-    try { if (typeof renderBrandLogo === 'function') renderBrandLogo(notice); } catch(e) {}
+  if (dash) {
+    var nav = dash.querySelector('.adm-nav');
+    var body = dash.querySelector('.adm-body');
+    if (nav) nav.style.display = 'none';
+    if (body) body.style.display = 'none';
+    dash.querySelectorAll('.notif-panel').forEach(function(panel) { panel.style.display = 'none'; });
   }
-  notice.style.display = 'grid';
+  // A timed-out administrator is taken safely to the public website, not the sign-in screen.
+  window._rftSkipHomeReset = true;
+  try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
+  if (typeof gotoSection === 'function') gotoSection('hero');
+  if (typeof showToast === 'function') showToast('Admin session ended. You are back on the public website.', 'warn');
 };
+// Watch only while the admin dashboard is active; expiry returns Home.
 setInterval(function() {
   var dash = document.getElementById('adminDash');
   if (!dash || !document.body.classList.contains('on-admin') || window._rftAdminSessionLocked) return;
