@@ -2652,6 +2652,38 @@ body.light #adminLogin #loginForm input{background:#fff!important;border-color:#
   #adminLogin .login-box{max-width:100%!important}
 }
 
+
+/* ===== FINAL FOOTER / BRAND CONTRAST HARDENING ===== */
+footer,footer *{opacity:1}
+footer{background:#07111f!important;color:#e2e8f0!important;border-top:1px solid rgba(148,163,184,.28)!important}
+footer .foot-wordmark-main{display:block!important;color:#f8fafc!important;font-weight:800!important;letter-spacing:.015em;text-shadow:none!important;line-height:1.25}
+footer .foot-wordmark-main strong{color:#f5bd4f!important;font-weight:900!important}
+footer .foot-wordmark-sub{display:block!important;color:#cbd5e1!important;font-weight:750!important;letter-spacing:.18em!important;line-height:1.35}
+footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,footer .foot-copy,footer .foot-powered-text,footer .foot-admin{color:#cbd5e1!important;text-shadow:none!important}
+footer .foot-col h4{color:#f8fafc!important;font-size:.78rem!important;letter-spacing:.11em!important}
+footer .foot-col ul a:hover,footer .foot-col ul button:hover,footer .foot-clist a:hover,footer .foot-admin:hover{color:#f5bd4f!important}
+footer .foot-powered{color:#cbd5e1!important}
+footer .foot-powered-text{font-weight:650!important}
+footer .foot-logo img{width:48px!important;height:48px!important;min-width:48px!important;object-fit:contain!important;display:block!important;background:transparent!important}
+footer .foot-bottom{border-top:1px solid rgba(148,163,184,.24)!important;gap:14px;align-items:center}
+footer .foot-copy{line-height:1.6!important}
+footer .foot-tiktok-link,footer .foot-powered [data-social="tiktok"],footer .foot-powered .tiktok-icon,footer .foot-powered svg[aria-label*="TikTok"],footer .foot-powered a[aria-label*="TikTok"]{display:none!important}
+footer .foot-social-row:empty{display:none!important}
+#contact .clink[data-social="tiktok"]{display:flex!important;visibility:visible!important;opacity:1!important}
+#contact .clink[data-social="tiktok"] .clink-ico{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#25F4EE,#FE2C55)!important;color:#fff!important;display:flex!important;align-items:center;justify-content:center}
+#contact .clink[data-social="tiktok"] .clink-ico svg{width:21px;height:21px;display:block}
+body.light footer{background:#0b1525!important;color:#e2e8f0!important}
+body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .foot-col ul a,body.light footer .foot-col ul button,body.light footer .foot-copy,body.light footer .foot-powered-text,body.light footer .foot-admin{color:#dbe4f0!important}
+body.light footer .foot-col h4{color:#fff!important}
+@media(max-width:700px){
+ footer{padding:34px 18px 22px!important}
+ footer .foot-grid{grid-template-columns:minmax(0,1fr)!important;gap:25px!important;margin-bottom:26px!important}
+ footer .foot-bottom{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:12px!important}
+ footer .foot-copy{font-size:.76rem!important}
+ footer .foot-powered{flex-wrap:wrap}
+ footer .foot-logo{align-items:center}
+ footer .foot-wordmark-main{font-size:.98rem}
+}
 </style>
 </head>
 <body>
@@ -5033,13 +5065,22 @@ window.rftLockAdminSession = function() {
   if (typeof gotoSection === 'function') gotoSection('hero');
   if (typeof showToast === 'function') showToast('Admin session ended. You are back on the public website.', 'warn');
 };
-// Watch only while the admin dashboard is active; expiry returns Home.
+// Admin timeout is scoped to an authenticated admin dashboard only.
+// Expired sessions return to the public website; public visitors are never redirected to admin login.
 setInterval(function() {
   var dash = document.getElementById('adminDash');
   if (!dash || !document.body.classList.contains('on-admin') || window._rftAdminSessionLocked) return;
   var display = window.getComputedStyle ? window.getComputedStyle(dash).display : dash.style.display;
   if (display === 'none' || isAuth()) return;
-  if (typeof window.rftLockAdminSession === 'function') window.rftLockAdminSession();
+  window._rftAdminSessionLocked = true;
+  try {
+    if (typeof clearSession === 'function') clearSession();
+    if (typeof showPage === 'function') showPage('mainSite');
+    if (typeof gotoSection === 'function') gotoSection('hero');
+    if (typeof showToast === 'function') showToast('Your admin session ended. The public website is still available.', 'warn');
+  } finally {
+    window.setTimeout(function(){ window._rftAdminSessionLocked = false; }, 1200);
+  }
 }, 60000);
 
 // ---- ADMIN CLOCK ----
