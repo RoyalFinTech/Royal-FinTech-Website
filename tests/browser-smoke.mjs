@@ -20,7 +20,7 @@ async function waitForHome(page) {
   await page.waitForTimeout(350);
 }
 async function routeIs(page, route) {
-  return page.locator('#mainSite').getAttribute('data-rft-current') === route;
+  return (await page.locator('#mainSite').getAttribute('data-rft-current')) === route;
 }
 async function navGeometry(page) {
   return page.locator('#mainNav').evaluate((nav) => {
