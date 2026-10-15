@@ -2463,6 +2463,60 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
 /* Admin sign-in is intentionally marked as awaiting a server-side auth endpoint. */
 #adminLogin .session-badge{background:rgba(245,158,11,.12)!important;border-color:rgba(245,158,11,.38)!important;color:#fbbf24!important}
 #adminLogin .session-dot{background:#fbbf24!important;box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+
+/* ===== FINAL FOOTER BRAND / CONTRAST HARDENING ===== */
+footer,body.light footer{background:#061126!important;color:#e2e8f0!important;border-top:1px solid rgba(96,165,250,.24)!important;opacity:1!important}
+footer .foot-logo{display:flex;align-items:center;gap:13px;min-width:0;margin-bottom:16px;cursor:pointer}
+footer .foot-logo img[data-brand-logo="true"]{display:block!important;width:52px!important;height:52px!important;min-width:52px!important;max-width:52px!important;object-fit:contain!important;object-position:center!important;background:transparent!important;opacity:1!important;flex:0 0 52px}
+footer .foot-wordmark{display:flex;flex-direction:column;gap:4px;min-width:0;color:#f8fafc!important;opacity:1!important;line-height:1.08}
+footer .foot-wordmark-main{display:block;font-family:"Space Grotesk",sans-serif;font-weight:850;font-size:clamp(.9rem,1.2vw,1.12rem);letter-spacing:.025em;color:#f8fafc!important;white-space:normal;overflow-wrap:normal}
+footer .foot-wordmark-main strong{color:#f6c86a!important;font-weight:900}
+footer .foot-wordmark-sub{display:block;font-family:"Inter",sans-serif;font-size:.62rem;font-weight:800;letter-spacing:.28em;color:#dbeafe!important;margin-top:2px}
+footer .foot-desc,footer .foot-clist a,footer .foot-col h4,footer .foot-col ul a,footer .foot-col ul button,footer .foot-copy,footer .foot-admin,footer .foot-powered-text,footer .foot-powered{color:#dbe5f2!important;opacity:1!important;text-shadow:none!important}
+footer .foot-col h4{color:#f8fafc!important;font-size:.78rem!important;font-weight:800!important;letter-spacing:.1em!important}
+footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button{font-size:.88rem!important;line-height:1.55!important}
+footer .foot-desc{font-size:.9rem!important;line-height:1.75!important}
+footer .foot-copy,footer .foot-admin,footer .foot-powered-text{font-size:.82rem!important;line-height:1.5!important}
+footer .foot-clist a:hover,footer .foot-col ul a:hover,footer .foot-col ul button:hover,footer .foot-admin:hover{color:#fff!important}
+footer .foot-bottom{border-top:1px solid rgba(203,213,225,.24)!important;gap:14px!important}
+footer .foot-bottom>p{margin:0;color:#dbe5f2!important}
+footer .socials{display:flex;gap:10px;flex-wrap:wrap}
+footer .socials .soc{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px;padding:0 8px;background:#10213a!important;border:1px solid rgba(203,213,225,.35)!important;color:#f8fafc!important;opacity:1!important}
+footer .socials .soc:hover{background:#1d4ed8!important;border-color:#60a5fa!important;color:#fff!important}
+footer .foot-powered{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+footer a[href*="tiktok.com"],footer [data-social="tiktok"],footer .foot-tiktok-link{display:none!important}
+body.light footer .foot-wordmark-main,body.light footer .foot-wordmark-sub{color:#f8fafc!important}
+@media(max-width:640px){
+  footer{padding:34px 17px 24px!important}
+  footer .foot-grid{grid-template-columns:1fr!important;gap:26px!important}
+  footer .foot-bottom{align-items:flex-start!important;flex-direction:column!important}
+  footer .foot-powered{order:0!important}
+  footer .foot-admin{align-self:flex-start}
+  footer .foot-logo img[data-brand-logo="true"]{width:48px!important;height:48px!important;min-width:48px!important;max-width:48px!important;flex-basis:48px}
+  footer .foot-wordmark-main{font-size:1rem}
+}
+
+
+/* ===== IN-PLACE ADMIN TIMEOUT LOCK ===== */
+.rft-admin-session-lock{position:fixed;inset:0;z-index:10020;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(2,6,23,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#f8fafc}
+.rft-admin-session-lock-card{width:min(100%,520px);padding:clamp(24px,4vw,42px);border-radius:24px;border:1px solid rgba(96,165,250,.32);background:linear-gradient(145deg,#0d1b34,#061126);box-shadow:0 30px 100px rgba(0,0,0,.55);text-align:center}
+.rft-admin-session-lock-mark{display:flex;align-items:center;justify-content:center;width:62px;height:62px;margin:0 auto 18px;border-radius:18px;background:rgba(246,200,106,.11);border:1px solid rgba(246,200,106,.42);color:#f6c86a;font-size:1.8rem}
+.rft-admin-session-lock-eyebrow{color:#f6c86a;font-size:.7rem;font-weight:800;letter-spacing:.17em;margin-bottom:10px}
+.rft-admin-session-lock-card h2{font-family:"Space Grotesk",sans-serif;color:#fff!important;font-size:clamp(1.45rem,3.5vw,2rem);line-height:1.15;margin:0 0 12px}
+.rft-admin-session-lock-message{color:#dbe5f2!important;font-size:.95rem;line-height:1.7;margin:0 0 22px}
+.rft-admin-session-lock-home{min-height:48px;padding:12px 22px;border:0;border-radius:999px;background:linear-gradient(135deg,#f6c86a,#f59e0b);color:#111827;font-weight:800;cursor:pointer;box-shadow:0 8px 28px rgba(245,158,11,.2)}
+.rft-admin-session-lock-home:focus-visible{outline:3px solid #93c5fd;outline-offset:4px}
+.rft-admin-session-lock-note{font-size:.73rem;line-height:1.55;color:#aebed3;margin-top:18px}
+@media(max-width:480px){.rft-admin-session-lock{padding:16px}.rft-admin-session-lock-card{padding:24px 18px;border-radius:20px}}
+
+
+/* Enforce a single visible TikTok entry: Contact only. */
+#mainSite footer a[href*="tiktok.com"],#mainSite footer a[data-social="tiktok"],#mainSite footer .foot-tiktok-link{display:none!important}
+#contact a[data-social="tiktok"]{display:flex!important;align-items:center}
+#contact a[data-social="tiktok"] .clink-ico{width:42px;height:42px;flex:0 0 42px;border-radius:12px;background:#0b1224!important;border:1px solid rgba(148,163,184,.35);color:#fff!important}
+#contact a[data-social="tiktok"] .clink-lbl{color:var(--gray)}
+#contact a[data-social="tiktok"] .clink-val{color:var(--white);overflow-wrap:anywhere}
+
 </style>
 </head>
 <body>
@@ -2958,7 +3012,7 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
         <a href="https://wa.me/2204071510" class="clink" target="_blank"><div class="clink-ico">💬</div><div><div class="clink-lbl">WhatsApp</div><div class="clink-val">+220 4071510</div></div></a>
         <a href="mailto:royalfintechcompany@gmail.com" class="clink"><div class="clink-ico">📧</div><div><div class="clink-lbl">Email</div><div class="clink-val">royalfintechcompany@gmail.com</div></div></a>
         <a href="https://maps.google.com/?q=Old+Yundum+Gambia" class="clink" target="_blank"><div class="clink-ico">📍</div><div><div class="clink-lbl">Address</div><div class="clink-val">98M4+25R, OIC Rd, Old Yundum, Gambia</div></div></a>
-        <a href="https://www.tiktok.com/@royal_fintech?_r=1&_t=ZS-98G3x9NXuVh" class="clink" target="_blank" rel="noopener noreferrer" data-social="tiktok" aria-label="Follow Royal FinTech on TikTok (opens in a new tab)"><div class="clink-ico" data-tiktok-icon="20" data-tiktok-color="currentColor"></div><div><div class="clink-lbl">Follow us on TikTok</div><div class="clink-val">@royal_fintech</div></div></a>
+        <a href="https://www.tiktok.com/@royal_fintech" class="clink" target="_blank" rel="noopener noreferrer" data-social="tiktok" aria-label="Follow Royal FinTech on TikTok (opens in a new tab)"><div class="clink-ico" data-tiktok-icon="20" data-tiktok-color="currentColor"></div><div><div class="clink-lbl">Follow us on TikTok</div><div class="clink-val">@royal_fintech</div></div></a>
       </div>
     </div>
     <div class="rev-r">
@@ -3006,8 +3060,12 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
 <footer>
   <div class="foot-grid">
     <div>
-      <div class="foot-logo" onclick="gotoSection('hero')">
-        <img data-brand-logo="true" alt="Royal FinTech Logo" loading="eager" decoding="async" width="36" height="36" style="aspect-ratio:1/1;background:var(--bg2,#0A0F1C);object-fit:contain;" ><div class="nav-logo-text">Royal <span>Fin</span>Tech<br>Company</div>
+      <div class="foot-logo" onclick="gotoSection('hero')" role="link" tabindex="0" aria-label="Royal FinTech Company home">
+        <img data-brand-logo="true" alt="Royal FinTech official logo" loading="eager" decoding="async" width="52" height="52" style="aspect-ratio:1/1;background:transparent;object-fit:contain;" >
+        <div class="foot-wordmark" aria-label="Royal FinTech Company">
+          <span class="foot-wordmark-main">ROYAL <strong>FINTECH</strong></span>
+          <span class="foot-wordmark-sub">COMPANY</span>
+        </div>
       </div>
       <p class="foot-desc">Innovating Finance. Empowering Africa. Building world-class digital solutions for African businesses and entrepreneurs.</p>
       <div class="foot-clist">
@@ -3062,9 +3120,8 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
   </div>
   <div class="foot-bottom">
     <p class="foot-copy">© 2026 Royal FinTech Company. All Rights Reserved. | Old Yundum, The Gambia</p>
-    <div class="foot-powered" role="group" aria-label="Royal FinTech social presence">
+    <div class="foot-powered" role="note" aria-label="Powered by Royal FinTech">
       <span class="foot-powered-text">🛡️ Powered by Royal FinTech</span>
-      
     </div>
     <button class="foot-admin" onclick="showPage('adminLogin')" type="button">🛡️ Admin Portal</button>
   </div>
@@ -3503,7 +3560,7 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
 <div id="adminLogin" class="page">
   <div class="rft-admin-login-shell">
     <aside class="rft-admin-login-visual" aria-label="Royal FinTech technology workspace">
-      <img class="rft-admin-login-photo" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Developer workspace with a laptop, code and modern technology" loading="eager" decoding="async">
+      <img class="rft-admin-login-photo" src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Technology professionals collaborating in a modern workplace" loading="eager" decoding="async">
       <div class="rft-admin-login-shade"></div>
       <div class="rft-admin-login-visual-copy">
         <div class="rft-admin-brand-lockup">
@@ -4131,6 +4188,7 @@ function showPage(id) {
       showToast('Admin access is required for the dashboard. Open Admin Portal to sign in.', 'error');
       return;
     }
+    if (typeof window.rftDismissAdminSessionLock === 'function') window.rftDismissAdminSessionLock();
     updateDashSession();
     startClock();
     setTimeout(function() { initRevChart(); animBars(); }, 200);
@@ -4817,20 +4875,55 @@ function adminLogout() {
 
 }
 
-// Admin session expiry guard. Use computed visibility so a CSS-hidden dashboard
-// cannot be mistaken for an open admin dashboard just because inline display is empty.
-setInterval(function() {
-  const d = document.getElementById('adminDash');
-  if (!d || !document.body.classList.contains('on-admin') || window._rftExpiryRedirecting) return;
-  const display = window.getComputedStyle ? window.getComputedStyle(d).display : d.style.display;
-  if (display === 'none' || isAuth()) return;
+// Admin session lock. Timeout never changes route; it masks protected content and disables dashboard actions.
+window.rftDismissAdminSessionLock = function() {
+  var overlay = document.getElementById('rftAdminSessionLock');
+  var dashboard = document.getElementById('adminDash');
+  if (dashboard) dashboard.inert = false;
+  if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  window._rftExpiryRedirecting = false;
+};
+window.rftLockAdminSession = function(message) {
+  try { clearSession(); } catch(e) {}
+  var dashboard = document.getElementById('adminDash');
+  var display = dashboard && window.getComputedStyle ? window.getComputedStyle(dashboard).display : (dashboard ? dashboard.style.display : 'none');
+  if (!dashboard || !document.body.classList.contains('on-admin') || display === 'none') {
+    showToast('Admin access is paused. Public browsing is still available.', 'error');
+    return;
+  }
   window._rftExpiryRedirecting = true;
-  clearSession();
-  window._rftSkipHomeReset = true;
-  try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
-  if (typeof gotoSection === 'function') gotoSection('hero');
-  showToast('Admin session ended. The public website is still available; open Admin Portal when you need to sign in again.', 'error');
-  window.setTimeout(function() { window._rftExpiryRedirecting = false; }, 1200);
+  var overlay = document.getElementById('rftAdminSessionLock');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'rftAdminSessionLock';
+    overlay.className = 'rft-admin-session-lock';
+    overlay.setAttribute('role','alertdialog');
+    overlay.setAttribute('aria-modal','true');
+    overlay.setAttribute('aria-labelledby','rftAdminSessionLockTitle');
+    overlay.innerHTML = '<div class="rft-admin-session-lock-card"><div class="rft-admin-session-lock-mark" aria-hidden="true">🛡️</div><div class="rft-admin-session-lock-eyebrow">ROYAL FINTECH · SECURITY</div><h2 id="rftAdminSessionLockTitle">Admin access paused</h2><p class="rft-admin-session-lock-message"></p><button type="button" class="rft-admin-session-lock-home">Return to public website</button><div class="rft-admin-session-lock-note">Your public browsing is unaffected. Admin sign-in remains available only when you choose Admin Portal.</div></div>';
+    document.body.appendChild(overlay);
+    var homeButton = overlay.querySelector('.rft-admin-session-lock-home');
+    if (homeButton) homeButton.addEventListener('click', function() {
+      window.rftDismissAdminSessionLock();
+      window._rftSkipHomeReset = true;
+      try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
+      if (typeof gotoSection === 'function') gotoSection('hero');
+    });
+  }
+  var messageEl = overlay.querySelector('.rft-admin-session-lock-message');
+  if (messageEl) messageEl.textContent = message || 'For protection, this dashboard is paused until an authorised admin session is available. No protected actions can be performed right now.';
+  dashboard.inert = true;
+  overlay.style.display = 'flex';
+  var button = overlay.querySelector('.rft-admin-session-lock-home');
+  if (button) button.focus();
+};
+// Check only while the admin dashboard is visible. Never route users to Admin Login or Home on timeout.
+setInterval(function() {
+  var dashboard = document.getElementById('adminDash');
+  if (!dashboard || !document.body.classList.contains('on-admin') || window._rftExpiryRedirecting) return;
+  var display = window.getComputedStyle ? window.getComputedStyle(dashboard).display : dashboard.style.display;
+  if (display === 'none' || isAuth()) return;
+  window.rftLockAdminSession('For protection, this admin view has been paused. Return to the public website or continue browsing without signing in again.');
 }, 60000);
 
 // ---- ADMIN CLOCK ----
@@ -4844,7 +4937,7 @@ function startClock() {
 // ---- ADMIN PANELS ----
 function showPanel(id) {
   if (id === 'formSubmissions') id = 'applications';
-  if (!isAuth()) { adminLogout(); return; }
+  if (!isAuth()) { window.rftLockAdminSession('Admin access is paused because no valid authorised session is available. Return to the public website when you are ready.'); return; }
   document.querySelectorAll('.dash-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.adm-menu a,.adm-menu button').forEach(function(a) { a.classList.remove('act'); });
   var panel = document.getElementById('panel-' + id);
@@ -5164,7 +5257,7 @@ function runAIDash() {
   var input = document.getElementById('aiDashInput');
   var resp  = document.getElementById('aiDashResp');
   if (!input || !input.value.trim()) { showToast('Please enter a prompt.', 'error'); return; }
-  if (!isAuth()) { adminLogout(); return; }
+  if (!isAuth()) { window.rftLockAdminSession('Admin access is paused because no valid authorised session is available. Return to the public website when you are ready.'); return; }
   if (resp) { resp.classList.add('show'); resp.textContent = 'Processing...'; }
   var userText = input.value.trim();
   input.value = '';
@@ -7741,8 +7834,7 @@ function saveSocialLinks() {
   // RBAC: this panel only renders inside the authenticated admin
   // dashboard, but re-verify the session before allowing a write.
   if (typeof isAuth === 'function' && !isAuth()) {
-    showToast('Session expired — please sign in again.', 'error');
-    try { adminLogout(); } catch(e) {}
+    window.rftLockAdminSession('Admin access is paused because no valid authorised session is available.');
     return;
   }
 
@@ -7808,7 +7900,8 @@ function applySocialLinks(links) {
   if (!links) return;
   if (links.whatsapp) { var waNum=links.whatsapp.replace(/\D/g,''); document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){a.href='https://wa.me/'+waNum;}); }
   ['facebook','instagram','linkedin','tiktok','youtube','twitter','telegram','github'].forEach(function(k) {
-    document.querySelectorAll('a[data-social="'+k+'"]').forEach(function(a) {
+    var socialSelector = k === 'tiktok' ? '#contact a[data-social="tiktok"]' : 'a[data-social="'+k+'"]';
+    document.querySelectorAll(socialSelector).forEach(function(a) {
       if (links[k]) {
         // Validate before applying — only accept http(s) URLs to prevent
         // javascript: or data: URI injection via admin-controlled input.
@@ -8594,7 +8687,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var response=await fetch(base+(config.applicationsPath||'/api/applications'),{
       method:'GET',headers:{'Authorization':'Bearer '+token,'Accept':'application/json'}
     });
-    if(response.status===401||response.status===403){clearSession();window._rftSkipHomeReset=true;try{showPage('mainSite');}finally{window._rftSkipHomeReset=false;}if(typeof gotoSection==='function')gotoSection('hero');throw new Error('Your admin session has ended. The public site is still available; open Admin Portal to sign in again.');}
+    if(response.status===401||response.status===403){window.rftLockAdminSession('The server did not accept this admin session. Protected dashboard actions are paused; you can return to the public website.');return false;}
     if(!response.ok)throw new Error('Could not refresh applications (HTTP '+response.status+').');
     var payload=await response.json();
     var rows=Array.isArray(payload)?payload:(payload.applications||payload.data);
