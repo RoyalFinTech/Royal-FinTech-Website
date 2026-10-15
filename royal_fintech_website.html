@@ -2463,6 +2463,40 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
 /* Admin sign-in is intentionally marked as awaiting a server-side auth endpoint. */
 #adminLogin .session-badge{background:rgba(245,158,11,.12)!important;border-color:rgba(245,158,11,.38)!important;color:#fbbf24!important}
 #adminLogin .session-dot{background:#fbbf24!important;box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+
+/* ===== FINAL FOOTER READABILITY / BRAND MARK / ADMIN-SESSION PASS ===== */
+footer,body.light footer,body:not(.light) footer{background:#061126!important;color:#e2e8f0!important;color-scheme:dark;border-top:1px solid rgba(96,165,250,.28)!important;opacity:1!important;filter:none!important}
+footer .foot-grid,footer .foot-bottom,footer .foot-logo,footer .foot-col,footer .foot-clist{opacity:1!important;filter:none!important;min-width:0}
+footer .foot-logo{display:flex!important;align-items:center!important;gap:12px!important}
+footer .foot-logo img[data-brand-logo="true"]{display:block!important;width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;object-fit:contain!important;box-sizing:border-box!important;padding:3px!important;background:#f8fafc!important;border:1px solid rgba(226,232,240,.7)!important;border-radius:10px!important;box-shadow:0 6px 20px rgba(0,0,0,.22)!important;flex:0 0 50px!important}
+footer .foot-logo .nav-logo-text,body.light footer .foot-logo .nav-logo-text{color:#f8fafc!important;font-family:"Space Grotesk",sans-serif;font-size:.96rem!important;font-weight:800!important;line-height:1.18!important;letter-spacing:.01em!important;opacity:1!important;-webkit-text-fill-color:#f8fafc!important;text-shadow:none!important}
+footer .foot-logo .nav-logo-text span,body.light footer .foot-logo .nav-logo-text span{color:#f6c86a!important;-webkit-text-fill-color:#f6c86a!important;opacity:1!important}
+footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,footer .foot-copy,footer .foot-admin,footer .foot-powered-text,footer .foot-powered,body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .foot-col ul a,body.light footer .foot-col ul button,body.light footer .foot-copy,body.light footer .foot-admin,body.light footer .foot-powered-text,body.light footer .foot-powered{color:#cbd5e1!important;opacity:1!important;filter:none!important;text-shadow:none!important}
+footer .foot-col h4,body.light footer .foot-col h4{color:#f8fafc!important;font-size:.78rem!important;font-weight:800!important;letter-spacing:.1em!important;opacity:1!important;text-shadow:none!important}
+footer .foot-clist a:hover,footer .foot-col ul a:hover,footer .foot-col ul button:hover,footer .foot-admin:hover{color:#fff!important}
+footer .foot-bottom{border-top:1px solid rgba(148,163,184,.28)!important}
+footer .socials .soc{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(148,163,184,.35)!important;color:#f8fafc!important}
+footer .socials .soc:hover{background:#2563eb!important;border-color:#60a5fa!important;color:#fff!important}
+footer a,footer button{overflow-wrap:anywhere;opacity:1!important}
+footer a[data-social="tiktok"],footer .foot-tiktok-link{display:none!important}
+#contact .clink[data-social="tiktok"]{display:flex!important;align-items:center}
+#contact .clink[data-social="tiktok"] .clink-ico{display:flex!important;align-items:center;justify-content:center}
+#contact .clink[data-social="tiktok"] svg{display:block;width:20px;height:20px}
+body:not(.light) select,body:not(.light) .lc-select,body:not(.light) .drawer-select{color:#f8fafc!important;background-color:#0b1730!important;color-scheme:dark}
+body:not(.light) select option,body:not(.light) select optgroup{color:#f8fafc!important;background:#0b1730!important}
+body.light select,body.light .lc-select,body.light .drawer-select{color:#0f172a!important;background-color:#fff!important;color-scheme:light}
+body.light select option,body.light select optgroup{color:#0f172a!important;background:#fff!important}
+.rft-admin-session-lock{width:min(900px,calc(100% - 32px));min-height:64svh;margin:24px auto;box-sizing:border-box;display:grid;grid-template-columns:100px minmax(0,1fr);align-content:center;align-items:center;gap:26px;padding:clamp(24px,5vw,56px);border:1px solid rgba(96,165,250,.32);border-radius:26px;background:radial-gradient(circle at 0 0,rgba(37,99,235,.24),transparent 55%),linear-gradient(135deg,#07152c,#0b1730);color:#f8fafc;box-shadow:0 28px 90px rgba(0,0,0,.3)}
+.rft-admin-lock-brand{display:flex;flex-direction:column;align-items:center;gap:12px}
+.rft-admin-lock-brand img{width:84px!important;height:84px!important;object-fit:contain!important;background:#f8fafc!important;border-radius:14px;padding:4px;box-sizing:border-box;border:1px solid rgba(226,232,240,.5)}
+.rft-admin-lock-shield{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(246,200,106,.12);border:1px solid rgba(246,200,106,.45);font-size:1.35rem}
+.rft-admin-lock-copy{min-width:0}
+.rft-admin-lock-kicker{color:#f6c86a;font-size:.72rem;font-weight:800;letter-spacing:.18em}
+.rft-admin-lock-copy h1{margin:9px 0 12px;color:#fff!important;font-size:clamp(1.6rem,4vw,2.5rem);line-height:1.12}
+.rft-admin-lock-copy p{margin:0 0 20px;max-width:620px;color:#dbeafe!important;line-height:1.75}
+.rft-admin-lock-copy .btn{min-height:46px}
+@media(max-width:620px){.rft-admin-session-lock{grid-template-columns:1fr;gap:18px;text-align:center;margin:16px auto;min-height:60svh;padding:26px 20px}.rft-admin-lock-brand img{width:70px!important;height:70px!important}.rft-admin-lock-copy p{margin-inline:auto}.rft-admin-lock-copy .btn{width:100%}}
+
 </style>
 </head>
 <body>
@@ -3503,7 +3537,7 @@ body.light footer .foot-desc,body.light footer .foot-clist a,body.light footer .
 <div id="adminLogin" class="page">
   <div class="rft-admin-login-shell">
     <aside class="rft-admin-login-visual" aria-label="Royal FinTech technology workspace">
-      <img class="rft-admin-login-photo" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&amp;fit=crop&amp;w=1400&amp;q=85" alt="Developer workspace with a laptop, code and modern technology" loading="eager" decoding="async">
+      <img class="rft-admin-login-photo" src="data:image/webp;base64,UklGRogbAABXRUJQVlA4IHwbAADwxgCdASqkAS8BPzGOvViuqbu5pbKM63AmCWJt/LP0yWANkcXwWWwk7MBcOfWadP1W+KxbqCfkB85vMvUruN+dacv/1mtM0J/qO8Sx6LoF1qZkVg5d+tnmAOj7RPydiyUH+lglIJp5U09Jc+6KwnTQvrCtmyrDOdYejg4l3XEG8RHE0kFxjg5365WiXD73ZPYWC8rYuICqR2TFjZfwAwdG052/whhvzn428kdEy0NPHosJdvYzIgPwwJzSCpdmYj6uzRHpWFcnz2eyRS84dzshbWOgYw5nNFbZn7qo5jW4dOl0JLd1J0SDwAx/69929ybwKGrQwgp4XsxQOP2r/ls3uPINIdfLOXZzfr3M4MG08nSTEAGeuKi35E1TFi//V8dVq1Ddm04h+6IVXFJhGK7Nu+/UX9BjJAs0etaf84PzIjIthTHL7AZJQE9avinRuAMFOgqm8wVVe35A/WVF35AWFFeE4tTZEBfShCE8YSrLL8VSkASHdnAN67+4yc30f7I3vSAQqeALD1wHYxA/+Cy73Scar6zlRUnYbDqf+S8yzp5f+2gi1WPwd3hxKuFNOXhS/ygOtEeGrhWfa9tnGaRvbAYfqjMvvxOxx8Zp9DpgDCSsYjxGY1bWoeH1QiYMbd3iEYEMwa80D0BvI5Hnqs+ispxQTyGDc2xDJNkqqqsGrcIDCS0819cux7oBmDiSYLqhfBaERAclwbTdH/6R9Auivq+siCZYUNdA9HxhP2gdTd5IerxctnJPA6qTHDTvPFZjZ8d1Qqwx7WZ8lAZWy3zUufAm2RAvXN4gEyE4gUEU7/+TiKYCgYJmkyUTUMXXJgcNh1epQTZFwRd3iw1DpCVjL+bSu3LMdNCnaBKLk4MjmEIT6Eg9l+eUe0Mp7GZm3j5qYtHm1d9X8PDMnJdBN+86ky/j08E0rEwvAYhchsI+KawGeLY0JR3eeH5EIIrLpOtfxKDuFTcDGy8W4+pCW9Kji5Ly0xk4YHTJ866a3P1x8dy0ptTNUVXQ+jl8Hf4Kg1rUVbQ7YPxQXA/G5Z+BoXaq4DezTc6aE7OTqf2R3uvwfON27EC/EEKYqzehqPHcKR/cp3/qkWxsHz1+2Mu4ZC53GNliphIIq3qNW47cz86cQL7Bm/iDpLDUxJ3uZnhTGkxJN13Kr7Zv3RXy8/0Kw6GY8YHgbKtcieLgwG7lVp9O9jDkPcjfRICpbSw/OszcYp6yl1HhOBrrOTsQ/SajeWIa97cuQkYXvdywvQjQvr6g0MJ/z5Jmkcac2PqbaUcObvEYaefoX3YdtqqUSmzp/Qi5bfGQtbvr/hbxigeCO27GkFgOqTe8igE7Bhc8m0UtAz4rLlCeq9h2UgMeeAdFW/3EtUDjOkGVrwRZuc8pKhynBLyrm5WLV9n5E0h4R1NYs/ZOcccgKWlNIVqNIasns/XFclfD5yzN9LjcRqNnLBHyW4+8KTLBTqgowIHq+RNH/gEEtvsgJh78f3KVtvKBHJovlbyM5MATfJZzbNSVzsvotejqxEi19uaIvBc/pays+qpXxIoTyx1N4y9TwhdUEmsPnnrgzndISYCRoGx7Kx6V+uz2/pG4BPBzqajE5aSEg27zWJ95IJXxZTkEoaX49IFQW63X/LQoFZrh6Qf96mMvCyb9Rlxvdgts5ufBJKX1qx8AD/Xgd/o5YRfgd2P6d+gyz5AeK+URrDcORSRitWbMeAUlZ6IV1m6K0DiO/gqEpLLeVrTyn4F/lHZOcPlNRWuy5nVH4GSTSpmCAGY2VOQokL4EsOINzovIAML5jcMCXw1r/rXsoepbJxzuwgA3fGAuekm7XVebV8HyP/pirUNPw4xMER76LzbNB/57SR6ZgOHiUdNT9t949mIF7K2JCkHsTEt5kZPVEm6FAaHddPx3iE5zf9jA8u/PwiJnmswSEjj6gDJ+c7F5reYjpYkAnZVkf7DtcKcuegCq1XmtesNG7NOYqf/ztUkIZfy2pWn1BzFRORjmazT+OAButL6dHsw6Fsv8wKTMQMvrZp46oRrC8DRgZKFNndTgHF598k7x6AR9Z6h5nkXE0ZIjFxn+QK97IMsEw0FpeZWEi1vzX4/cfVLIM1hO9ZIgVMLBDIgyeV6NKgAfh6VPp5he/PkTEx2AAPt07SupwQpv4+2wv1wdgqdjjjq0eappyI171/c1G0VH+PlFh/YzJz3MQlzgKj3PPQ1HXmwVBFiz4PbabI+s3OuQOBI5jk1C4oiJTydQwPbHf8U+ixwEmgwtpk+4Lk8SEIXWvXPvQ0jlGNwMBR7sRPP73WnGsGW9tES2N2mDFOY4csgXCSeWWsgv9mjaeI30ygjQzjOcyx0xvzocXdc3qWr26FXaOh3NvTkALzGrLUuF4BJeXrbmFtNmb58d1zU0ZjnM2wq76xUOHK6hGTaA1MgOi6sYIlE4wp8imKWUT0Z/esaXRypCmqmFDcjxC5SQt8QMGd+a+wJK3zvtM78KDkdQe0c2wY9nA6IGijSY77JPrhcnRcuH2xA7KxdWuyIIXLgxybslvjHB53POEpTVAhA/WFOCKN3UolQEh8QC1oRdz9pEpAiynnHoo+GChQXgWlJ55DvlWU598XzGnJktp66v/D33VWx1rNZUuOa6VWmJxv4QKiBPR5VrsxDT0ZfCO+NL65UZxfVVMjp7pcBdNv9xFHpjc/P8sQpZp2RjLz74raFjwuph8HyRAqSlgVl9VYwVyW6n4D37ye8LeGWWTAC8QJ+2C25bdvHDKw8X7QvuZg9fpSPmyZVZgTQg8mbD19abJJRNY1PrjKRK2XWffXTOJvIRK1rRhO0ufLshpZP8APgK5NcoDGMXBP6LDPoS/HtDAkbmbRHBmUQIAIiP2zVhK1Zc+rhmI1CzAHcJJYDwocYGQgBnDrV3CA+GLjQpwaQXfQ9yOOWpovQUuJT5O3RvyOlVOgHLdZ2+Rsq8oVb40GgGQ/I0c6v79qi957qLJtY89r1XC68OTmUgnjMKXcHbsUHzQCKEG0pP54zNLgqOTvSIlV7MtAhQmhcuglt1J8vdnYvweDEQcfL9CMCaIc23csAuqq2FPVZxMTI32ZYOCZO59zwDFAkoILD01AkMriV2wNVfn0FXg/dnOeeC0pZ3pwlnypN1e+bx/jlVdx7rDgbrf7YP6rIVUsxiVZ+WwJsDxWJlVuFiQcXhLS217Wmm/4RyarObaHQhUQkG3jl2Zvg36yWvTrasAnv4Kx3JFoKZOoygngtbmbE7NyEDp1NmfP62IhoyVWlz0rm8Fqkufev0Fc6C+9FFON8NdvMCcux5P5FlMrIb5eBsGL34KSd2V+3FMrt09bEFQz9MkEElrFfHQ9sHNfwQ4L9d+5MoPDPbxnyx5LVb2yU5W++y+yvBJc1LxDhpspSiJGbsJLpPpxG0pJMF3L3Irp+1orGL6/xG7Vo1oOAprBWcqZBJp6IBD48KKyILUL8Ugfmv9HWvXHChVj+ds8YWk48bphvOKw2c/Vxz4ep3Bz0cIqzBjjTPmyGyo2fZokAgXqRg6R3lDk5pv/UVB8/iR5HCP1OpmOL2x7wDxEIZl1OEkiq+MKqaRpilcg0oArVa2WCW0zQdT5tEzMwaMbcY55npfwBjS8/M/GPlYwenkvuFqDvR/N5/VlsHzeuoNA+KUOhOJ4IYLiN/8gleQJPI0hAkOeRu869stCY0o+LvY2eoRnesvhTY160EV0Cy0qW4fUlFfcFdzfTAjmiERglOHK4Jw7xu2Z6M5DgUupbDhGi3hXSwTyTlmNsj167mpBNaP3+M2lVAqvZwZe3WiSdbnwKSLkaA+OY377S26HA9ocV0J98kiY834uXD1s1AYUHc+KoE/WrMfh/io7UX8tKbXQv/F0B6jtsSBqUl6m74TwSQLXsFzPQ0HHzeU3um8gDq1onsIvbLDUpakMke4nAcKVVUjbmaBsd1i5R8Fl5REvUYyyLx1EpQzDXg39CEQ6i1Wp83W2NsDDZ9dThy6d/J35Ax/GSMmI6m4YMf78+Jv5Nhlt3onjOHOCdo3W/Ir4rp8qXsDntCIYBVRtGSEBC7N8xza+LE0OvQ9h2o1N4CGpSmVVLmGmBvyoEFRncd4fDx0MCmrdAzM/IMy35B2+Oeil3QmZNuxguuG+kFTWC754PXlVgj6d9SpJlsOkw1KeYCL1HOWxc/doSHzZNXvREgqxUnxm+PZLB9FqtiAEqSJ+edwmQ5eP+O5ShmeVL3NJFwSXuHvsP1GDVeLlI2kOxi5aekGhTIU3z7+ZJJr+X3QEE4hffnDB7n/zADKHoGhkKrZptczD78RThe5ReVULznqE2PrUEtvWzXAuYJtXaW4HPY4bvRBjGO7guTQH8cpXU4BbKpy+jjy2QEZcuD+uRYEJ1EDotz85AxvnJZoKog44yZQrdstq7x78AAjC6OA4jQyGNVCzOsHbsaf5Zvetpz3PNfgaLRpT5rO05RZT6sU55sdCv9WOpKnqyhyTf9j5y4h12u3cQXlDzy6sDDCmcINdsQUnjkvktqiU8IoRyqcjuLfh2wKCGvQTlAIGMeccQQPpr1BrGKZ8/xJGMXXXq8LLPtHbOVdavkrj343wHFHtc13EO0GAvRyMUhZXFa5n/OtydCLDGTAKnAuXbozT/AH1/Y1e7/ZpuxCA2EXC/2xpO3Z5d4/aOy3hkPkoY1GWUDh7Mo+ubw6GppDrOBmNwylPbsjPQwrNu25mi/Bo1m9fSSCJakSPW+B+Aiej8dI6PEPhm/14hB+IyTBfcg047tYNtpk49OIv3mIS9E51tj6pfHivnhLT8R7X29WLIgfiBRzx7IEpmle9LurP+noB+IEaCwy8Pa9ibIaVetER7w7WFkQWHnarhRcZKLTaGKgBbgkogXOhvaNdDZKNazF2nUfY8aMmJC4wMq/oJbILK8h6CfAzIbgAi4y+dy8S8PCG0HVPi3WnYVYWlhWf6s8HbqDLWasfyPAAHH0B6tZjdypPakbRydSD7K0OmJb0W3UvBZLCTIFzoXsAIxwBNVNy4HviQkgkd+1mzKLHGqaIPF3fEtdUja4n8Za91sbtUGnD19xtjv5DzyTdwpw+j+iXN4qJZTPOO3zwi3RGNpFZIkrGZB36cEaYkAs7rPPpgl3wEenxLIyifacx6mK+uT6LE//cmnXLLoPrYUMre4TOCI+LVSiPjEDzPMuNVJG0I/QrauT3708UoBMPaItxoZbcfnH9VBiECagilYxCz1931TcNVPQFkKA8j9a/bhFoGOrye4kGofOyKh5kYPdeA7yi/bmKRW0TF81I5Bl75nFeolwYUfAIrCzAD5Qw6pyx9Ql4wQQlRvNFpQQDEggzQEACRZZTxztzLBCQmBtCr0AlnZ5zD0xxAbJABeAD0kIda6VeLkBp51MJ/78xeD4N0yv+O16TsfgwZ3JGMiNorS5h/sW7oe/yTkScx2vc5H9Cs33rCGw/YVU7MJVmK2u5fIckTZ5AeuvNUFvmyiEHd/6K9H3dy23MGHLv7csyAIpteKuXJeKn02vURYdK7vR1IdUv6kTky0i0b8BWE82pi1IpQyX4iQnlOtsYgk7GlJPZgZUUB4pl4lfeqVqF/xLwW0yWYfV3bHsuy3EjMONbth5z9RV1POL3QKU+KAjvV6ZxEHWXKC0eSO8PokFmrREHB0Q9yYBD8jypbq8ouOLfP6lip0bp0nSoNZ0TBChoFvgrRCbkLPI48MaHbjOS+GqhnTHtf2m7jPhL967bSSBZIr3GQtf4J3XWHArVN/JEtYJ1olVnWtjSDTMk+LzIh7fXtDdn1X1EqkLtRRs6Nx9/hL7yLcF78aO/qY9OwHoQpZSnurtbwageAvE+SuLgvVv+3vmmR2KiW3r2pd4jipWVeJij8fAwtjWYezgC+lhoHHlEsQoVqq7IFSpMS+nJihrwZ1WM5v/a/Ly3lTkoAGV2vgzgdRj7ATURQxhgFLP6CplYNO2fGvCt1bnj9qqQHU3JA73l/0Gz20Hjl/oY6KiP44S/wA+tsqZ1eOdUMD2NoY8m/IytHrhg/sXg36/i0T+uqWCLPU+s/kehd3wnvdAEv4a9e9pLxUPi+z1XeR8W3DeWFLhQVIrbyBch+Ex3CwAzRBwLQ16nFTpRms4lAqUFBWw9rJX3yrcylY8TLkacQz9ntRCGuEoM3ydccbBIvjXAEiYooH74DLQKH/ng6TGX0rVuqzQIqY++d8HR6dd4ktjZ5dgav+rYFK80+sG4estBLXzcmkgPVec4CebxS8+Vx8+WZe+wdSN0aK/KrL1NhBI0ZOc4243uZFXWk1o6QCLtXXSipmk6+ytqsIQUZHfHYSgt5euBfOXcMDr/Xv6jcjpc9hHjYDHT68GsunIkVFbb9DPiN7NDA40OcPh2mgC1wI1tlCLTL4MlHfsMZw59v+Cik70StQ7itGjfnSnSduI4o6gesoW7KG9ZcWCO1XX5N+hma47Y5nSNhcFp64Ufuk1FhrLjk/KJ/FNXghik3AlJbboJl6zZjHmFFwoU4eBAHaT7Rzo7bjwuy4XleKBpUQqVkC4okc9jB4Sj3jg7L+pEHSIT0qK3gQenlP6pKf78VV/v+ATkXr5tpUJxIDg0C3Nj8YIvMv4bU+9wW4CS67QmlXsd6wifmABWA6wyfrcGZuLzs+YobxNi3lkbuUrQVhmtkN8r1a4520L6REGZ2T77sqU6M7HwQl0IKAfilZXfFis63PFFpUbGpG/RH5kJmlxVapMO2bNkjkri3PogtKROIPxD+Kw9u951jIdh332TF7EbnyBc7Max+oAixholNhyoYkjrAT9ClaI3lG7Zso50w6dB1u1dEPPDDW9OVFxbB+Iw5lr2bNoUPTyJrUt5pKJAdWejSISGyUTsHS+x+f2ToxTakTOv/a2FxUfX8xzkLO6ygGLvUfOqhijFzFkQKnHhvX5W7zw8IVNIONAr73rBO8PgEfIb62TlJETTSK1niwxbjheLxVy8VVkf2y3FaCayLYBwi2ZVz+BR+8h8BjS2wtX+7LcShZERwRihsby53Xy0U9zmOE7OX5ZyCCpttuUYcdULSNjBFAJ7mnxj4k0QI/RrIIQT+slv+e79v8fWR+jhuhx9vxrm3mTOOiLm/+4irzjKeQZsTGpi4YNodaWGfLpQkju+4/bWjw8hc45FQsf6HmisNgZ4N51JuW1kwLJpb/GUKmfjyVIB9pJ8XuCypDcz+xqrGbh0DO0Vz7Gpw5M0Cc5oE2gLwFkW3bMia6U4I91FPyeIQgX2KklFHKZFvIvSrVZDpJaOxL7VufGWHuPs7hlGqAEBip14dHiLQ9shoggBWsRJsYWtDgxqbi5Gp3bQ6B3xljrP8jBJzjiisA9SESUZwYs2WaIP8mwADDi8gXTzxv3wYVnRCvSThTr9W3XCBRQMj3Kj4M5MWSNCefDpBtYw2hL5DNyOkbOoFmiqsoCnqE9V+RBCxDEZ0ioko/khKBEUF8/pa0XDXbZVSkMtJS7sGnnwj/BrZPrcgrYd13CM7kcDZ78YfrAantSmG03XXLeCzEiIVWesNxPtJtRWFxJQKujzE4aOqKJQ/ypNfZTe+ohAmllTpycN4TJ9dtpHbIufp9YkWSDCGjPZzTkuFDL4gn3t9J4JAlkcXQAPgYLXiKQMU8rnnYNt6ddjlxDdoEVMSwQELV5VHGnX/BvYJDhXQBsAeE2SJNGAEI2D9CpeNqOO6iBEKFszgvDbz5An8XaOpmt1TVRAzxPuTz7CJ58mhiyBtctohIyZcWHcfMAOzA6TEaZYnUmdwkG/z29hkHe4WSwEWpxFSZX+lT25HHTDEPJ0WHcSCEYRXgKE/3c8r6KGx/Bw3RHqSOP7EM9Reu1HkVwqCMskc6dkPVCMET7cjXaNhAB4Ebzj9aZLB4DVszB9eClaqUaHoX+F2W1oacUAUiKY4wCmJR1HAEE1s0WIJ+Lt47vhQ6h24T8vhjasiU9B3QztRswpu7C9gZTBtotB8EJaFOQ0k/ceYsfTdru+VibHUa5CqaaYSXRJdui5jaqceMVXBfoF0yw4W92KWueq0/noTI8d00Cf6aohq2hIItosgu2IdL/gYPUcNDNICX0tQaufK3oH1qheXnW3wLA3klM31p7rGb+aZAVdMzB4SYktuZ90gEIt1xOmOxbX5eamJt6UUKBvy9fewdtidEay2YiRf3t39nq+U5M5ucz5CaEhpGfsF3LM3s+dZaADt4H6zJaARWZSxVWwaoxL5MhqcejZIS3xR8WmJC2bobVyE2AtJpbZb5oKYoo2lJ0CQPAv7jdcdgrm8hgva38YZwpOPbXqv8NrU5VePSC/X8YuuanIvp+iP4BW657/74gi5dF6Zvd50ckqDgRxUG4VEMrKi22+iIUPQ8E5OBOAgS23ZReDshunkrSdJD9s3GiUFZ7rwqBK71fp91YA4NZSVGgOxy8Nb5X0Hc+jMSUKvU9YvBQNtTxQ7BGarW1ZJ3wAKIk4Wh9rxxzecnHJ5kgG0vZ1VUfEj8l0iAokATORdc6rPjpdilHdM/1435WiFYXAYpxz3l0D7e9Gyhc28tgZzcyh+jE6O4EGdWPOoy8UmypARgui65Ew2qML8FABxZ9gShSgubjeMjt2UZgHxcqohaStiZA9nVuYySCewzSxpsBqty5juSCFT3WDcWZ0unUlS6n3tfHdM268iYfyox/YE5tjOEw8UickMO4uGyljdUsrmvJLZYUdbAig7XDbuXsbLiBdoMxtJn6NbpQLDmXO6mzsrmnsGe8zE7d4v4FiLvihBldrYBBIrt4/ZfSpgCoEn3cZPltWHtBHOOlmdpzt6p/cXo5YlcNfCkgEqjZXwYtz4fZ7nb/xzYfzVb9K9auHHsDGz0h772/A9ohBSLFpPUtE6uOkpKv+zeXaGi7hXgNk4yEmGueCof2vAze4rRdyjzD4iIiBDSn2ExXClkVhRbp2VmFFxa9DqTB0jW4pjZIPP+K+jX2vK7+LRMolYa0Eahx1jyAqsKbewIrv+jJ8H2tQ0pj3gio/0R5mOaNQ4KkIkhEMoS8tVS0nPTYPN6HAQYmBl1MJ36u7aMpzmgyxDTr9cmOW8Hf8pS7RwSckgVKfxVYRspTW+m5b1bg9MerDSA78fFAh0ASdltIYfHPTm4q2VAjY/X6oQ3ROzV6OOPSZ52mba3EHKeYL/lHuYKSCj9zudKO5O5liu5u9Br4RwAUrLg+Ybq28oAIJC8VomXprqZQTiVDOxLDBMcF8W2o5H6+IlO65KbxqEDnQrwXTcgAg46I/bgKuoyo0cF+ziPml4S4fXtIIeZlXioDW8clIOal3VCQH2XH6xctDSNbhj3OQsrqKWyLo8AR4g85r08vuC1fb6AUy4p9heYozPdJdmKdzlQ7H5xpI386MBAsuXR3Todem8vQ313pOUoSaVcRAAA" alt="Developer workspace with a laptop, code and modern technology" loading="eager" decoding="async">
       <div class="rft-admin-login-shade"></div>
       <div class="rft-admin-login-visual-copy">
         <div class="rft-admin-brand-lockup">
@@ -4126,11 +4160,18 @@ function showPage(id) {
 
   if (id === 'adminDash') {
     if (!isAuth()) {
-      window._rftSkipHomeReset = true;
-      try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
-      showToast('Admin access is required for the dashboard. Open Admin Portal to sign in.', 'error');
+      if (typeof window.rftLockAdminSession === 'function') window.rftLockAdminSession();
       return;
     }
+    window._rftAdminSessionLocked = false;
+    var _sessionLock = document.getElementById('rftAdminSessionLock');
+    if (_sessionLock) _sessionLock.remove();
+    var _dash = document.getElementById('adminDash');
+    var _dashNav = _dash && _dash.querySelector('.adm-nav');
+    var _dashBody = _dash && _dash.querySelector('.adm-body');
+    if (_dashNav) _dashNav.style.display = '';
+    if (_dashBody) _dashBody.style.display = '';
+    if (_dash) _dash.querySelectorAll('.notif-panel').forEach(function(panel) { panel.style.display = ''; });
     updateDashSession();
     startClock();
     setTimeout(function() { initRevChart(); animBars(); }, 200);
@@ -4817,20 +4858,37 @@ function adminLogout() {
 
 }
 
-// Admin session expiry guard. Use computed visibility so a CSS-hidden dashboard
-// cannot be mistaken for an open admin dashboard just because inline display is empty.
+// Admin session guard: lock protected dashboard panels in place instead of redirecting.
+// It runs only while the dashboard page is visible, so public visitors are unaffected.
+window.rftLockAdminSession = function() {
+  if (window._rftAdminSessionLocked) return;
+  window._rftAdminSessionLocked = true;
+  try { clearSession(); } catch(e) {}
+  var dash = document.getElementById('adminDash');
+  if (!dash) return;
+  var nav = dash.querySelector('.adm-nav');
+  var body = dash.querySelector('.adm-body');
+  if (nav) nav.style.display = 'none';
+  if (body) body.style.display = 'none';
+  dash.querySelectorAll('.notif-panel').forEach(function(panel) { panel.style.display = 'none'; });
+  var notice = document.getElementById('rftAdminSessionLock');
+  if (!notice) {
+    notice = document.createElement('section');
+    notice.id = 'rftAdminSessionLock';
+    notice.className = 'rft-admin-session-lock';
+    notice.setAttribute('role', 'status');
+    notice.innerHTML = '<div class="rft-admin-lock-brand"><img data-brand-logo="true" alt="Royal FinTech official logo" width="72" height="72"><span class="rft-admin-lock-shield">🛡️</span></div><div class="rft-admin-lock-copy"><div class="rft-admin-lock-kicker">SECURE WORKSPACE</div><h1>Admin access is paused</h1><p>The dashboard controls have been hidden because the current session is no longer valid. The public website and project request pages remain available.</p><button class="btn btn-primary" type="button" onclick="showPage(\'mainSite\')">Return to website</button></div>';
+    dash.appendChild(notice);
+    try { if (typeof renderBrandLogo === 'function') renderBrandLogo(notice); } catch(e) {}
+  }
+  notice.style.display = 'grid';
+};
 setInterval(function() {
-  const d = document.getElementById('adminDash');
-  if (!d || !document.body.classList.contains('on-admin') || window._rftExpiryRedirecting) return;
-  const display = window.getComputedStyle ? window.getComputedStyle(d).display : d.style.display;
+  var dash = document.getElementById('adminDash');
+  if (!dash || !document.body.classList.contains('on-admin') || window._rftAdminSessionLocked) return;
+  var display = window.getComputedStyle ? window.getComputedStyle(dash).display : dash.style.display;
   if (display === 'none' || isAuth()) return;
-  window._rftExpiryRedirecting = true;
-  clearSession();
-  window._rftSkipHomeReset = true;
-  try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
-  if (typeof gotoSection === 'function') gotoSection('hero');
-  showToast('Admin session ended. The public website is still available; open Admin Portal when you need to sign in again.', 'error');
-  window.setTimeout(function() { window._rftExpiryRedirecting = false; }, 1200);
+  if (typeof window.rftLockAdminSession === 'function') window.rftLockAdminSession();
 }, 60000);
 
 // ---- ADMIN CLOCK ----
@@ -4844,7 +4902,7 @@ function startClock() {
 // ---- ADMIN PANELS ----
 function showPanel(id) {
   if (id === 'formSubmissions') id = 'applications';
-  if (!isAuth()) { adminLogout(); return; }
+  if (!isAuth()) { if (typeof window.rftLockAdminSession === 'function') window.rftLockAdminSession(); return; }
   document.querySelectorAll('.dash-panel').forEach(function(p) { p.classList.remove('active'); });
   document.querySelectorAll('.adm-menu a,.adm-menu button').forEach(function(a) { a.classList.remove('act'); });
   var panel = document.getElementById('panel-' + id);
@@ -5164,7 +5222,7 @@ function runAIDash() {
   var input = document.getElementById('aiDashInput');
   var resp  = document.getElementById('aiDashResp');
   if (!input || !input.value.trim()) { showToast('Please enter a prompt.', 'error'); return; }
-  if (!isAuth()) { adminLogout(); return; }
+  if (!isAuth()) { if (typeof window.rftLockAdminSession === 'function') window.rftLockAdminSession(); return; }
   if (resp) { resp.classList.add('show'); resp.textContent = 'Processing...'; }
   var userText = input.value.trim();
   input.value = '';
@@ -7741,8 +7799,7 @@ function saveSocialLinks() {
   // RBAC: this panel only renders inside the authenticated admin
   // dashboard, but re-verify the session before allowing a write.
   if (typeof isAuth === 'function' && !isAuth()) {
-    showToast('Session expired — please sign in again.', 'error');
-    try { adminLogout(); } catch(e) {}
+    if (typeof window.rftLockAdminSession === 'function') window.rftLockAdminSession();
     return;
   }
 
