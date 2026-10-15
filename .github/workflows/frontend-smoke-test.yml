@@ -1,0 +1,31 @@
+name: Royal FinTech Frontend Smoke Test
+
+on:
+  push:
+    paths:
+      - "royal_fintech_website.html"
+      - "tests/smoke-test.mjs"
+      - ".github/workflows/frontend-smoke-test.yml"
+  pull_request:
+    paths:
+      - "royal_fintech_website.html"
+      - "tests/smoke-test.mjs"
+      - ".github/workflows/frontend-smoke-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    name: Validate primary HTML and navigation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run frontend smoke test
+        run: node tests/smoke-test.mjs
