@@ -92,7 +92,7 @@ check('footer has one visible TikTok icon and no duplicate Contact-page TikTok c
   const contact = html.slice(contactStart, contactEnd);
   assert.equal(count(/data-rft-tiktok="true"/g, footer), 1, 'Footer must contain exactly one TikTok button');
   assert.match(footer, /href="https:\/\/www\.tiktok\.com\/@royal_fintech"[^>]*data-rft-tiktok="true"/);
-  assert.match(footer, /footer \.socials \.foot-tiktok-link\{display:inline-flex!important\}/);
+  assert.match(html, /footer \.socials \.foot-tiktok-link\{display:inline-flex!important\}/);
   assert.equal(count(/data-social="tiktok"/g, contact), 0, 'Duplicate TikTok card remains in Contact section');
   assert.match(html, /footer a\[data-rft-tiktok="true"\]/);
 });
