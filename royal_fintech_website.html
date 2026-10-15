@@ -6918,19 +6918,47 @@ function closeAppModal() {
   currentAppId = null;
 }
 
-function updateAppStatus(newStatus) {
+async function updateAppStatus(newStatus) {
   if (!currentAppId) return;
   var apps = DB.get('applications');
+  if (!Array.isArray(apps)) apps = [];
+  var app = apps.find(function(a) { return a && String(a.id) === String(currentAppId); });
+  if (!app) { showToast('Application not found.', 'error'); return; }
+  if (app.serverId) {
+    var token = '';
+    try { token = sessionStorage.getItem('rft_admin_access_token') || ''; } catch (e) {}
+    if (!token || !window.RFAppRequests) {
+      showToast('A valid Supabase administrator session is required to update a central request.', 'error');
+      return;
+    }
+    var statusMap = { pending: 'new', reviewing: 'reviewing', approved: 'approved', rejected: 'declined' };
+    var remoteStatus = statusMap[newStatus] || newStatus;
+    try {
+      await window.RFAppRequests.update({ accessToken: token, id: app.serverId, status: remoteStatus });
+      if (remoteStatus === 'new') app.status = 'pending';
+      else if (remoteStatus === 'declined') app.status = 'rejected';
+      else app.status = remoteStatus;
+      DB.set('applications', apps);
+      closeAppModal();
+      await window.refreshSupabaseRequests();
+      showToast('Central request status updated.', 'success');
+      try { addAuditLog('✅', 'action', 'Central request ' + (app.requestNumber || app.serverId) + ' updated to ' + remoteStatus); } catch (e) {}
+    } catch (error) {
+      console.error('[Royal FinTech] Central request update failed:', error);
+      showToast(error.message || 'Could not update the central request.', 'error');
+    }
+    return;
+  }
   apps = apps.map(function(a) {
-    if (a.id === currentAppId) a.status = newStatus;
+    if (String(a.id) === String(currentAppId)) a.status = newStatus;
     return a;
   });
   DB.set('applications', apps);
   closeAppModal();
   renderApplications();
   updateAppStats();
-  showToast('Application status updated to: ' + newStatus, 'success');
-  addAuditLog('✅', 'action', 'Application #' + currentAppId + ' marked as ' + newStatus);
+  showToast('Local application status updated. This record is not a central request.', 'success');
+  try { addAuditLog('✅', 'action', 'Local application #' + currentAppId + ' marked as ' + newStatus); } catch (e) {}
 }
 
 function updateAppStats() {
