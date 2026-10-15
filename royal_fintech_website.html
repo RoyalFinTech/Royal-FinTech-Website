@@ -8428,13 +8428,14 @@ async function submitProjectRequest() {
         budget_selection:budgetTxt,requested_timeline:timelineTxt},
       contact_method:'Email / WhatsApp'
     });
-    if(!result||result.ok===false||result.success===false||!result.request_number) throw new Error('The server did not confirm that the request was saved.');
+    var savedRequest=result&&result.request&&typeof result.request==='object'?result.request:result;
+    if(!result||result.ok===false||result.success===false||!savedRequest||savedRequest.request_number==null) throw new Error('The server did not confirm that the request was saved.');
     delivery='server-confirmed';
-    serverReceipt=result;
-    app.serverId=result.id||'';
-    app.requestNumber=String(result.request_number);
-    app.status=result.status||'new';
-    app.date=result.created_at||app.date;
+    serverReceipt=savedRequest;
+    app.serverId=savedRequest.id||'';
+    app.requestNumber=String(savedRequest.request_number);
+    app.status=savedRequest.status||'new';
+    app.date=savedRequest.created_at||app.date;
     try{DB.push('applications',app);}catch(cacheError){}
   } catch(err) {
     deliveryError=err;
