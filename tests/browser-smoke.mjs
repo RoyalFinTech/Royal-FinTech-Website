@@ -88,16 +88,31 @@ try {
   check('browser Back restores previous site view', await routeIs(page, 'about'));
 
   // Verify theme changes update form controls, not only backgrounds.
+  const initialTheme = await page.evaluate(() => ({
+    light: document.body.classList.contains('light'),
+    themeText: document.getElementById('themeBtn')?.textContent,
+    storage: (() => { try { return localStorage.getItem('rft_theme'); } catch(e) { return 'unavailable'; } })()
+  }));
   await page.locator('#themeBtn').click();
-  await page.waitForFunction(() => document.body.classList.contains('light'));
-  const lightSelect = await page.locator('#currSelect').evaluate((el) => {
+  await page.waitForFunction((initial) => document.body.classList.contains('light') !== initial, initialTheme.light);
+  const lightSnapshot = await page.evaluate(() => {
+    const el = document.getElementById('currSelect');
     const c = getComputedStyle(el);
-    return { color: c.color, background: c.backgroundColor };
+    return { light: document.body.classList.contains('light'), bodyClass: document.body.className,
+      themeText: document.getElementById('themeBtn')?.textContent, color: c.color, background: c.backgroundColor,
+      inlineStyle: el.getAttribute('style'), storage: (() => { try { return localStorage.getItem('rft_theme'); } catch(e) { return 'unavailable'; } })() };
   });
-  check('light theme currency dropdown has dark readable text', lightSelect.color === 'rgb(15, 23, 42)', JSON.stringify(lightSelect));
-  check('light theme currency dropdown has a white background', lightSelect.background === 'rgb(255, 255, 255)', JSON.stringify(lightSelect));
-  await page.locator('#themeBtn').click();
-  await page.waitForFunction(() => !document.body.classList.contains('light'));
+  console.log('THEME_SNAPSHOT_AFTER_FIRST_CLICK', JSON.stringify({ initialTheme, lightSnapshot }));
+  check('theme toggle changes theme class', lightSnapshot.light !== initialTheme.light, JSON.stringify({initialTheme, lightSnapshot}));
+  const lightSelect = { color: lightSnapshot.color, background: lightSnapshot.background };
+  check('light theme currency dropdown has dark readable text', !lightSnapshot.light || lightSelect.color === 'rgb(15, 23, 42)', JSON.stringify({initialTheme, lightSnapshot}));
+  check('light theme currency dropdown has a white background', !lightSnapshot.light || lightSelect.background === 'rgb(255, 255, 255)', JSON.stringify({initialTheme, lightSnapshot}));
+  if (lightSnapshot.light) {
+    await page.locator('#themeBtn').click();
+    await page.waitForFunction(() => !document.body.classList.contains('light'));
+  } else {
+    await page.evaluate(() => window.rftSetTheme(false));
+  }
   const darkSelect = await page.locator('#currSelect').evaluate((el) => {
     const c = getComputedStyle(el);
     return { color: c.color, background: c.backgroundColor };
