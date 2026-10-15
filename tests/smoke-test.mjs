@@ -63,7 +63,7 @@ check('all route-view targets exist in the primary HTML', () => {
       } else if (target === 'stats-banner') {
         assert.match(html, /class="stats-banner"/, `Missing route target: ${target}`);
       } else {
-        assert.match(html, new RegExp('id=["\\']' + target.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '["\\']'),
+        assert.ok(html.includes('id="' + target + '"') || html.includes("id='" + target + "'"),
           `Missing route target: ${target}`);
       }
     }
