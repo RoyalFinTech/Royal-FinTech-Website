@@ -5549,6 +5549,7 @@ function saveCredentials() {
 
 // ---- LOGOUT ----
 function adminLogout() {
+  try { if (window.__rftSupabaseAuthClient) window.__rftSupabaseAuthClient.auth.signOut(); } catch (e) {}
   clearSession();
   showPage('mainSite');
   showToast('Signed out securely.', 'success');
@@ -5562,6 +5563,7 @@ function adminLogout() {
 window.rftLockAdminSession = function() {
   if (window._rftAdminSessionLocked) return;
   window._rftAdminSessionLocked = true;
+  try { if (window.__rftSupabaseAuthClient) window.__rftSupabaseAuthClient.auth.signOut(); } catch(e) {}
   try { clearSession(); } catch(e) {}
   var dash = document.getElementById('adminDash');
   if (dash) {
