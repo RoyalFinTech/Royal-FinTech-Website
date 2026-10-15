@@ -40,7 +40,7 @@ Browser push requires these Edge Function secrets:
 - `VAPID_SUBJECT` (e.g. `mailto:royalfintechcompany@gmail.com`)
 - `SITE_ORIGIN` (currently `https://royalfintech.github.io`)
 
-The push worker is included, and the client exposes `enablePush(accessToken)`. VAPID secrets, an authenticated admin token, notification permission and the subscription action are required. Automatic push dispatch on every new submission is not yet connected to a trusted server-side trigger.
+The push worker is included. The admin Applications toolbar exposes **Enable Admin Push**, which calls `enablePush(accessToken)` to request browser permission and register that administrator's subscription. VAPID secrets, an authenticated admin token, notification permission and a successful subscription are required. Automatic push dispatch on every new submission is not yet connected to a trusted server-side trigger; currently new requests create an in-app database notification and attempt configured email notification.
 
 ## Verification and limitations
 - Confirmed the latest primary HTML contains the client script, asynchronous Supabase submission flow, response-envelope handling, honest failure state, and admin refresh action.
