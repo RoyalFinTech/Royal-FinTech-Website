@@ -2684,6 +2684,99 @@ body.light footer .foot-col h4{color:#fff!important}
  footer .foot-logo{align-items:center}
  footer .foot-wordmark-main{font-size:.98rem}
 }
+
+/* ===== FINAL NAV, FOOTER BRANDING AND SESSION UX QA ===== */
+#mainNav{isolation:isolate}
+#mainNav .nav-links a{display:inline-flex;align-items:center;min-height:40px;white-space:nowrap}
+#mainNav .hamburger{display:flex!important;visibility:visible!important;opacity:1!important;flex:0 0 42px!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;padding:8px!important;border:1px solid var(--gborder)!important;border-radius:12px!important;background:var(--glass)!important;align-items:center!important;justify-content:center!important;position:relative;z-index:910}
+#mainNav .hamburger span{display:block!important;width:22px!important;height:2px!important;background:var(--white)!important;border-radius:3px!important}
+body.light #mainNav .hamburger span{background:#0f172a!important}
+@media(max-width:1279px){
+  #mainNav .nav-links,#mainNav .nav-desktop-controls{display:none!important}
+  #mainNav .hamburger{display:flex!important}
+}
+@media(min-width:1280px) and (max-width:1439px){
+  #mainNav{padding-inline:12px!important;gap:8px!important}
+  #mainNav .nav-logo{gap:6px!important;flex:0 0 auto}
+  #mainNav .nav-logo img{width:32px!important;height:32px!important}
+  #mainNav .nav-logo-text{font-size:.76rem!important;line-height:1.08!important}
+  #mainNav .nav-links{display:flex!important;gap:9px!important;flex:1 1 auto;justify-content:center}
+  #mainNav .nav-links a{font-size:.72rem!important;padding-inline:0!important}
+  #mainNav .nav-desktop-controls{display:flex!important;align-items:center!important;gap:5px!important;flex:0 0 auto}
+  #mainNav .nav-desktop-controls #langSelect{width:88px!important;max-width:88px!important;font-size:.64rem!important;padding-left:5px!important;padding-right:16px!important}
+  #mainNav .nav-desktop-controls #currSelect{width:66px!important;max-width:66px!important;font-size:.64rem!important;padding-left:5px!important;padding-right:15px!important}
+  #mainNav .nav-cta{padding:8px 10px!important;font-size:.72rem!important;white-space:nowrap}
+  #mainNav .icon-btn{width:33px!important;height:33px!important;flex:0 0 33px}
+  #mainNav .hamburger{display:none!important}
+}
+@media(min-width:1440px){
+  #mainNav .nav-links{display:flex!important}
+  #mainNav .nav-desktop-controls{display:flex!important;align-items:center}
+  #mainNav .hamburger{display:none!important}
+}
+footer,body.light footer,body:not(.light) footer{
+  background:#061126!important;color:#eaf2ff!important;color-scheme:dark;
+  border-top:1px solid rgba(96,165,250,.28)!important;
+}
+footer .foot-grid,footer .foot-grid>div,footer .foot-col,footer .foot-bottom,
+footer .foot-logo,footer .foot-wordmark{opacity:1!important;visibility:visible!important;filter:none!important;mix-blend-mode:normal!important;min-width:0!important}
+footer .foot-logo{display:flex!important;align-items:center!important;gap:12px!important;max-width:100%;cursor:pointer}
+footer .foot-logo img[data-brand-logo="true"]{
+  display:block!important;flex:0 0 50px!important;width:50px!important;height:50px!important;
+  min-width:50px!important;min-height:50px!important;max-width:50px!important;
+  object-fit:contain!important;opacity:1!important;visibility:visible!important;
+  background:#f8fafc!important;border-radius:8px!important;
+}
+footer .foot-wordmark{
+  flex:1 1 auto!important;min-width:0!important;display:flex!important;
+  flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:3px!important;
+}
+footer .foot-wordmark-main{
+  display:block!important;max-width:100%;font-size:clamp(.9rem,1.35vw,1.03rem)!important;
+  line-height:1.15!important;font-weight:800!important;letter-spacing:0!important;
+  white-space:nowrap!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;
+  opacity:1!important;visibility:visible!important;text-shadow:none!important;
+}
+footer .foot-wordmark-main strong{color:#fbbf24!important;-webkit-text-fill-color:#fbbf24!important;font-weight:900!important}
+footer .foot-wordmark-sub{
+  display:block!important;font-size:.7rem!important;font-weight:750!important;letter-spacing:.17em!important;
+  line-height:1.2!important;color:#cbd5e1!important;-webkit-text-fill-color:#cbd5e1!important;
+  opacity:1!important;visibility:visible!important;
+}
+footer .foot-desc,footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button,
+footer .foot-copy,footer .foot-powered-text,footer .foot-admin{
+  color:#dbe5f2!important;-webkit-text-fill-color:#dbe5f2!important;
+  opacity:1!important;visibility:visible!important;text-shadow:none!important;line-height:1.65!important;
+}
+footer .foot-col h4{color:#fbbf24!important;-webkit-text-fill-color:#fbbf24!important;font-weight:800!important;opacity:1!important}
+footer .foot-col ul{padding-left:0!important;list-style:none!important}
+footer .foot-col ul li{margin:0 0 7px!important}
+footer .foot-desc{font-size:.86rem!important;max-width:360px!important}
+footer .foot-clist a,footer .foot-col ul a,footer .foot-col ul button{font-size:.84rem!important;text-decoration:none!important}
+footer .foot-clist a:hover,footer .foot-col ul a:hover,footer .foot-col ul button:hover,footer .foot-admin:hover{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+}
+footer .socials{display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important;margin-top:16px!important}
+footer .socials .soc{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-width:40px!important;width:40px!important;height:40px!important;padding:0!important;
+  border-radius:12px!important;border:1px solid rgba(148,163,184,.38)!important;
+  background:rgba(255,255,255,.07)!important;color:#f8fafc!important;
+  -webkit-text-fill-color:#f8fafc!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;
+}
+footer .socials .soc[aria-hidden="true"]{display:none!important}
+footer .socials .foot-tiktok-link{display:inline-flex!important}
+footer .socials .foot-tiktok-link span{display:flex;align-items:center;justify-content:center}
+footer .socials .foot-tiktok-link svg{display:block!important;width:20px!important;height:20px!important;fill:currentColor!important}
+footer .socials .foot-tiktok-link:hover{background:#2563eb!important;border-color:#60a5fa!important;color:#fff!important}
+footer .foot-social-row{display:none!important}
+@media(max-width:600px){
+  footer .foot-logo{align-items:center!important;gap:10px!important}
+  footer .foot-wordmark-main{font-size:.87rem!important}
+  footer .foot-wordmark-sub{font-size:.64rem!important}
+  footer .foot-bottom{align-items:flex-start!important;gap:10px!important}
+}
+
 </style>
 </head>
 <body>
@@ -3179,7 +3272,6 @@ body.light footer .foot-col h4{color:#fff!important}
         <a href="https://wa.me/2204071510" class="clink" target="_blank"><div class="clink-ico">💬</div><div><div class="clink-lbl">WhatsApp</div><div class="clink-val">+220 4071510</div></div></a>
         <a href="mailto:royalfintechcompany@gmail.com" class="clink"><div class="clink-ico">📧</div><div><div class="clink-lbl">Email</div><div class="clink-val">royalfintechcompany@gmail.com</div></div></a>
         <a href="https://maps.google.com/?q=Old+Yundum+Gambia" class="clink" target="_blank"><div class="clink-ico">📍</div><div><div class="clink-lbl">Address</div><div class="clink-val">98M4+25R, OIC Rd, Old Yundum, Gambia</div></div></a>
-        <a href="https://www.tiktok.com/@royal_fintech" class="clink" target="_blank" rel="noopener noreferrer" data-social="tiktok" aria-label="Follow Royal FinTech on TikTok (opens in a new tab)"><div class="clink-ico" data-tiktok-icon="20" data-tiktok-color="currentColor"></div><div><div class="clink-lbl">Follow us on TikTok</div><div class="clink-val">@royal_fintech</div></div></a>
       </div>
     </div>
     <div class="rev-r">
@@ -3244,7 +3336,8 @@ body.light footer .foot-col h4{color:#fff!important}
       <div class="socials">
         <a href="#" class="soc" data-social="facebook" aria-hidden="true" style="display:none">f</a><a href="#" class="soc" data-social="instagram" aria-hidden="true" style="display:none">ig</a>
         <a href="https://wa.me/2204071510" class="soc" target="_blank">wa</a>
-        <a href="mailto:royalfintechcompany@gmail.com" class="soc">✉</a>
+        <a href="mailto:royalfintechcompany@gmail.com" class="soc" aria-label="Email Royal FinTech" title="Email">✉</a>
+        <a href="https://www.tiktok.com/@royal_fintech" class="soc foot-tiktok-link" data-rft-tiktok="true" target="_blank" rel="noopener noreferrer" aria-label="Follow Royal FinTech on TikTok" title="TikTok"><span data-tiktok-icon="20" data-tiktok-color="currentColor"></span></a>
       </div>
     </div>
     <div class="foot-col">
@@ -5063,7 +5156,7 @@ window.rftLockAdminSession = function() {
   window._rftSkipHomeReset = true;
   try { showPage('mainSite'); } finally { window._rftSkipHomeReset = false; }
   if (typeof gotoSection === 'function') gotoSection('hero');
-  if (typeof showToast === 'function') showToast('Admin session ended. You are back on the public website.', 'warn');
+  /* Silent fallback: return to public Home without an expired-session banner. */
 };
 // Admin timeout is scoped to an authenticated admin dashboard only.
 // Expired sessions return to the public website; public visitors are never redirected to admin login.
@@ -5077,7 +5170,7 @@ setInterval(function() {
     if (typeof clearSession === 'function') clearSession();
     if (typeof showPage === 'function') showPage('mainSite');
     if (typeof gotoSection === 'function') gotoSection('hero');
-    if (typeof showToast === 'function') showToast('Your admin session ended. The public website is still available.', 'warn');
+    /* Keep the public page unobstructed after admin access is cleared. */
   } finally {
     window.setTimeout(function(){ window._rftAdminSessionLocked = false; }, 1200);
   }
@@ -8057,7 +8150,7 @@ function applySocialLinks(links) {
   if (!links) return;
   if (links.whatsapp) { var waNum=links.whatsapp.replace(/\D/g,''); document.querySelectorAll('a[href*="wa.me"]').forEach(function(a){a.href='https://wa.me/'+waNum;}); }
   ['facebook','instagram','linkedin','tiktok','youtube','twitter','telegram','github'].forEach(function(k) {
-    var socialSelector = k === 'tiktok' ? '#contact a[data-social="tiktok"]' : 'a[data-social="'+k+'"]';
+    var socialSelector = k === 'tiktok' ? '#contact a[data-social="tiktok"],footer a[data-rft-tiktok="true"]' : 'a[data-social="'+k+'"]';
     document.querySelectorAll(socialSelector).forEach(function(a) {
       if (links[k]) {
         // Validate before applying — only accept http(s) URLs to prevent
