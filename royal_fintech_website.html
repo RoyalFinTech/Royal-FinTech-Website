@@ -3093,6 +3093,122 @@ body.light #mainSite #mainNav .nav-brand-company{color:#475569!important;-webkit
   #mainSite #mainNav .hamburger{display:none!important}
 }
 /* End desktop navigation visibility final override. */
+
+/* ===== FINAL RELEASE PATCH · HEADER / FOOTER / BRAND CONTRAST ===== */
+#mainSite #mainNav{
+  display:flex!important;visibility:visible!important;opacity:1!important;
+  position:sticky!important;top:0!important;z-index:1200!important;
+  width:100%!important;min-height:66px!important;height:auto!important;
+  box-sizing:border-box!important;isolation:isolate!important;
+  background:rgba(248,250,252,.97)!important;border-bottom:1px solid #dbeafe!important;
+  padding:9px clamp(12px,2vw,26px)!important;gap:clamp(8px,1vw,16px)!important;
+}
+#mainSite #mainNav .nav-logo,
+#mainSite #mainNav .nav-right{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;min-width:0!important}
+#mainSite #mainNav .nav-logo{flex:0 0 auto!important;gap:9px!important}
+#mainSite #mainNav .nav-logo img[data-brand-logo="true"]{display:block!important;visibility:visible!important;opacity:1!important;flex:0 0 38px!important;width:38px!important;height:38px!important;object-fit:contain!important;background:transparent!important}
+#mainSite #mainNav .nav-logo-text{display:block!important;visibility:visible!important;opacity:1!important;color:#0f172a!important;-webkit-text-fill-color:#0f172a!important;font-size:.88rem!important;line-height:1.15!important;overflow:visible!important}
+#mainSite #mainNav .nav-brand-line{display:flex!important;align-items:baseline!important;gap:4px!important;white-space:nowrap!important}
+#mainSite #mainNav .nav-brand-royal{color:#0f172a!important;-webkit-text-fill-color:#0f172a!important;opacity:1!important}
+#mainSite #mainNav .nav-brand-fin{color:#1d4ed8!important;-webkit-text-fill-color:#1d4ed8!important;opacity:1!important}
+#mainSite #mainNav .nav-brand-company{display:block!important;color:#475569!important;-webkit-text-fill-color:#475569!important;font-size:.59rem!important;letter-spacing:.13em!important;font-weight:850!important;opacity:1!important}
+#mainSite #mainNav .nav-right{margin-left:auto!important;flex:0 0 auto!important;gap:8px!important}
+#mainSite #mainNav .nav-links{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;gap:clamp(8px,.8vw,15px)!important;flex:1 1 auto!important;min-width:0!important;margin:0!important;padding:0!important;list-style:none!important}
+#mainSite #mainNav .nav-links li{display:list-item!important;visibility:visible!important;opacity:1!important}
+#mainSite #mainNav .nav-links a{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;white-space:nowrap!important;font-size:clamp(.72rem,.72vw,.86rem)!important;font-weight:650!important;color:#334155!important;padding:8px 1px!important;text-decoration:none!important;-webkit-text-fill-color:#334155!important}
+#mainSite #mainNav .nav-links a:hover,#mainSite #mainNav .nav-links a.active{color:#1d4ed8!important;-webkit-text-fill-color:#1d4ed8!important}
+#mainSite #mainNav .nav-desktop-controls{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;gap:6px!important;flex:0 0 auto!important}
+#mainSite #mainNav .nav-desktop-controls select{max-width:105px!important}
+#mainSite #mainNav #themeBtn,#mainSite #mainNav #notifBtn{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important}
+#mainSite #mainNav .hamburger{display:none!important}
+#mainSite #mainNav .nav-cta{white-space:nowrap!important;min-height:40px!important}
+@media(min-width:1180px) and (max-width:1439px){
+  #mainSite #mainNav{gap:7px!important;padding-inline:12px!important}
+  #mainSite #mainNav .nav-logo{gap:6px!important}
+  #mainSite #mainNav .nav-logo img[data-brand-logo="true"]{width:33px!important;height:33px!important;flex-basis:33px!important}
+  #mainSite #mainNav .nav-logo-text{font-size:.76rem!important}
+  #mainSite #mainNav .nav-links{gap:clamp(4px,.42vw,7px)!important}
+  #mainSite #mainNav .nav-links a{font-size:.66rem!important;letter-spacing:-.01em!important}
+  #mainSite #mainNav .nav-desktop-controls select,#mainSite #mainNav #notifBtn{display:none!important}
+  #mainSite #mainNav #themeBtn{width:34px!important;height:34px!important;min-width:34px!important;padding:0!important}
+  #mainSite #mainNav .nav-cta{font-size:.68rem!important;padding:8px 9px!important}
+}
+@media(max-width:1179px){
+  #mainSite #mainNav{min-height:64px!important;padding:8px 14px!important;gap:10px!important}
+  #mainSite #mainNav .nav-links,#mainSite #mainNav .nav-desktop-controls{display:none!important}
+  #mainSite #mainNav .hamburger{
+    display:flex!important;visibility:visible!important;opacity:1!important;
+    position:relative!important;flex:0 0 88px!important;width:88px!important;min-width:88px!important;
+    height:44px!important;min-height:44px!important;padding:0 10px!important;
+    flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;
+    gap:4px!important;background:#0b1730!important;border:1px solid #35527a!important;
+    border-radius:11px!important;z-index:1210!important;cursor:pointer!important;
+  }
+  #mainSite #mainNav .hamburger span{display:block!important;width:22px!important;height:2px!important;min-height:2px!important;background:#f8fafc!important;border-radius:3px!important;flex:0 0 2px!important}
+  #mainSite #mainNav .hamburger::after{content:"MENU"!important;display:block!important;position:absolute!important;left:39px!important;top:50%!important;transform:translateY(-50%)!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;font-size:10px!important;line-height:1!important;letter-spacing:.09em!important;font-weight:850!important;opacity:1!important;visibility:visible!important}
+  #mainSite #mainNav .nav-logo-text{font-size:.85rem!important}
+}
+@media(max-width:480px){
+  #mainSite #mainNav{padding-inline:10px!important}
+  #mainSite #mainNav .nav-logo{gap:6px!important}
+  #mainSite #mainNav .nav-logo img[data-brand-logo="true"]{width:32px!important;height:32px!important;flex-basis:32px!important}
+  #mainSite #mainNav .nav-logo-text{font-size:.78rem!important}
+  #mainSite #mainNav .nav-brand-company{font-size:.54rem!important}
+  #mainSite #mainNav .hamburger{width:82px!important;min-width:82px!important;flex-basis:82px!important}
+  #mainSite #mainNav .hamburger::after{left:36px!important}
+}
+/* Footer is intentionally navy in light and dark theme; text colours are explicit and high contrast. */
+#mainSite footer,body.light #mainSite footer,body:not(.light) #mainSite footer{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  background:#061126!important;color:#f8fafc!important;color-scheme:dark!important;
+  border-top:1px solid rgba(96,165,250,.32)!important;
+}
+#mainSite footer .foot-grid{display:grid!important;grid-template-columns:minmax(0,1.2fr) minmax(155px,.8fr) minmax(190px,.9fr)!important;gap:clamp(18px,3vw,42px)!important;align-items:start!important}
+#mainSite footer .foot-grid>div,#mainSite footer .foot-col,#mainSite footer .foot-bottom,#mainSite footer .foot-logo,#mainSite footer .foot-wordmark{min-width:0!important;opacity:1!important;visibility:visible!important;filter:none!important}
+#mainSite footer .foot-logo{display:flex!important;align-items:center!important;gap:12px!important;max-width:100%!important;margin-bottom:16px!important}
+#mainSite footer .foot-logo img[data-brand-logo="true"]{display:block!important;visibility:visible!important;opacity:1!important;mix-blend-mode:normal!important;flex:0 0 50px!important;width:50px!important;height:50px!important;min-width:50px!important;max-width:50px!important;object-fit:contain!important;object-position:center!important;background:#fff!important;padding:4px!important;border:1px solid #dbeafe!important;border-radius:10px!important}
+#mainSite footer .foot-wordmark{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;flex:1 1 auto!important;max-width:100%!important;overflow:visible!important}
+#mainSite footer .foot-wordmark-main{display:flex!important;flex-wrap:wrap!important;align-items:baseline!important;gap:.32em!important;white-space:normal!important;overflow:visible!important;overflow-wrap:normal!important;font-family:"Space Grotesk",sans-serif!important;font-size:clamp(.88rem,1.1vw,1.04rem)!important;font-weight:900!important;line-height:1.28!important;letter-spacing:.01em!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important;visibility:visible!important}
+#mainSite footer .foot-wordmark-royal{display:inline!important;color:#f8fafc!important;-webkit-text-fill-color:#f8fafc!important;opacity:1!important;visibility:visible!important;font-weight:850!important}
+#mainSite footer .foot-wordmark-main strong{display:inline!important;color:#fbbf24!important;-webkit-text-fill-color:#fbbf24!important;opacity:1!important;visibility:visible!important;font-weight:950!important}
+#mainSite footer .foot-wordmark-sub{display:block!important;margin-top:4px!important;color:#dbeafe!important;-webkit-text-fill-color:#dbeafe!important;font-size:.67rem!important;font-weight:850!important;letter-spacing:.2em!important;line-height:1.35!important;opacity:1!important;visibility:visible!important}
+#mainSite footer .foot-col h4{display:block!important;color:#fbbf24!important;-webkit-text-fill-color:#fbbf24!important;font-size:.9rem!important;font-weight:850!important;letter-spacing:.04em!important;opacity:1!important;visibility:visible!important}
+#mainSite footer .foot-desc,#mainSite footer .foot-clist a,#mainSite footer .foot-col ul a,#mainSite footer .foot-col ul button,#mainSite footer .foot-copy,#mainSite footer .foot-powered-text,#mainSite footer .foot-admin{
+  color:#dbe5f2!important;-webkit-text-fill-color:#dbe5f2!important;opacity:1!important;visibility:visible!important;
+  filter:none!important;text-shadow:none!important;line-height:1.65!important;
+}
+#mainSite footer .foot-desc{max-width:390px!important;font-size:.9rem!important;color:#cbd5e1!important;-webkit-text-fill-color:#cbd5e1!important}
+#mainSite footer .foot-clist{display:flex!important;flex-direction:column!important;gap:10px!important;margin-top:14px!important}
+#mainSite footer .foot-clist a,#mainSite footer .foot-col ul a,#mainSite footer .foot-col ul button{display:flex!important;align-items:flex-start!important;gap:7px!important;font-size:.9rem!important;font-weight:550!important;text-decoration:none!important;overflow-wrap:anywhere!important}
+#mainSite footer .foot-col ul{list-style:none!important;padding:0!important;margin:10px 0 0!important}
+#mainSite footer .foot-col ul li{margin:0 0 10px!important}
+#mainSite footer .foot-col ul a:hover,#mainSite footer .foot-col ul button:hover,#mainSite footer .foot-clist a:hover,#mainSite footer .foot-admin:hover{color:#fff!important;-webkit-text-fill-color:#fff!important}
+#mainSite footer .foot-bottom{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:12px 20px!important;justify-content:space-between!important;border-top:1px solid rgba(148,163,184,.26)!important;padding-top:22px!important;margin-top:28px!important}
+#mainSite footer .foot-copy{color:#cbd5e1!important;-webkit-text-fill-color:#cbd5e1!important;font-size:.82rem!important;margin:0!important}
+#mainSite footer .foot-powered-text{font-size:.84rem!important;font-weight:700!important;color:#dbeafe!important;-webkit-text-fill-color:#dbeafe!important}
+#mainSite footer .foot-admin{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:40px!important;border:1px solid rgba(96,165,250,.42)!important;border-radius:10px!important;padding:8px 12px!important;background:rgba(255,255,255,.04)!important;font-weight:700!important}
+#mainSite footer .foot-tiktok-placement,#mainSite footer .foot-tiktok-item{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;margin:16px 0 8px!important;height:auto!important;max-height:none!important;overflow:visible!important}
+#mainSite footer #rft-footer-tiktok-link,#mainSite footer a#rft-footer-tiktok-link[data-rft-tiktok="true"]{
+  display:inline-flex!important;visibility:visible!important;opacity:1!important;position:relative!important;
+  align-items:center!important;justify-content:flex-start!important;gap:11px!important;
+  width:auto!important;max-width:min(100%,340px)!important;min-width:0!important;min-height:48px!important;height:auto!important;
+  padding:11px 15px!important;box-sizing:border-box!important;border:1px solid rgba(96,165,250,.76)!important;
+  border-radius:13px!important;background:linear-gradient(125deg,#142b4c,#17243a)!important;
+  color:#fff!important;-webkit-text-fill-color:#fff!important;text-decoration:none!important;
+  font-size:.89rem!important;font-weight:800!important;line-height:1.35!important;white-space:normal!important;
+  box-shadow:0 9px 22px rgba(0,0,0,.25)!important;overflow:visible!important;
+}
+#mainSite footer #rft-footer-tiktok-link .rft-tiktok-static-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;flex:0 0 23px!important;width:23px!important;height:23px!important;color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;visibility:visible!important}
+#mainSite footer #rft-footer-tiktok-link .rft-tiktok-static-icon svg{display:block!important;visibility:visible!important;opacity:1!important;width:22px!important;height:22px!important;fill:#fff!important}
+#mainSite footer #rft-footer-tiktok-link span:not(.rft-tiktok-static-icon){display:inline!important;color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;visibility:visible!important}
+#mainSite footer #rft-footer-tiktok-link:hover,#mainSite footer #rft-footer-tiktok-link:focus-visible{background:linear-gradient(125deg,#1d4ed8,#17243a)!important;border-color:#fbbf24!important;color:#fff!important}
+#mainSite footer .foot-social-row{display:none!important}
+#mainSite footer .socials a[href*="tiktok.com"],#mainSite footer .foot-social-row a[href*="tiktok.com"],#contact a[data-social="tiktok"]{display:none!important}
+@media(max-width:900px){#mainSite footer .foot-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:640px){#mainSite footer .foot-grid{grid-template-columns:minmax(0,1fr)!important;gap:24px!important}#mainSite footer .foot-logo img[data-brand-logo="true"]{width:46px!important;height:46px!important;min-width:46px!important;flex-basis:46px!important}#mainSite footer .foot-wordmark-main{font-size:.95rem!important}#mainSite footer .foot-desc{font-size:.92rem!important}#mainSite footer .foot-col ul a,#mainSite footer .foot-col ul button{font-size:.92rem!important}#mainSite footer #rft-footer-tiktok-link{width:100%!important;max-width:340px!important}}
+@media(prefers-reduced-motion:reduce){#mainSite #mainNav *,#mainSite footer *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+/* ===== END FINAL RELEASE PATCH ===== */
+
 </style>
 </head>
 <body>
@@ -3687,7 +3803,7 @@ body.light #mainSite #mainNav .nav-brand-company{color:#475569!important;-webkit
       </ul>
       <div class="foot-tiktok-placement foot-tiktok-item">
         <a id="rft-footer-tiktok-link" href="https://www.tiktok.com/@royal_fintech" class="foot-tiktok-link foot-tiktok-primary" data-rft-tiktok="true" target="_blank" rel="noopener noreferrer" aria-label="Follow Royal FinTech on TikTok" title="Follow Royal FinTech on TikTok">
-          <span data-tiktok-icon="20" data-tiktok-color="currentColor" aria-hidden="true"></span>
+          <span class="rft-tiktok-static-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" focusable="false"><path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07Z"/></svg></span>
           <span>Follow Royal FinTech on TikTok</span>
         </a>
       </div>
