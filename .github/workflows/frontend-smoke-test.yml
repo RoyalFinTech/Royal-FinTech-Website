@@ -5,11 +5,13 @@ on:
     paths:
       - "royal_fintech_website.html"
       - "tests/smoke-test.mjs"
+      - "tests/browser-smoke.mjs"
       - ".github/workflows/frontend-smoke-test.yml"
   pull_request:
     paths:
       - "royal_fintech_website.html"
       - "tests/smoke-test.mjs"
+      - "tests/browser-smoke.mjs"
       - ".github/workflows/frontend-smoke-test.yml"
   workflow_dispatch:
 
@@ -27,5 +29,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Run frontend smoke test
+      - name: Run source-level smoke test
         run: node tests/smoke-test.mjs
+      - name: Prepare temporary npm project
+        run: npm init -y
+      - name: Install pinned Playwright test dependency
+        run: npm install --no-save playwright@1.55.0
+      - name: Install headless Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run Chromium responsive browser smoke test
+        run: node tests/browser-smoke.mjs
