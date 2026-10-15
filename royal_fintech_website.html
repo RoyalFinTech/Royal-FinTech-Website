@@ -2968,14 +2968,22 @@ footer .foot-tiktok-placement{display:block!important;visibility:visible!importa
 #mainSite #mainNav .hamburger{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;z-index:1210!important;background:transparent!important;border:1px solid var(--gborder,rgba(148,163,184,.4))!important;border-radius:10px!important;cursor:pointer!important}
 #mainSite #mainNav .hamburger span{display:block!important;width:22px!important;height:2px!important;border-radius:3px!important;flex:0 0 auto!important}
 #mainSite #mainNav .hamburger:focus-visible{outline:3px solid #60a5fa!important;outline-offset:3px!important}
-@media(max-width:1439px){
+@media(max-width:1279px){
   #mainSite #mainNav .nav-links,#mainSite #mainNav .nav-desktop-controls{display:none!important}
   #mainSite #mainNav .hamburger{display:flex!important}
 }
-@media(min-width:641px) and (max-width:1439px){
+@media(min-width:641px) and (max-width:1279px){
   #mainSite #mainNav .hamburger{flex-direction:row!important;gap:8px!important;width:auto!important;min-width:84px!important;flex:0 0 auto!important;padding:0 10px!important}
   #mainSite #mainNav .hamburger:after{content:"Menu";display:inline-block!important;color:var(--white,#f8fafc);font-size:.82rem;font-weight:750;line-height:1}
   body.light #mainSite #mainNav .hamburger:after{color:#0f172a!important}
+}
+@media(min-width:1280px) and (max-width:1439px){
+  #mainSite #mainNav .nav-links{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;gap:clamp(4px,.45vw,7px)!important;min-width:0!important;flex:1 1 auto!important}
+  #mainSite #mainNav .nav-links a{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;white-space:nowrap!important;font-size:.67rem!important;padding-inline:2px!important}
+  #mainSite #mainNav .nav-desktop-controls{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;gap:6px!important;flex:0 0 auto!important}
+  #mainSite #mainNav .nav-desktop-controls select,#mainSite #mainNav #notifBtn{display:none!important}
+  #mainSite #mainNav .nav-cta{padding:9px 10px!important;font-size:.72rem!important;white-space:nowrap!important}
+  #mainSite #mainNav .hamburger{display:none!important}
 }
 @media(min-width:1440px){
   #mainSite #mainNav .nav-links{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;gap:clamp(8px,1vw,18px)!important;min-width:0!important;flex:1 1 auto!important}
