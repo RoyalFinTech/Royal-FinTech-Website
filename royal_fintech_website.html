@@ -3077,6 +3077,22 @@ body.light #mainSite #mainNav .nav-brand-company{color:#475569!important;-webkit
   #mainSite footer #rft-footer-tiktok-link{width:100%!important;max-width:320px!important}
 }
 /* End final nav/footer smoke-fix overrides. */
+/* ===== DESKTOP NAVIGATION VISIBILITY FINAL OVERRIDE ===== */
+/* Keep the actual navigation keys visible on laptop/desktop widths, not just a hamburger. */
+@media(min-width:1280px) and (max-width:1439px){
+  #mainSite #mainNav{gap:7px!important;padding-inline:12px!important}
+  #mainSite #mainNav .nav-logo{gap:6px!important;flex:0 0 auto!important}
+  #mainSite #mainNav .nav-logo img[data-brand-logo="true"]{width:34px!important;height:34px!important;min-width:34px!important;flex-basis:34px!important}
+  #mainSite #mainNav .nav-logo-text{font-size:.78rem!important}
+  #mainSite #mainNav .nav-links{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;gap:clamp(3px,.35vw,6px)!important;flex:1 1 auto!important;min-width:0!important;margin:0!important}
+  #mainSite #mainNav .nav-links a{display:inline-flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;white-space:nowrap!important;font-size:.65rem!important;letter-spacing:-.015em!important;padding:5px 1px!important}
+  #mainSite #mainNav .nav-desktop-controls{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;gap:5px!important;flex:0 0 auto!important}
+  #mainSite #mainNav .nav-desktop-controls select,#mainSite #mainNav #notifBtn{display:none!important}
+  #mainSite #mainNav #themeBtn{display:flex!important;align-items:center!important;justify-content:center!important;width:34px!important;height:34px!important;min-width:34px!important;padding:0!important}
+  #mainSite #mainNav .nav-cta{display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;font-size:.68rem!important;padding:8px 9px!important;gap:4px!important}
+  #mainSite #mainNav .hamburger{display:none!important}
+}
+/* End desktop navigation visibility final override. */
 </style>
 </head>
 <body>
