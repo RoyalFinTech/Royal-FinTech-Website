@@ -3060,7 +3060,7 @@ body.light footer .foot-wordmark-main,body.light footer .foot-wordmark-sub{color
 <footer>
   <div class="foot-grid">
     <div>
-      <div class="foot-logo" onclick="gotoSection('hero')" role="link" tabindex="0" aria-label="Royal FinTech Company home">
+      <div class="foot-logo" onclick="gotoSection('hero')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();gotoSection('hero')}" role="link" tabindex="0" aria-label="Royal FinTech Company home">
         <img data-brand-logo="true" alt="Royal FinTech official logo" loading="eager" decoding="async" width="52" height="52" style="aspect-ratio:1/1;background:transparent;object-fit:contain;" >
         <div class="foot-wordmark" aria-label="Royal FinTech Company">
           <span class="foot-wordmark-main">ROYAL <strong>FINTECH</strong></span>
