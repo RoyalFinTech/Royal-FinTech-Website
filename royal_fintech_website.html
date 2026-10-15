@@ -5411,89 +5411,69 @@ function handleLoginClick(e) {
   performLogin();
 }
 
-function performLogin() {
-  try {
-
-    clearLoginMsgs();
-    if (!canLogin()) { return; }
-
-    var emailEl = document.getElementById('adminEmail');
-    var passEl  = document.getElementById('adminPass');
-    var btn     = document.getElementById('loginBtn');
-    var email   = emailEl ? emailEl.value.trim() : '';
-    var pass    = passEl  ? passEl.value : '';
-
-
-
-    // Validate inputs
-    var ok = true;
-    if (!email || !validEmail(email)) {
-      showFgErr('adminEmail','emailErr','Please enter a valid email address.');
-      ok = false;
+async function performLogin() {
+  clearLoginMsgs();
+  if (!canLogin()) return;
+  var emailEl=document.getElementById('adminEmail');
+  var passEl=document.getElementById('adminPass');
+  var btn=document.getElementById('loginBtn');
+  var email=emailEl?emailEl.value.trim():'';
+  var password=passEl?passEl.value:'';
+  var valid=true;
+  if(!email||!validEmail(email)){showFgErr('adminEmail','emailErr','Please enter a valid email address.');valid=false;}
+  if(!password){showFgErr('adminPass','passErr','Password is required.');valid=false;}
+  if(!valid)return;
+  if(!window.supabase||typeof window.supabase.createClient!=='function'){
+    showLoginErr('Secure sign-in could not load. Please refresh and try again.');
+    return;
+  }
+  if(btn){btn.disabled=true;btn.textContent='⏳ Signing in securely…';}
+  showLoginOk('Verifying your administrator account…');
+  try{
+    var authClient=window.__rftSupabaseAuthClient;
+    if(!authClient){
+      authClient=window.supabase.createClient(
+        'https://lqpfyanfbyafnfmexmuu.supabase.co',
+        'sb_publishable_H06Z3HcJ1A2NYmHDMn7qZQ_5JH_-9mT',
+        {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}
+      );
+      window.__rftSupabaseAuthClient=authClient;
     }
-    if (!pass) {
-      showFgErr('adminPass','passErr','Password is required.');
-      ok = false;
-    }
-    if (!ok) { return; }
-
-    if (!ADMIN_EMAIL || !ADMIN_PASS) {
-      showLoginErr('Admin sign-in is not configured. Connect secure server-side authentication before enabling access to customer data.');
+    var result=await authClient.auth.signInWithPassword({email:email,password:password});
+    if(result.error||!result.data||!result.data.user||!result.data.session){
+      badLogin();
+      showLoginErr('Sign-in failed. Check your email and password, then try again.');
+      if(passEl){passEl.value='';passEl.focus();}
       return;
     }
-    // Set loading state
-    if (btn) { btn.textContent = '⏳ Signing in...'; btn.disabled = true; }
-    showLoginOk('Verifying credentials...');
-
-    // Auth check (simulated async — replace with real API call in production)
-    setTimeout(function() {
-      try {
-
-        if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-          // SUCCESS
-          resetTries();
-          saveSession(email);
-          showLoginOk('✅ Authenticated! Loading dashboard...');
-          if (btn) { btn.textContent = '✅ Authenticated!'; }
-
-          // Navigate to dashboard after short delay
-          setTimeout(function() {
-            try {
-              showPage('adminDash');
-
-            } catch(navErr) {
-
-              // Fallback: force display
-              var dash = document.getElementById('adminDash');
-              var login = document.getElementById('adminLogin');
-              if (login) login.style.display = 'none';
-              if (dash) { dash.style.display = 'flex'; }
-            }
-          }, 600);
-        } else {
-          // FAILED
-          badLogin();
-          if (email !== ADMIN_EMAIL) {
-            showLoginErr('No account found with that email address.');
-          } else {
-            showLoginErr('Incorrect password. Please try again.');
-          }
-          if (passEl) { passEl.value = ''; passEl.focus(); }
-          if (btn) { btn.textContent = '🔐 Sign In to Dashboard'; btn.disabled = false; }
-
-        }
-      } catch(innerErr) {
-
-        if (btn) { btn.textContent = '🔐 Sign In to Dashboard'; btn.disabled = false; }
-        showLoginErr('An error occurred. Please try again.');
-      }
-    }, 800);
-
-  } catch(err) {
-
-    var btn2 = document.getElementById('loginBtn');
-    if (btn2) { btn2.textContent = '🔐 Sign In to Dashboard'; btn2.disabled = false; }
-    showLoginErr('An unexpected error occurred. Please try again.');
+    var user=result.data.user;
+    var meta=user.app_metadata||{};
+    var roles=Array.isArray(meta.roles)?meta.roles:[];
+    if(meta.role!=='admin'&&roles.indexOf('admin')===-1){
+      await authClient.auth.signOut();
+      badLogin();
+      showLoginErr('This account is not authorized for the Royal FinTech admin portal. Contact the project owner.');
+      if(passEl){passEl.value='';passEl.focus();}
+      return;
+    }
+    var session=result.data.session;
+    try{
+      sessionStorage.setItem('rft_admin_access_token',session.access_token);
+      sessionStorage.setItem(SK,JSON.stringify({email:user.email||email,exp:Math.min(session.expires_at?session.expires_at*1000:Date.now()+ST,Date.now()+ST)}));
+    }catch(storageError){
+      await authClient.auth.signOut();
+      showLoginErr('This browser could not establish a secure admin session. Enable session storage and try again.');
+      return;
+    }
+    resetTries();
+    showLoginOk('✅ Administrator verified. Opening dashboard…');
+    if(btn)btn.textContent='✅ Signed in';
+    setTimeout(function(){showPage('adminDash');},250);
+  }catch(error){
+    console.error('[Royal FinTech] Supabase admin sign-in failed:',error);
+    showLoginErr('Secure sign-in is temporarily unavailable. Please try again shortly.');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔐 Sign In to Dashboard';}
   }
 }
 
@@ -9389,6 +9369,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase/app-requests-client.js"></script>
 <script id="rft-request-flow-qa">
 (function () {
