@@ -47,3 +47,7 @@ The push worker is included. The admin Applications toolbar exposes **Enable Adm
 - Confirmed the public Edge Function response shape and the live schema columns against Supabase metadata.
 - Confirmed both Edge Functions are reported ACTIVE.
 - No end-to-end browser submission, admin login, email delivery or push delivery has been claimed. Those require browser testing, real admin Auth setup and provider secrets.
+
+
+## Live notification behavior (2026-10-16)
+The deployed request function now attempts an audit event, in-app notification, optional verified-sender email, and best-effort browser push dispatch after saving a request. Notification failures do not undo the saved request. Browser push requires VAPID configuration and an administrator subscription. The email sender must be explicitly configured; the example sender is not used as a production fallback. Live functions: `app-requests` v3 and `admin-push` v2.
