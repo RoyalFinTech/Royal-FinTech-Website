@@ -51,3 +51,6 @@ The push worker is included. The admin Applications toolbar exposes **Enable Adm
 
 ## Live notification behavior (2026-10-16)
 The deployed request function now attempts an audit event, in-app notification, optional verified-sender email, and best-effort browser push dispatch after saving a request. Notification failures do not undo the saved request. Browser push requires VAPID configuration and an administrator subscription. The email sender must be explicitly configured; the example sender is not used as a production fallback. Live functions: `app-requests` v3 and `admin-push` v2.
+
+
+Correction: The live request function now calls the push function after saving a new request. Push delivery remains best-effort and depends on VAPID keys and an active administrator subscription. The live admin login uses Supabase Auth and requires an account with trusted administrator role metadata.
