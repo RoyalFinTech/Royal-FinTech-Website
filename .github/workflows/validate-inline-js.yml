@@ -1,0 +1,68 @@
+name: Validate website JavaScript
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, feature/supabase-app-request-intake]
+jobs:
+  inline-javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check inline JavaScript syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import subprocess, tempfile
+
+          html = Path("royal_fintech_website.html").read_text(encoding="utf-8")
+          class ScriptParser(HTMLParser):
+              def __init__(self):
+                  super().__init__(convert_charrefs=False)
+                  self.scripts = []
+                  self.current = None
+              def handle_starttag(self, tag, attrs):
+                  if tag.lower() != "script":
+                      return
+                  attrs = dict(attrs)
+                  if attrs.get("src"):
+                      self.current = None
+                      return
+                  typ = (attrs.get("type") or "").lower()
+                  if typ and typ not in ("text/javascript", "application/javascript", "module"):
+                      self.current = None
+                      return
+                  self.current = {"id": attrs.get("id", "inline-script"), "content": ""}
+                  self.scripts.append(self.current)
+              def handle_data(self, data):
+                  if self.current is not None:
+                      self.current["content"] += data
+              def handle_endtag(self, tag):
+                  if tag.lower() == "script":
+                      self.current = None
+
+          parser = ScriptParser()
+          parser.feed(html)
+          failures = []
+          checked = 0
+          with tempfile.TemporaryDirectory() as tmp:
+              for index, script in enumerate(parser.scripts):
+                  if not script["content"].strip():
+                      continue
+                  checked += 1
+                  path = Path(tmp) / f"inline-{index}.js"
+                  path.write_text(script["content"], encoding="utf-8")
+                  result = subprocess.run(["node", "--check", str(path)], capture_output=True, text=True)
+                  if result.returncode:
+                      failures.append((script["id"], result.stderr))
+          print(f"Checked {checked} non-empty inline JavaScript blocks.")
+          if failures:
+              for name, error in failures:
+                  print(f"\nFAILED: {name}\n{error}")
+              raise SystemExit(1)
+          print("All inline JavaScript blocks passed syntax checks.")
+          PY
