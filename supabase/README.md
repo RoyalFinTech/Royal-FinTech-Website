@@ -1,56 +1,82 @@
 # Royal FinTech Supabase request intake
 
-## Live project
-- Supabase project: `lqpfyanfbyafnfmexmuu` (Royal-FinTech-Website, eu-west-1)
-- Edge Functions: `app-requests`, `admin-push`
-- Website client: `supabase/app-requests-client.js`
-- Push worker: `supabase/royal-fintech-push-sw.js`
-- Primary page: `royal_fintech_website.html`
+## Live project and files
+
+- Supabase project: lqpfyanfbyafnfmexmuu (Royal-FinTech-Website, eu-west-1)
+- Primary page: royal_fintech_website.html
+- Browser API helper: supabase/app-requests-client.js
+- Request API: app-requests Edge Function
+- Push API: admin-push Edge Function
+- Push worker: royal-fintech-push-sw.js (repository root)
+
+The service-worker file is deliberately hosted at the repository root. Its default maximum scope can then cover /Royal-FinTech-Website/ without requiring a Service-Worker-Allowed response header. See the browser registration rules in the [MDN documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Service-Worker-Allowed).
 
 ## Database
-The migration `create_app_request_intake_and_admin_notifications` creates:
-- `public.app_requests`: customer/project brief, flexible budget fields, status, priority, assignment and admin notes.
-- `public.app_request_events`: admin action/status audit history.
-- `public.admin_notifications`: in-app admin notification inbox.
-- `public.admin_notification_subscriptions`: browser push subscriptions.
 
-All tables have Row Level Security enabled and no client-facing policies. Direct anonymous/authenticated table access is revoked. The Edge Functions use the service role only on the server and validate an authenticated user for protected admin operations. Never put the service-role key in website code.
+The production project has had these migrations applied:
 
-## Public request submission
-`POST /functions/v1/app-requests?action=submit`
+- create_app_request_intake_and_admin_notifications
+- index_request_audit_relations_and_harden_admin_rpc
 
-The five-step form now calls `window.RFAppRequests.submit(payload)`. It sends contact details, project type/name/summary, platforms, requested features, budget preference, timeline, language/currency, and selected file names as additional details. File contents are not uploaded to Supabase storage in this implementation.
+The resulting public tables are:
 
-The Edge Function returns `{ ok: true, request: { id, request_number, created_at, status }, notification_email, message }`. The website only displays a central-submission success after the returned request number is present. If submission fails, the page explicitly says the request was not saved centrally and offers WhatsApp/email fallback. Browser-local cache is not presented as server storage.
+- app_requests — customer/project brief, flexible budget fields, status, priority, assignment and admin notes.
+- app_request_events — audit history for submissions and administrator updates.
+- admin_notifications — the in-app administrator notification inbox.
+- admin_notification_subscriptions — browser push subscription records.
 
-## Admin API (real Supabase Auth JWT required)
-- `GET /app-requests?action=list&page=0&page_size=25&status=new&q=`
-- `GET /app-requests?action=notifications`
-- `PATCH /app-requests?action=update` with `{ "id": "UUID", "status": "reviewing", "priority": "normal", "admin_notes": "..." }`
-- `POST /app-requests?action=mark_read` with `{ "id": "UUID" }`
+All four tables have Row Level Security enabled and direct anonymous/authenticated table access revoked. The Edge Functions use the service role only on the server. Protected operations validate the supplied access token with Supabase Auth and require trusted app_metadata role information. Never place the service-role key in website code.
 
-Pass a real Supabase Auth access token in `Authorization: Bearer <access-token>`. The user must have trusted `app_metadata.role=admin` or `app_metadata.roles` containing `admin`. The website's Applications panel has a **Refresh Supabase** action and attempts a central load using `sessionStorage.rft_admin_access_token`. The existing legacy admin login is not automatically a Supabase Auth session, so central admin loading remains locked until the login flow is configured to obtain a real Supabase Auth token. Do not treat a localStorage flag, hidden URL, or client-side PIN as administrator authorization.
+**Migration reproducibility remains a release task:** this branch currently has no supabase/migrations directory or SQL migration files, even though the migrations are present in the live project's history. Export the exact applied SQL and commit it before relying on this repository to recreate the backend in another environment. Do not reconstruct migration SQL from assumptions.
+
+## Customer request submission
+
+The five-step website form calls window.RFAppRequests.submit(payload), which sends the request to:
+
+POST /functions/v1/app-requests?action=submit
+
+The server validates the contact fields and project summary, creates an app_requests record, and returns a request number. The website only reports central submission success when the server returns that number. If the request cannot be saved centrally, the page identifies the failure and offers direct contact alternatives; it does not present a browser-only record as a centrally saved request.
+
+The submitted brief includes contact details, project type/name/summary, target platforms, requested features, budget preference, timeline, language/currency, and selected file names as additional details. File contents are not uploaded to Supabase Storage in this implementation.
+
+## Administrator access
+
+The admin login in the primary HTML uses Supabase Auth password sign-in. The browser checks for app_metadata.role = admin or an app_metadata.roles array containing admin, then places the access token in sessionStorage for the protected API calls. The Edge Functions independently validate the token using auth.getUser(); client-side flags or a legacy PIN are not authorization.
+
+The authenticated Applications panel can:
+
+- Load centrally stored requests using GET /app-requests?action=list.
+- Load in-app alerts using GET /app-requests?action=notifications.
+- Update request status, priority and notes through PATCH /app-requests?action=update.
+- Mark an administrator notification as read through POST /app-requests?action=mark_read.
+
+The existence and role metadata of a real administrator account still need confirmation. No account credentials have been added to the repository.
 
 ## Notifications
-A new request creates an in-app notification row in the database. Optional email notification uses Resend only when `RESEND_API_KEY`, `ADMIN_NOTIFICATION_EMAIL`, and a verified `RESEND_FROM_EMAIL` are configured. Without these secrets, the request is still saved and the API reports `notification_email: not_configured`.
 
-Browser push requires these Edge Function secrets:
-- `VAPID_PUBLIC_KEY`
-- `VAPID_PRIVATE_KEY`
-- `VAPID_SUBJECT` (e.g. `mailto:royalfintechcompany@gmail.com`)
-- `SITE_ORIGIN` (currently `https://royalfintech.github.io`)
+After a successful insert, app-requests creates an in-app notification record and audit event, then attempts:
 
-The push worker is included. The admin Applications toolbar exposes **Enable Admin Push**, which calls `enablePush(accessToken)` to request browser permission and register that administrator's subscription. VAPID secrets, an authenticated admin token, notification permission and a successful subscription are required. Automatic push dispatch on every new submission is not yet connected to a trusted server-side trigger; currently new requests create an in-app database notification and attempt configured email notification.
+- Browser push through a server-to-server call to admin-push?action=dispatch. This path is now connected. Delivery requires VAPID_PUBLIC_KEY and VAPID_PRIVATE_KEY plus at least one valid administrator browser subscription. VAPID_SUBJECT and SITE_ORIGIN should also be configured correctly. The dispatch is best-effort and does not undo a saved request.
+- Email through Resend. Configure RESEND_API_KEY and a verified RESEND_FROM_EMAIL. ADMIN_NOTIFICATION_EMAIL overrides the destination; otherwise the function defaults to royalfintechcompany@gmail.com. Email delivery is optional and failures do not undo a saved request.
 
-## Verification and limitations
-- Confirmed the latest primary HTML contains the client script, asynchronous Supabase submission flow, response-envelope handling, honest failure state, and admin refresh action.
-- Confirmed the public Edge Function response shape and the live schema columns against Supabase metadata.
-- Confirmed both Edge Functions are reported ACTIVE.
-- No end-to-end browser submission, admin login, email delivery or push delivery has been claimed. Those require browser testing, real admin Auth setup and provider secrets.
+The admin Applications toolbar has an Enable Admin Push action. The signed-in administrator must grant browser notification permission and successfully register a subscription before push messages can be delivered.
 
+## Verification snapshot — 4 November 2026
 
-## Live notification behavior (2026-10-16)
-The deployed request function now attempts an audit event, in-app notification, optional verified-sender email, and best-effort browser push dispatch after saving a request. Notification failures do not undo the saved request. Browser push requires VAPID configuration and an administrator subscription. The email sender must be explicitly configured; the example sender is not used as a production fallback. Live functions: `app-requests` v3 and `admin-push` v2.
+- Both Edge Functions are ACTIVE: app-requests v3 and admin-push v2.
+- The committed GitHub source files for both functions match the deployed Edge Function source byte-for-byte.
+- GitHub Actions passed on PR head 47865e0d85d0f394bca1030e90db82e681818a5a:
+  - Validate website JavaScript.
+  - Royal FinTech Frontend Smoke Test.
+- The frontend smoke test checks static HTML structure, navigation, theme contrast, branding, route targets, and admin timeout behavior. It is not a real browser end-to-end test.
+- A browser-based customer submission followed by administrator sign-in and inbox retrieval has not yet been executed.
+- Admin account role metadata, Resend configuration, VAPID configuration and active push subscriptions have not been confirmed. Recent database inspection calls timed out; secret values must never be exposed in documentation or chat.
 
+## Release gates
 
-Correction: The live request function now calls the push function after saving a new request. Push delivery remains best-effort and depends on VAPID keys and an active administrator subscription. The live admin login uses Supabase Auth and requires an account with trusted administrator role metadata.
+1. Restore database metadata/query access and confirm the four table definitions, migration history, administrator account role, and notification-subscription count.
+2. Confirm the Resend and VAPID secret names are configured without printing secret values; verify the sender domain and at least one admin browser subscription.
+3. Run a real browser test: submit a clearly marked test request, sign in as an authorized admin, confirm it appears in the central inbox, update its status, and check the audit/in-app notification. Verify email/push only when providers are configured.
+4. Commit the exact production migration SQL to supabase/migrations and rerun the relevant CI checks.
+
+Do not merge until the production admin and customer-to-admin browser workflow is verified, or explicitly record any intentionally deferred notification providers.
