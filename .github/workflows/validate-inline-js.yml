@@ -66,3 +66,5 @@ jobs:
               raise SystemExit(1)
           print("All inline JavaScript blocks passed syntax checks.")
           PY
+          node --check supabase/app-requests-client.js
+          node --check royal-fintech-push-sw.js
