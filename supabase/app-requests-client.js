@@ -9,7 +9,7 @@
     publishableKey: "sb_publishable_H06Z3HcJ1A2NYmHDMn7qZQ_5JH_-9mT",
     requestFunction: "app-requests",
     pushFunction: "admin-push",
-    serviceWorkerPath: "/Royal-FinTech-Website/supabase/royal-fintech-push-sw.js",
+    serviceWorkerPath: "/Royal-FinTech-Website/royal-fintech-push-sw.js",
     serviceWorkerScope: "/Royal-FinTech-Website/"
   });
   const endpoint = (name, query) => CONFIG.url + "/functions/v1/" + name + (query ? "?" + query : "");
