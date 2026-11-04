@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "royal_fintech_website.html"
+      - "supabase/app-requests-client.js"
+      - "royal-fintech-push-sw.js"
       - "tests/smoke-test.mjs"
       - ".github/workflows/frontend-smoke-test.yml"
   pull_request:

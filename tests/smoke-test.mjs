@@ -4,6 +4,8 @@ import { resolve } from 'node:path';
 
 const htmlPath = resolve(process.cwd(), 'royal_fintech_website.html');
 const html = readFileSync(htmlPath, 'utf8');
+const apiClient = readFileSync(resolve(process.cwd(), 'supabase/app-requests-client.js'), 'utf8');
+const pushWorker = readFileSync(resolve(process.cwd(), 'royal-fintech-push-sw.js'), 'utf8');
 const passed = [];
 function check(name, fn) {
   fn();
@@ -30,6 +32,15 @@ check('all inline JavaScript compiles', () => {
       `Inline script #${script.index} failed syntax compilation`
     );
   }
+});
+
+check('Supabase browser helper registers the root-hosted push worker at the GitHub Pages project scope', () => {
+  assert.match(apiClient, /serviceWorkerPath:\s*"\/Royal-FinTech-Website\/royal-fintech-push-sw\.js"/);
+  assert.match(apiClient, /serviceWorkerScope:\s*"\/Royal-FinTech-Website\/"/);
+  assert.match(apiClient, /navigator\.serviceWorker\.register\(CONFIG\.serviceWorkerPath,\s*\{\s*scope:\s*CONFIG\.serviceWorkerScope\s*\}\)/);
+  assert.match(pushWorker, /self\.addEventListener\("push"/);
+  assert.match(pushWorker, /self\.addEventListener\("notificationclick"/);
+  assert.doesNotMatch(apiClient, /SERVICE_ROLE_KEY|service_role/i, 'Service-role credentials must never appear in browser code');
 });
 
 check('official logo source and primary branding references exist', () => {

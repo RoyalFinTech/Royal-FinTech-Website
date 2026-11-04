@@ -4673,6 +4673,8 @@ function updateOverviewWidgets() {
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
     <div class="panel-title" style="margin-bottom:0">📋 Application Management</div>
     <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="refreshSupabaseRequests()" type="button">↻ Refresh Supabase</button>
+      <button class="btn btn-outline btn-sm" onclick="enableAdminPush()" type="button">🔔 Enable Admin Push</button>
       <button class="btn btn-green btn-sm" onclick="exportAppCSV()" type="button">📊 Export CSV</button>
       <button class="btn btn-outline btn-sm" onclick="showToast('PDF export ready','success')" type="button">📄 Export PDF</button>
     </div>
@@ -5410,89 +5412,69 @@ function handleLoginClick(e) {
   performLogin();
 }
 
-function performLogin() {
-  try {
-
-    clearLoginMsgs();
-    if (!canLogin()) { return; }
-
-    var emailEl = document.getElementById('adminEmail');
-    var passEl  = document.getElementById('adminPass');
-    var btn     = document.getElementById('loginBtn');
-    var email   = emailEl ? emailEl.value.trim() : '';
-    var pass    = passEl  ? passEl.value : '';
-
-
-
-    // Validate inputs
-    var ok = true;
-    if (!email || !validEmail(email)) {
-      showFgErr('adminEmail','emailErr','Please enter a valid email address.');
-      ok = false;
+async function performLogin() {
+  clearLoginMsgs();
+  if (!canLogin()) return;
+  var emailEl=document.getElementById('adminEmail');
+  var passEl=document.getElementById('adminPass');
+  var btn=document.getElementById('loginBtn');
+  var email=emailEl?emailEl.value.trim():'';
+  var password=passEl?passEl.value:'';
+  var valid=true;
+  if(!email||!validEmail(email)){showFgErr('adminEmail','emailErr','Please enter a valid email address.');valid=false;}
+  if(!password){showFgErr('adminPass','passErr','Password is required.');valid=false;}
+  if(!valid)return;
+  if(!window.supabase||typeof window.supabase.createClient!=='function'){
+    showLoginErr('Secure sign-in could not load. Please refresh and try again.');
+    return;
+  }
+  if(btn){btn.disabled=true;btn.textContent='⏳ Signing in securely…';}
+  showLoginOk('Verifying your administrator account…');
+  try{
+    var authClient=window.__rftSupabaseAuthClient;
+    if(!authClient){
+      authClient=window.supabase.createClient(
+        'https://lqpfyanfbyafnfmexmuu.supabase.co',
+        'sb_publishable_H06Z3HcJ1A2NYmHDMn7qZQ_5JH_-9mT',
+        {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}}
+      );
+      window.__rftSupabaseAuthClient=authClient;
     }
-    if (!pass) {
-      showFgErr('adminPass','passErr','Password is required.');
-      ok = false;
-    }
-    if (!ok) { return; }
-
-    if (!ADMIN_EMAIL || !ADMIN_PASS) {
-      showLoginErr('Admin sign-in is not configured. Connect secure server-side authentication before enabling access to customer data.');
+    var result=await authClient.auth.signInWithPassword({email:email,password:password});
+    if(result.error||!result.data||!result.data.user||!result.data.session){
+      badLogin();
+      showLoginErr('Sign-in failed. Check your email and password, then try again.');
+      if(passEl){passEl.value='';passEl.focus();}
       return;
     }
-    // Set loading state
-    if (btn) { btn.textContent = '⏳ Signing in...'; btn.disabled = true; }
-    showLoginOk('Verifying credentials...');
-
-    // Auth check (simulated async — replace with real API call in production)
-    setTimeout(function() {
-      try {
-
-        if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-          // SUCCESS
-          resetTries();
-          saveSession(email);
-          showLoginOk('✅ Authenticated! Loading dashboard...');
-          if (btn) { btn.textContent = '✅ Authenticated!'; }
-
-          // Navigate to dashboard after short delay
-          setTimeout(function() {
-            try {
-              showPage('adminDash');
-
-            } catch(navErr) {
-
-              // Fallback: force display
-              var dash = document.getElementById('adminDash');
-              var login = document.getElementById('adminLogin');
-              if (login) login.style.display = 'none';
-              if (dash) { dash.style.display = 'flex'; }
-            }
-          }, 600);
-        } else {
-          // FAILED
-          badLogin();
-          if (email !== ADMIN_EMAIL) {
-            showLoginErr('No account found with that email address.');
-          } else {
-            showLoginErr('Incorrect password. Please try again.');
-          }
-          if (passEl) { passEl.value = ''; passEl.focus(); }
-          if (btn) { btn.textContent = '🔐 Sign In to Dashboard'; btn.disabled = false; }
-
-        }
-      } catch(innerErr) {
-
-        if (btn) { btn.textContent = '🔐 Sign In to Dashboard'; btn.disabled = false; }
-        showLoginErr('An error occurred. Please try again.');
-      }
-    }, 800);
-
-  } catch(err) {
-
-    var btn2 = document.getElementById('loginBtn');
-    if (btn2) { btn2.textContent = '🔐 Sign In to Dashboard'; btn2.disabled = false; }
-    showLoginErr('An unexpected error occurred. Please try again.');
+    var user=result.data.user;
+    var meta=user.app_metadata||{};
+    var roles=Array.isArray(meta.roles)?meta.roles:[];
+    if(meta.role!=='admin'&&roles.indexOf('admin')===-1){
+      await authClient.auth.signOut();
+      badLogin();
+      showLoginErr('This account is not authorized for the Royal FinTech admin portal. Contact the project owner.');
+      if(passEl){passEl.value='';passEl.focus();}
+      return;
+    }
+    var session=result.data.session;
+    try{
+      sessionStorage.setItem('rft_admin_access_token',session.access_token);
+      sessionStorage.setItem(SK,JSON.stringify({email:user.email||email,exp:Math.min(session.expires_at?session.expires_at*1000:Date.now()+ST,Date.now()+ST)}));
+    }catch(storageError){
+      await authClient.auth.signOut();
+      showLoginErr('This browser could not establish a secure admin session. Enable session storage and try again.');
+      return;
+    }
+    resetTries();
+    showLoginOk('✅ Administrator verified. Opening dashboard…');
+    if(btn)btn.textContent='✅ Signed in';
+    setTimeout(function(){showPage('adminDash');},250);
+  }catch(error){
+    console.error('[Royal FinTech] Supabase admin sign-in failed:',error);
+    showLoginErr('Secure sign-in is temporarily unavailable. Please try again shortly.');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='🔐 Sign In to Dashboard';}
   }
 }
 
@@ -5568,6 +5550,7 @@ function saveCredentials() {
 
 // ---- LOGOUT ----
 function adminLogout() {
+  try { if (window.__rftSupabaseAuthClient) window.__rftSupabaseAuthClient.auth.signOut(); } catch (e) {}
   clearSession();
   showPage('mainSite');
   showToast('Signed out securely.', 'success');
@@ -5581,6 +5564,7 @@ function adminLogout() {
 window.rftLockAdminSession = function() {
   if (window._rftAdminSessionLocked) return;
   window._rftAdminSessionLocked = true;
+  try { if (window.__rftSupabaseAuthClient) window.__rftSupabaseAuthClient.auth.signOut(); } catch(e) {}
   try { clearSession(); } catch(e) {}
   var dash = document.getElementById('adminDash');
   if (dash) {
@@ -6917,19 +6901,47 @@ function closeAppModal() {
   currentAppId = null;
 }
 
-function updateAppStatus(newStatus) {
+async function updateAppStatus(newStatus) {
   if (!currentAppId) return;
   var apps = DB.get('applications');
+  if (!Array.isArray(apps)) apps = [];
+  var app = apps.find(function(a) { return a && String(a.id) === String(currentAppId); });
+  if (!app) { showToast('Application not found.', 'error'); return; }
+  if (app.serverId) {
+    var token = '';
+    try { token = sessionStorage.getItem('rft_admin_access_token') || ''; } catch (e) {}
+    if (!token || !window.RFAppRequests) {
+      showToast('A valid Supabase administrator session is required to update a central request.', 'error');
+      return;
+    }
+    var statusMap = { pending: 'new', reviewing: 'reviewing', approved: 'approved', rejected: 'declined' };
+    var remoteStatus = statusMap[newStatus] || newStatus;
+    try {
+      await window.RFAppRequests.update({ accessToken: token, id: app.serverId, status: remoteStatus });
+      if (remoteStatus === 'new') app.status = 'pending';
+      else if (remoteStatus === 'declined') app.status = 'rejected';
+      else app.status = remoteStatus;
+      DB.set('applications', apps);
+      closeAppModal();
+      await window.refreshSupabaseRequests();
+      showToast('Central request status updated.', 'success');
+      try { addAuditLog('✅', 'action', 'Central request ' + (app.requestNumber || app.serverId) + ' updated to ' + remoteStatus); } catch (e) {}
+    } catch (error) {
+      console.error('[Royal FinTech] Central request update failed:', error);
+      showToast(error.message || 'Could not update the central request.', 'error');
+    }
+    return;
+  }
   apps = apps.map(function(a) {
-    if (a.id === currentAppId) a.status = newStatus;
+    if (String(a.id) === String(currentAppId)) a.status = newStatus;
     return a;
   });
   DB.set('applications', apps);
   closeAppModal();
   renderApplications();
   updateAppStats();
-  showToast('Application status updated to: ' + newStatus, 'success');
-  addAuditLog('✅', 'action', 'Application #' + currentAppId + ' marked as ' + newStatus);
+  showToast('Local application status updated. This record is not a central request.', 'success');
+  try { addAuditLog('✅', 'action', 'Local application #' + currentAppId + ' marked as ' + newStatus); } catch (e) {}
 }
 
 function updateAppStats() {
@@ -8382,80 +8394,114 @@ function buildQuotation() {
   qCard.innerHTML = h;
 }
 
-function submitProjectRequest() {
+async function submitProjectRequest() {
   var getName = function(id) { var el=document.getElementById(id); return el?el.value:''; };
-  var name=getName('rqName'), email=getName('rqEmail');
-  var phoneCode = getName('rqPhoneCode'), phone = phoneCode + getName('rqPhone');
-  var proj=getName('rqProjectName'), desc=getName('rqDesc');
+  var name=getName('rqName').trim(), email=getName('rqEmail').trim();
+  var phoneCode=getName('rqPhoneCode'), phoneNumber=getName('rqPhone').trim();
+  var phone=phoneCode+' '+phoneNumber;
+  var proj=getName('rqProjectName').trim(), desc=getName('rqDesc').trim();
   var countryEl=document.getElementById('rqCountry');
   var country=countryEl?countryEl.options[countryEl.selectedIndex].text:'';
+  var companyVal=getName('rqCompany').trim();
+  var budgetEl=document.getElementById('rqBudget');
+  var budgetTxt=budgetEl?budgetEl.options[budgetEl.selectedIndex].text:'Flexible — discuss with Royal FinTech';
+  var timelineEl=document.getElementById('rqTimeline');
+  var timelineTxt=timelineEl?timelineEl.options[timelineEl.selectedIndex].text:'To be discussed';
   var quotNum=window._rqQuotNum||('RFT-'+new Date().getFullYear()+'-'+Math.floor(Math.random()*90000+10000));
   var refNum='REF-'+Date.now().toString(36).toUpperCase();
   var total=window._rqTotal||0;
-
-  var companyVal = getName('rqCompany');
-  var budgetEl1 = document.getElementById('rqBudget');
-  var budgetTxt1 = budgetEl1 ? budgetEl1.options[budgetEl1.selectedIndex].text : '';
-  var timelineEl1 = document.getElementById('rqTimeline');
-  var timelineTxt1 = timelineEl1 ? timelineEl1.options[timelineEl1.selectedIndex].text : '';
-  var app = {
-    id:Date.now(), quotNum:quotNum, refNum:refNum,
-    name:name, email:email, phone:phone, company:companyVal, projectName:proj,
-    desc:desc, country:country, types:rqSelectedTypes.slice(),
-    platforms:rqSelectedPlatforms.slice(), features:rqSelectedFeatures.slice(),
-    budget:budgetTxt1, timeline:timelineTxt1,
-    estimatedTotal:total, currency:currentCurrency, status:'pending',
-    date:new Date().toISOString(), notes:''
+  var typeNames=[], featureNames=[];
+  try {[APP_TYPES_BUSINESS,APP_TYPES_PERSONAL,APP_TYPES_PLATFORM].forEach(function(g){(g||[]).forEach(function(t){if(rqSelectedTypes.indexOf(t.id)>-1)typeNames.push(t.name);});});}catch(e){}
+  try {(FEATURES_LIST||[]).forEach(function(f){if(rqSelectedFeatures.indexOf(f.id)>-1)featureNames.push(f.name);});}catch(e){}
+  var filesInput=document.getElementById('rqLogoFile');
+  var fileNames=filesInput&&filesInput.files?Array.from(filesInput.files).map(function(f){return f.name;}):[];
+  var app={
+    id:Date.now(),quotNum:quotNum,refNum:refNum,name:name,email:email,phone:phone,company:companyVal,
+    projectName:proj,desc:desc,country:country,types:typeNames,platforms:rqSelectedPlatforms.slice(),
+    features:featureNames,budget:budgetTxt,timeline:timelineTxt,estimatedTotal:total,currency:currentCurrency,
+    status:'pending',date:new Date().toISOString(),notes:''
   };
-  DB.push('applications', app);
-
-  var receipt=document.getElementById('receiptCard');
-  if (receipt) {
-    var companyEl0 = document.getElementById('rqCompany');
-    var company0 = companyEl0 ? companyEl0.value : '';
-    var typeNames0 = [];
-    try {
-      [APP_TYPES_BUSINESS,APP_TYPES_PERSONAL,APP_TYPES_PLATFORM].forEach(function(g){
-        (g||[]).forEach(function(t){ if (rqSelectedTypes.indexOf(t.id)>-1) typeNames0.push(t.name); });
-      });
-    } catch(e) {}
-    var featNames0 = [];
-    try { (FEATURES_LIST||[]).forEach(function(f){ if (rqSelectedFeatures.indexOf(f.id)>-1) featNames0.push(f.name); }); } catch(e) {}
-    var platformStr0 = rqSelectedPlatforms.length ? rqSelectedPlatforms.join(', ') : 'Web';
-    var budgetEl0 = document.getElementById('rqBudget');
-    var budgetStr0 = budgetEl0 ? budgetEl0.options[budgetEl0.selectedIndex].text : '\u2014';
-    var timelineEl0 = document.getElementById('rqTimeline');
-    var timelineStr0 = timelineEl0 ? timelineEl0.options[timelineEl0.selectedIndex].text : '\u2014';
-
-    receipt.innerHTML =
-      '<div class="receipt-logo-wrap">' +
-        '<div style="font-weight:800;font-size:1.1rem;color:var(--blue)">Royal FinTech Company</div>' +
-        '<div style="font-size:0.72rem;color:var(--gray)">OIC Road, Old Yundum, The Gambia</div>' +
-      '</div>' +
-      '<div style="border-top:2px dashed var(--gborder);margin-bottom:10px"></div>' +
-      '<div class="receipt-row"><span>Request ID</span><strong>' + refNum + '</strong></div>' +
-      '<div class="receipt-row"><span>Quotation #</span><strong>' + quotNum + '</strong></div>' +
-      '<div class="receipt-row"><span>Customer Name</span><span>' + esc(name) + '</span></div>' +
-      (company0 ? '<div class="receipt-row"><span>Company</span><span>' + esc(company0) + '</span></div>' : '') +
-      '<div class="receipt-row"><span>Email</span><span>' + esc(email) + '</span></div>' +
-      '<div class="receipt-row"><span>Phone</span><span>' + esc(phone) + '</span></div>' +
-      '<div class="receipt-row"><span>Country</span><span>' + esc(country) + '</span></div>' +
-      '<div class="receipt-row"><span>Project Name</span><span>' + esc(proj) + '</span></div>' +
-      '<div class="receipt-row"><span>Package / Type</span><span>' + (typeNames0.join(', ')||'Custom') + '</span></div>' +
-      '<div class="receipt-row"><span>Platform(s)</span><span>' + platformStr0 + '</span></div>' +
-      '<div class="receipt-row"><span>Features (' + featNames0.length + ')</span><span style="text-align:right;max-width:60%">' + (featNames0.join(', ')||'\u2014') + '</span></div>' +
-      '<div class="receipt-row"><span>Budget Range</span><span>' + budgetStr0 + '</span></div>' +
-      '<div class="receipt-row"><span>Timeline</span><span>' + timelineStr0 + '</span></div>' +
-      '<div class="receipt-row"><span>Submitted</span><span>' + new Date().toLocaleString() + '</span></div>' +
-      '<div class="receipt-row"><span>Payment Status</span><span style="color:#f59e0b;font-weight:700">Pending Offline Payment</span></div>' +
-      '<div class="receipt-row"><span>Status</span><span style="color:var(--green);font-weight:700">\u2705 Received</span></div>' +
-      '<div class="receipt-total"><span>Estimated Total</span><span>' + convertPrice(total) + '</span></div>' +
-      '<div style="text-align:center;margin-top:14px;font-size:0.75rem;color:var(--gray)">Expected response within 24 hours<br>royalfintechcompany@gmail.com | +220 4071510</div>';
+  var submitButton=document.querySelector('#reqStep4 button[onclick*="submitProjectRequest"], #reqStep4 button[type="submit"]');
+  if(submitButton){submitButton.disabled=true;submitButton.dataset.originalText=submitButton.textContent;submitButton.textContent='Sending securely…';}
+  var delivery='local-only',serverReceipt=null,deliveryError=null;
+  try {
+    if(!window.RFAppRequests||typeof window.RFAppRequests.submit!=='function') throw new Error('The secure request service is not loaded yet.');
+    var result=await window.RFAppRequests.submit({
+      full_name:name,email:email,phone_country_code:phoneCode,phone_number:phoneNumber,country:country,
+      company_name:companyVal,preferred_language:getName('rqLang')||'en',preferred_currency:currentCurrency,
+      project_type:typeNames.join(', ')||'Custom app or website',project_name:proj,
+      project_summary:desc.length>=10?desc:(('Project: '+proj+'. '+desc).trim()),
+      target_platforms:rqSelectedPlatforms.slice(),requested_features:featureNames,
+      timeline:timelineTxt,budget_currency:currentCurrency,budget_flexible:true,
+      budget_min:null,budget_max:null,integrations:[],reference_urls:[],
+      additional_details:{selected_type_ids:rqSelectedTypes.slice(),selected_feature_ids:rqSelectedFeatures.slice(),
+        estimated_quote_display:convertPrice(total),selected_files:fileNames,quotation_reference:quotNum,customer_reference:refNum,
+        budget_selection:budgetTxt,requested_timeline:timelineTxt},
+      contact_method:'Email / WhatsApp'
+    });
+    var savedRequest=result&&result.request&&typeof result.request==='object'?result.request:result;
+    if(!result||result.ok===false||result.success===false||!savedRequest||savedRequest.request_number==null) throw new Error('The server did not confirm that the request was saved.');
+    delivery='server-confirmed';
+    serverReceipt=savedRequest;
+    app.serverId=savedRequest.id||'';
+    app.requestNumber=String(savedRequest.request_number);
+    app.status=savedRequest.status||'new';
+    app.date=savedRequest.created_at||app.date;
+    try{DB.push('applications',app);}catch(cacheError){}
+  } catch(err) {
+    deliveryError=err;
+    console.error('[Royal FinTech] Supabase request submission failed:',err);
+    try{DB.push('applications',Object.assign({},app,{deliveryStatus:'local-only'}));}catch(cacheError){}
   }
-  try { pushAdminNotif('\ud83d\udcf1 New Request', proj+' from '+name+' \u2014 '+convertPrice(total)); } catch(e) {}
-  try { addAuditLog('\ud83d\udcf1','action','New request: '+proj+' ('+quotNum+')'); } catch(e) {}
-  try { updateOverviewWidgets(); updateAppStats(); } catch(e) {}
-  window._rqRefNum=refNum; window._rqQuotNum=quotNum;
+  var receipt=document.getElementById('receiptCard');
+  if(receipt){
+    var rows=[
+      ['Request ID',delivery==='server-confirmed'?'RFT-'+serverReceipt.request_number:refNum],
+      ['Customer',name],['Company',companyVal||'—'],['Email',email],['Phone',phone],['Country',country],
+      ['Project',proj],['Project type',typeNames.join(', ')||'Custom'],
+      ['Platforms',rqSelectedPlatforms.join(', ')||'Web'],['Features',featureNames.join(', ')||'None'],
+      ['Budget preference',budgetTxt],['Timeline',timelineTxt],['Language',getName('rqLang')||'English'],
+      ['Currency',currentCurrency],['Attachments',fileNames.join(', ')||'None']
+    ];
+    receipt.innerHTML='<div class="receipt-logo-wrap"><div style="font-weight:800;font-size:1.1rem;color:var(--blue)">Royal FinTech Company</div><div style="font-size:.72rem;color:var(--gray)">OIC Road, Old Yundum, The Gambia</div></div><div style="border-top:2px dashed var(--gborder);margin:10px 0"></div>'+
+      rows.map(function(row){return '<div class="receipt-row"><span>'+esc(row[0])+'</span><span style="text-align:right;max-width:65%">'+esc(String(row[1]||'—'))+'</span></div>';}).join('')+
+      '<div class="receipt-total"><span>Preliminary estimate (not a fixed price)</span><span>'+convertPrice(total)+'</span></div>'+
+      '<div style="font-size:.75rem;color:var(--gray);margin-top:12px">royalfintechcompany@gmail.com | +220 4071510</div>';
+  }
+  var heading=document.querySelector('#reqStep5 h2'),copy=document.querySelector('#reqStep5 p');
+  var notice=document.getElementById('reqLocalOnlyNotice');
+  if(!notice&&copy){
+    notice=document.createElement('div');notice.id='reqLocalOnlyNotice';
+    notice.style.cssText='display:none;max-width:560px;margin:0 auto 20px;padding:14px 16px;border:1px solid rgba(251,191,36,.45);border-radius:12px;background:rgba(251,191,36,.08);color:var(--light);text-align:left';
+    copy.parentNode.insertBefore(notice,copy.nextSibling);
+  }
+  if(delivery==='server-confirmed'){
+    window._rqRefNum='RFT-'+serverReceipt.request_number;window._rqQuotNum=quotNum;
+    if(heading){heading.textContent='Project Request Received';heading.style.color='var(--green)';}
+    if(copy)copy.textContent='Thank you. Your request was saved securely and our team has been notified. Your reference is RFT-'+serverReceipt.request_number+'.';
+    if(notice){notice.style.display='none';notice.textContent='';}
+    try{if(typeof pushAdminNotif==='function')pushAdminNotif('📱 New Request',proj+' from '+name+' — saved to Supabase');}catch(e){}
+    try{if(typeof addAuditLog==='function')addAuditLog('📱','action','Supabase request saved: RFT-'+serverReceipt.request_number);}catch(e){}
+    try{if(typeof updateOverviewWidgets==='function')updateOverviewWidgets();if(typeof updateAppStats==='function')updateAppStats();if(typeof renderApplications==='function')renderApplications();}catch(e){}
+  }else{
+    window._rqRefNum=refNum;window._rqQuotNum=quotNum;
+    if(heading){heading.textContent='Request Not Yet Sent';heading.style.color='var(--gold)';}
+    if(copy)copy.textContent='Your project details are prepared, but the server did not confirm receipt. Please use WhatsApp or email below so our team receives your request.';
+    if(notice){
+      notice.style.display='block';
+      notice.innerHTML='<strong>⚠️ Not saved to the central database</strong><p style="margin:6px 0 0">We could not confirm online delivery. Your browser copy is not visible to our team. Please send the request using WhatsApp or email.</p>';
+    }
+    var wa=document.getElementById('sendRequestWhatsApp');
+    if(wa)wa.onclick=function(){
+      var message=['Royal FinTech Project Request','Reference: '+refNum,'Quotation: '+quotNum,'Name: '+name,'Company: '+(companyVal||'—'),'Email: '+email,'Phone: '+phone,'Country: '+country,'Language: '+(getName('rqLang')||'en'),'Currency: '+currentCurrency,'Project: '+proj,'Description: '+desc,'Types: '+(typeNames.join(', ')||'Custom'),'Platforms: '+(rqSelectedPlatforms.join(', ')||'Web'),'Features: '+(featureNames.join(', ')||'None'),'Budget preference: '+budgetTxt,'Timeline: '+timelineTxt,'Preliminary estimate: '+convertPrice(total)].join('\n');
+      window.open('https://wa.me/2204071510?text='+encodeURIComponent(message),'_blank','noopener,noreferrer');
+    };
+    if(!wa&&notice){
+      var emailLink=document.createElement('a');emailLink.href='mailto:royalfintechcompany@gmail.com?subject='+encodeURIComponent('Project request '+refNum)+'&body='+encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nPhone: '+phone+'\nProject: '+proj+'\nDescription: '+desc+'\nBudget: '+budgetTxt);
+      emailLink.textContent='Email Royal FinTech';emailLink.style.cssText='display:inline-block;margin-top:10px;color:var(--gold);font-weight:700';notice.appendChild(emailLink);
+    }
+  }
+  if(submitButton){submitButton.disabled=false;submitButton.textContent=submitButton.dataset.originalText||'Submit Project Request';}
   goToReqStep(5);
 }
 
@@ -9326,6 +9372,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase/app-requests-client.js"></script>
 <script id="rft-request-flow-qa">
 (function () {
   function val(id) { var el = document.getElementById(id); return el ? el.value : ''; }
@@ -9598,5 +9646,60 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
+<script id="rft-supabase-admin-bridge">
+(function(){
+  'use strict';
+  window.refreshSupabaseRequests=async function(){
+    var panel=document.getElementById('appListBody');
+    var token='';
+    try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
+    if(!token){if(panel)panel.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center">Sign in through the configured Supabase administrator authentication to load central requests. Local browser records are not the central inbox.</td></tr>';return;}
+    if(!window.RFAppRequests){if(panel)panel.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center">Request API helper is unavailable. Refresh the page and try again.</td></tr>';return;}
+    if(panel)panel.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center">Loading secure requests…</td></tr>';
+    try{
+      var status=(document.getElementById('appFilter')||{}).value||'all';
+      var q=(document.getElementById('appSearch')||{}).value||'';
+      var result=await window.RFAppRequests.list({accessToken:token,status:status==='pending'?'new':status==='rejected'?'declined':status,q:q,page:0,pageSize:100});
+      var rows=Array.isArray(result.requests)?result.requests:(Array.isArray(result.data)?result.data:[]);
+      var mapped=rows.map(function(r){return {
+        id:Date.now()+Math.random(),serverId:r.id,requestNumber:r.request_number,name:r.full_name,email:r.email,
+        phone:[r.phone_country_code,r.phone_number].filter(Boolean).join(' '),company:r.company_name||'',
+        projectName:r.project_name||r.project_type||'Project Request',service:r.project_type||'App / Website',
+        desc:r.project_summary||'',country:r.country||'',types:[r.project_type||'Custom'],
+        platforms:r.target_platforms||[],features:r.requested_features||[],budget:r.budget_min==null?'Flexible':String(r.budget_min)+'–'+String(r.budget_max||'open')+' '+(r.budget_currency||''),
+        timeline:r.timeline||'To be discussed',currency:r.budget_currency||r.preferred_currency||'USD',
+        status:r.status==='new'?'pending':r.status==='declined'?'rejected':r.status,
+        date:r.created_at,adminNotes:r.admin_notes||'',deliveryStatus:'server-confirmed'
+      };});
+      try{DB.set('applications',mapped);}catch(e){}
+      if(typeof renderApplications==='function')renderApplications(status,q);
+      if(panel&&!mapped.length)panel.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center">No central requests match these filters.</td></tr>';
+      if(typeof updateAppStats==='function')updateAppStats();
+      if(typeof showToast==='function')showToast('Loaded '+mapped.length+' central request(s).','success');
+    }catch(error){
+      console.error('[Royal FinTech] Central admin request load failed:',error);
+      if(panel)panel.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center">Could not load central requests. Confirm your Supabase administrator session and try again.</td></tr>';
+      if(typeof showToast==='function')showToast(error.message||'Could not load central requests.','error');
+    }
+  };
+  window.enableAdminPush=async function(){
+    var token='';
+    try{token=sessionStorage.getItem('rft_admin_access_token')||'';}catch(e){}
+    if(!token){if(typeof showToast==='function')showToast('Sign in with an authorized Supabase administrator account first.','error');return;}
+    if(!window.RFAppRequests||typeof window.RFAppRequests.enablePush!=='function'){if(typeof showToast==='function')showToast('Push notification support is not loaded. Refresh and try again.','error');return;}
+    try{
+      var result=await window.RFAppRequests.enablePush(token);
+      if(typeof showToast==='function')showToast(result.message||'This browser is subscribed to admin push notifications.','success');
+    }catch(error){
+      console.error('[Royal FinTech] Admin push subscription failed:',error);
+      if(typeof showToast==='function')showToast(error.message||'Could not enable push notifications.','error');
+    }
+  };
+  document.addEventListener('click',function(event){
+    var link=event.target&&event.target.closest&&event.target.closest('[onclick*="showPanel(\'applications\')"]');
+    if(link)setTimeout(function(){if(typeof window.refreshSupabaseRequests==='function')window.refreshSupabaseRequests();},100);
+  });
+})();
+</script>
 </body>
 </html>
